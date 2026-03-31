@@ -98,9 +98,20 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     []
   );
 
-  if (!mod || !template) {
+  if (!mod) {
     return <div className="text-muted-foreground">Module not found</div>;
   }
+
+  const activeTemplate = template || {
+    moduleSlug, category,
+    sections: [
+      { key: "overview", label: "Overview", placeholder: "Provide a high-level overview...", type: "textarea" as const, required: true },
+      { key: "details", label: "Details", placeholder: "Add detailed information...", type: "textarea" as const },
+      { key: "analysis", label: "Analysis", placeholder: "Your analysis and insights...", type: "textarea" as const },
+      { key: "recommendations", label: "Recommendations", placeholder: "What do you recommend?", type: "textarea" as const },
+      { key: "nextSteps", label: "Next Steps", placeholder: "What are the next actions?", type: "textarea" as const },
+    ],
+  };
 
   return (
     <div>
@@ -203,7 +214,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
 
               {/* Sections */}
               <div className="space-y-5">
-                {template.sections.map((section) => (
+                {activeTemplate.sections.map((section) => (
                   <div key={section.key}>
                     <Label
                       htmlFor={section.key}
