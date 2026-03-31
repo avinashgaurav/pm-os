@@ -74,7 +74,7 @@ export default function DecisionLogPage() {
 
   return (
     <div>
-      <PageHeader title="Decision Log" description="Track all product decisions with context and outcomes" isNew
+      <PageHeader title="Decision Log" description="Track all product decisions with context and outcomes"
         actions={<Button size="sm" onClick={() => { resetForm(); setDialogOpen(true); }} className="gap-1.5"><Plus className="h-3.5 w-3.5" />Log Decision</Button>}
       />
 

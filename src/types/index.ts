@@ -306,7 +306,6 @@ export interface ModuleConfig {
   description: string;
   icon: string;
   archetype: 'document' | 'canvas' | 'tracker';
-  isNew?: boolean;
 }
 
 export interface CategoryConfig {

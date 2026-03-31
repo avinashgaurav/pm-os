@@ -34,7 +34,7 @@ export default function KnowledgeBasePage() {
 
   return (
     <div>
-      <PageHeader title="PM Knowledge Base" description="Frameworks, mental models, and book summaries for product managers" isNew />
+      <PageHeader title="PM Knowledge Base" description="Frameworks, mental models, and book summaries for product managers" />
       <div className="flex items-center gap-3 mb-6">
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />

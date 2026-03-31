@@ -42,7 +42,7 @@ export default function StakeholderMapPage() {
 
   return (
     <div>
-      <PageHeader title="Stakeholder Map" description="Map stakeholders by influence and interest" isNew
+      <PageHeader title="Stakeholder Map" description="Map stakeholders by influence and interest"
         actions={<Button size="sm" onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" />Add Stakeholder</Button>} />
       <div className="relative ml-4 mb-8">
         <div className="absolute -left-6 top-1/2 -translate-y-1/2 -rotate-90 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Influence →</div>

@@ -21,8 +21,8 @@ export const categories: CategoryConfig[] = [
       { slug: 'app-reviews', name: 'App Review Analyzer', description: 'Analyze app store reviews for insights', icon: 'Star', archetype: 'document' },
       { slug: 'feature-requests', name: 'Feature Requests', description: 'Track and analyze feature request patterns', icon: 'Lightbulb', archetype: 'document' },
       { slug: 'customer-voice', name: 'Customer Voice', description: 'Aggregate voice-of-customer data', icon: 'AudioLines', archetype: 'document' },
-      { slug: 'feedback-wall', name: 'Feedback Wall', description: 'Visual wall of customer feedback with sentiment tags', icon: 'LayoutGrid', archetype: 'tracker', isNew: true },
-      { slug: 'assumptions', name: 'Assumption Tracker', description: 'Track and validate product assumptions', icon: 'HelpCircle', archetype: 'tracker', isNew: true },
+      { slug: 'feedback-wall', name: 'Feedback Wall', description: 'Visual wall of customer feedback with sentiment tags', icon: 'LayoutGrid', archetype: 'tracker' },
+      { slug: 'assumptions', name: 'Assumption Tracker', description: 'Track and validate product assumptions', icon: 'HelpCircle', archetype: 'tracker' },
     ],
   },
   {
@@ -46,10 +46,10 @@ export const categories: CategoryConfig[] = [
       { slug: 'pricing', name: 'Pricing Strategy', description: 'Analyze and plan your pricing model', icon: 'DollarSign', archetype: 'document' },
       { slug: 'roadmap-review', name: 'Roadmap Review', description: 'Strategic review of your product roadmap', icon: 'Map', archetype: 'document' },
       { slug: 'devils-advocate', name: "Devil's Advocate", description: 'Challenge your strategy with contrarian thinking', icon: 'Flame', archetype: 'document' },
-      { slug: 'metric-tree', name: 'Metric Tree', description: 'Visual north star metric decomposition tree', icon: 'Network', archetype: 'canvas', isNew: true },
-      { slug: 'vision-board', name: 'Vision Board', description: 'Create a structured product vision board', icon: 'Presentation', archetype: 'canvas', isNew: true },
-      { slug: 'decisions', name: 'Decision Log', description: 'Track all product decisions with context and outcomes', icon: 'Gavel', archetype: 'tracker', isNew: true },
-      { slug: 'scoring', name: 'Feature Scoring', description: 'Score features using RICE, ICE, or custom frameworks', icon: 'Calculator', archetype: 'tracker', isNew: true },
+      { slug: 'metric-tree', name: 'Metric Tree', description: 'Visual north star metric decomposition tree', icon: 'Network', archetype: 'canvas' },
+      { slug: 'vision-board', name: 'Vision Board', description: 'Create a structured product vision board', icon: 'Presentation', archetype: 'canvas' },
+      { slug: 'decisions', name: 'Decision Log', description: 'Track all product decisions with context and outcomes', icon: 'Gavel', archetype: 'tracker' },
+      { slug: 'scoring', name: 'Feature Scoring', description: 'Score features using RICE, ICE, or custom frameworks', icon: 'Calculator', archetype: 'tracker' },
     ],
   },
   {
@@ -66,7 +66,7 @@ export const categories: CategoryConfig[] = [
       { slug: 'tech-spec', name: 'Technical Spec', description: 'Write detailed technical specifications', icon: 'Code', archetype: 'document' },
       { slug: 'api-docs', name: 'API Documentation', description: 'Generate API documentation from specs', icon: 'Braces', archetype: 'document' },
       { slug: 'onboarding', name: 'Onboarding Flow', description: 'Design user onboarding flows', icon: 'Footprints', archetype: 'document' },
-      { slug: 'story-map', name: 'User Story Map', description: 'Visual story mapping with activities and stories', icon: 'LayoutDashboard', archetype: 'canvas', isNew: true },
+      { slug: 'story-map', name: 'User Story Map', description: 'Visual story mapping with activities and stories', icon: 'LayoutDashboard', archetype: 'canvas' },
     ],
   },
   {
@@ -83,9 +83,9 @@ export const categories: CategoryConfig[] = [
       { slug: 'backlog', name: 'Backlog Prioritizer', description: 'Prioritize and manage your product backlog', icon: 'ListOrdered', archetype: 'tracker' },
       { slug: 'daily', name: 'Daily Plan', description: 'Structure your daily PM priorities', icon: 'Sun', archetype: 'document' },
       { slug: 'weekly', name: 'Weekly Plan', description: 'Plan your weekly PM activities', icon: 'CalendarRange', archetype: 'document' },
-      { slug: 'release-calendar', name: 'Release Calendar', description: 'Manage release timelines and milestones', icon: 'CalendarCheck', archetype: 'tracker', isNew: true },
-      { slug: 'velocity', name: 'Sprint Velocity', description: 'Track sprint velocity over time', icon: 'TrendingUp', archetype: 'tracker', isNew: true },
-      { slug: 'dependencies', name: 'Dependency Map', description: 'Visualize feature and team dependencies', icon: 'Workflow', archetype: 'canvas', isNew: true },
+      { slug: 'release-calendar', name: 'Release Calendar', description: 'Manage release timelines and milestones', icon: 'CalendarCheck', archetype: 'tracker' },
+      { slug: 'velocity', name: 'Sprint Velocity', description: 'Track sprint velocity over time', icon: 'TrendingUp', archetype: 'tracker' },
+      { slug: 'dependencies', name: 'Dependency Map', description: 'Visualize feature and team dependencies', icon: 'Workflow', archetype: 'canvas' },
     ],
   },
   {
@@ -101,7 +101,7 @@ export const categories: CategoryConfig[] = [
       { slug: 'funnels', name: 'Funnel Analyzer', description: 'Analyze conversion funnels and drop-offs', icon: 'Filter', archetype: 'document' },
       { slug: 'experiments', name: 'Experiment Designer', description: 'Design product experiments with clear hypotheses', icon: 'FlaskRound', archetype: 'document' },
       { slug: 'dashboards', name: 'Dashboard Designer', description: 'Design product analytics dashboards', icon: 'LayoutDashboard', archetype: 'document' },
-      { slug: 'okr-tracker', name: 'OKR Tracker', description: 'Track OKR progress with visual indicators', icon: 'Target', archetype: 'tracker', isNew: true },
+      { slug: 'okr-tracker', name: 'OKR Tracker', description: 'Track OKR progress with visual indicators', icon: 'Target', archetype: 'tracker' },
     ],
   },
   {
@@ -115,7 +115,7 @@ export const categories: CategoryConfig[] = [
       { slug: 'landscape', name: 'Landscape Mapper', description: 'Map the competitive landscape on key dimensions', icon: 'Map', archetype: 'canvas' },
       { slug: 'market-sizing', name: 'Market Sizing', description: 'Calculate TAM, SAM, SOM for your market', icon: 'Globe', archetype: 'document' },
       { slug: 'win-loss', name: 'Win/Loss Analysis', description: 'Analyze competitive wins and losses', icon: 'TrendingDown', archetype: 'document' },
-      { slug: 'impact-effort', name: 'Impact vs Effort', description: 'Interactive 2x2 prioritization matrix', icon: 'Maximize2', archetype: 'canvas', isNew: true },
+      { slug: 'impact-effort', name: 'Impact vs Effort', description: 'Interactive 2x2 prioritization matrix', icon: 'Maximize2', archetype: 'canvas' },
     ],
   },
   {
@@ -132,7 +132,7 @@ export const categories: CategoryConfig[] = [
       { slug: 'decision-doc', name: 'Decision Document', description: 'Write decision documents for alignment', icon: 'FileCheck2', archetype: 'document' },
       { slug: 'board-deck', name: 'Board Deck', description: 'Create board meeting presentation outlines', icon: 'GalleryHorizontalEnd', archetype: 'document' },
       { slug: 'agenda', name: 'Meeting Agenda', description: 'Create structured meeting agendas', icon: 'ListChecks', archetype: 'document' },
-      { slug: 'stakeholder-map', name: 'Stakeholder Map', description: 'Map stakeholders by influence and interest', icon: 'Users2', archetype: 'canvas', isNew: true },
+      { slug: 'stakeholder-map', name: 'Stakeholder Map', description: 'Map stakeholders by influence and interest', icon: 'Users2', archetype: 'canvas' },
     ],
   },
   {
@@ -146,7 +146,7 @@ export const categories: CategoryConfig[] = [
       { slug: 'checklist', name: 'Launch Checklist', description: 'Build comprehensive launch checklists', icon: 'CheckSquare', archetype: 'document' },
       { slug: 'sales-enablement', name: 'Sales Enablement', description: 'Create sales enablement materials', icon: 'Briefcase', archetype: 'document' },
       { slug: 'readiness', name: 'Launch Readiness', description: 'Assess launch readiness across all teams', icon: 'ShieldCheck', archetype: 'document' },
-      { slug: 'changelog', name: 'Product Changelog', description: 'Generate beautiful product changelogs', icon: 'History', archetype: 'tracker', isNew: true },
+      { slug: 'changelog', name: 'Product Changelog', description: 'Generate beautiful product changelogs', icon: 'History', archetype: 'tracker' },
     ],
   },
   {
@@ -161,7 +161,7 @@ export const categories: CategoryConfig[] = [
       { slug: 'processes', name: 'Process Docs', description: 'Document team processes and workflows', icon: 'BookMarked', archetype: 'document' },
       { slug: 'post-mortem', name: 'Post-Mortem', description: 'Conduct blameless post-mortem reviews', icon: 'AlertTriangle', archetype: 'document' },
       { slug: 'cs-playbook', name: 'CS Playbook', description: 'Build customer success playbooks', icon: 'HandShake', archetype: 'document' },
-      { slug: 'meeting-templates', name: 'Meeting Templates', description: 'Pre-built meeting templates (1:1, sprint review, etc.)', icon: 'LayoutTemplate', archetype: 'document', isNew: true },
+      { slug: 'meeting-templates', name: 'Meeting Templates', description: 'Pre-built meeting templates (1:1, sprint review, etc.)', icon: 'LayoutTemplate', archetype: 'document' },
     ],
   },
   {
@@ -171,9 +171,9 @@ export const categories: CategoryConfig[] = [
     icon: 'Sprout',
     color: '#14b8a6',
     modules: [
-      { slug: 'competency', name: 'PM Competency', description: 'Assess and track your PM skill development', icon: 'Radar', archetype: 'tracker', isNew: true },
-      { slug: 'knowledge-base', name: 'Knowledge Base', description: 'PM frameworks, mental models, and book summaries', icon: 'Library', archetype: 'tracker', isNew: true },
-      { slug: 'hypothesis-board', name: 'Hypothesis Board', description: 'Track product hypotheses and experiments', icon: 'Beaker', archetype: 'tracker', isNew: true },
+      { slug: 'competency', name: 'PM Competency', description: 'Assess and track your PM skill development', icon: 'Radar', archetype: 'tracker' },
+      { slug: 'knowledge-base', name: 'Knowledge Base', description: 'PM frameworks, mental models, and book summaries', icon: 'Library', archetype: 'tracker' },
+      { slug: 'hypothesis-board', name: 'Hypothesis Board', description: 'Track product hypotheses and experiments', icon: 'Beaker', archetype: 'tracker' },
     ],
   },
 ];
