@@ -17,8 +17,8 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
         <Sidebar />
         <div
           className={cn(
-            'flex-1 flex flex-col transition-all duration-200',
-            sidebarCollapsed ? 'ml-16' : 'ml-[280px]'
+            'flex-1 flex flex-col transition-all duration-300',
+            sidebarCollapsed ? 'ml-[60px]' : 'ml-[260px]'
           )}
         >
           <Topbar />
