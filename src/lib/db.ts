@@ -19,7 +19,24 @@ import type {
   Hypothesis,
 } from '@/types';
 
+export interface WorkflowStep {
+  id: string;
+  label: string;
+  description: string;
+  moduleLinks: string[];
+  order: number;
+}
+
+export interface Workflow {
+  id: string;
+  name: string;
+  steps: WorkflowStep[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 const db = new Dexie('PMOperatingSystem') as Dexie & {
+  workflows: EntityTable<Workflow, 'id'>;
   documents: EntityTable<BaseDocument, 'id'>;
   assumptions: EntityTable<Assumption, 'id'>;
   feedbackItems: EntityTable<FeedbackItem, 'id'>;
@@ -40,6 +57,7 @@ const db = new Dexie('PMOperatingSystem') as Dexie & {
 };
 
 db.version(1).stores({
+  workflows: 'id, name, createdAt',
   documents: 'id, category, moduleSlug, title, createdAt, updatedAt, starred, archived, *tags',
   assumptions: 'id, status, confidence, *tags, createdAt',
   feedbackItems: 'id, source, sentiment, category, *tags, createdAt',
