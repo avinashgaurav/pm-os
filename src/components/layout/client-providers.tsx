@@ -1,0 +1,32 @@
+'use client';
+
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { Toaster } from '@/components/ui/sonner';
+import { Sidebar } from './sidebar';
+import { Topbar } from './topbar';
+import { CommandPalette } from './command-palette';
+import { useUIStore } from '@/stores/ui-store';
+import { cn } from '@/lib/utils';
+
+export function ClientProviders({ children }: { children: React.ReactNode }) {
+  const { sidebarCollapsed } = useUIStore();
+
+  return (
+    <TooltipProvider>
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <div
+          className={cn(
+            'flex-1 flex flex-col transition-all duration-200',
+            sidebarCollapsed ? 'ml-16' : 'ml-[280px]'
+          )}
+        >
+          <Topbar />
+          <main className="flex-1 p-6">{children}</main>
+        </div>
+      </div>
+      <CommandPalette />
+      <Toaster richColors position="bottom-right" />
+    </TooltipProvider>
+  );
+}
