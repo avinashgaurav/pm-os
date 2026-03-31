@@ -39,10 +39,6 @@ export default function Dashboard() {
   };
 
   const totalModules = categories.reduce((sum, c) => sum + c.modules.length, 0);
-  const newModules = categories.reduce(
-    (sum, c) => sum + c.modules.filter((m) => m.isNew).length,
-    0
-  );
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -78,7 +74,6 @@ export default function Dashboard() {
           <StatCard label="Modules Available" value={totalModules} icon={<Compass className="h-4 w-4" />} color="#a855f7" />
         </motion.div>
         <motion.div variants={fadeUp}>
-          <StatCard label="New Modules" value={newModules} icon={<Sprout className="h-4 w-4" />} color="#10b981" />
         </motion.div>
       </motion.div>
 
@@ -101,7 +96,6 @@ export default function Dashboard() {
         <motion.div variants={stagger} initial="hidden" animate="show" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat) => {
             const Icon = iconMap[cat.icon] || Search;
-            const newCount = cat.modules.filter((m) => m.isNew).length;
             return (
               <motion.div key={cat.slug} variants={fadeUp}>
                 <Link href={`/${cat.slug}`} className="group glass-card rounded-xl p-5 block hover:scale-[1.01] transition-transform">
@@ -115,7 +109,6 @@ export default function Dashboard() {
                   <p className="text-[12px] text-muted-foreground line-clamp-2 mb-2.5">{cat.description}</p>
                   <div className="flex items-center gap-2">
                     <span className="text-[11px] text-muted-foreground/60">{cat.modules.length} modules</span>
-                    {newCount > 0 && <Badge className="h-4 px-1 text-[9px] font-medium bg-primary/15 text-primary border-0">{newCount} new</Badge>}
                   </div>
                 </Link>
               </motion.div>

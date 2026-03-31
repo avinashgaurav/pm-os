@@ -43,7 +43,7 @@ export default function FeedbackWallPage() {
 
   return (
     <div>
-      <PageHeader title="Feedback Wall" description="Visual wall of customer feedback with sentiment tags" isNew
+      <PageHeader title="Feedback Wall" description="Visual wall of customer feedback with sentiment tags"
         actions={<Button size="sm" onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" />Add Feedback</Button>} />
       <div className="flex items-center gap-2 mb-6">
         {['all', 'positive', 'neutral', 'negative'].map(s => (

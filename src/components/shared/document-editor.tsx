@@ -107,7 +107,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
       <PageHeader
         title={mod.name}
         description={mod.description}
-        isNew={mod.isNew}
+       
         actions={
           <Button size="sm" onClick={handleNew} className="gap-1.5">
             <Plus className="h-3.5 w-3.5" />

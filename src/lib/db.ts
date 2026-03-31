@@ -58,7 +58,7 @@ const db = new Dexie('PMOperatingSystem') as Dexie & {
 
 db.version(1).stores({
   workflows: 'id, name, createdAt',
-  documents: 'id, category, moduleSlug, title, createdAt, updatedAt, starred, archived, *tags',
+  documents: 'id, [category+moduleSlug], category, moduleSlug, title, createdAt, updatedAt, starred, archived, *tags',
   assumptions: 'id, status, confidence, *tags, createdAt',
   feedbackItems: 'id, source, sentiment, category, *tags, createdAt',
   decisions: 'id, status, date, *tags, createdAt',

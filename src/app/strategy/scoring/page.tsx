@@ -36,7 +36,7 @@ export default function FeatureScoringPage() {
 
   return (
     <div>
-      <PageHeader title="Feature Scoring" description="Score features using RICE and ICE frameworks" isNew
+      <PageHeader title="Feature Scoring" description="Score features using RICE and ICE frameworks"
         actions={<Button size="sm" onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" />Score Feature</Button>} />
       <Tabs value={sortBy} onValueChange={(v: string | null) => { if (v) setSortBy(v as 'rice' | 'ice'); }} className="mb-4">
         <TabsList><TabsTrigger value="rice">RICE Score</TabsTrigger><TabsTrigger value="ice">ICE Score</TabsTrigger></TabsList>

@@ -7,19 +7,14 @@ import { nanoid } from 'nanoid';
 
 export function useDocuments(category?: CategorySlug, moduleSlug?: string) {
   const documents = useLiveQuery(
-    () => {
-      let query = db.documents.orderBy('updatedAt').reverse();
+    async () => {
+      let results = await db.documents.toArray();
       if (category && moduleSlug) {
-        return db.documents
-          .where('[category+moduleSlug]')
-          .equals([category, moduleSlug])
-          .reverse()
-          .sortBy('updatedAt');
+        results = results.filter(d => d.category === category && d.moduleSlug === moduleSlug);
+      } else if (category) {
+        results = results.filter(d => d.category === category);
       }
-      if (category) {
-        return db.documents.where('category').equals(category).reverse().sortBy('updatedAt');
-      }
-      return query.toArray();
+      return results.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     },
     [category, moduleSlug]
   );
@@ -66,13 +61,16 @@ export function useDocuments(category?: CategorySlug, moduleSlug?: string) {
 
 export function useRecentDocuments(limit = 10) {
   return useLiveQuery(
-    () => db.documents.orderBy('updatedAt').reverse().limit(limit).toArray(),
+    async () => {
+      const all = await db.documents.toArray();
+      return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, limit);
+    },
     [limit]
   );
 }
 
 export function useStarredDocuments() {
-  return useLiveQuery(() => db.documents.where('starred').equals(1).toArray());
+  return useLiveQuery(() => db.documents.filter(d => d.starred).toArray());
 }
 
 export function useDocumentCount() {

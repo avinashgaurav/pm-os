@@ -38,7 +38,7 @@ export default function CompetencyPage() {
 
   return (
     <div>
-      <PageHeader title="PM Competency Tracker" description="Assess and track your PM skill development across key dimensions" isNew
+      <PageHeader title="PM Competency Tracker" description="Assess and track your PM skill development across key dimensions"
         actions={!editing ? <Button size="sm" onClick={() => setEditing(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" />New Assessment</Button> : undefined} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-xl p-6">

@@ -31,7 +31,7 @@ export default function ImpactEffortPage() {
 
   return (
     <div>
-      <PageHeader title="Impact vs Effort Matrix" description="Interactive 2x2 prioritization matrix" isNew />
+      <PageHeader title="Impact vs Effort Matrix" description="Interactive 2x2 prioritization matrix" />
       <div className="flex items-center gap-2 mb-6">
         <Input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && addItem()} placeholder="Add an item..." className="max-w-xs" />
         <Select value={selectedQuadrant} onValueChange={(v: string | null) => { if (v) setSelectedQuadrant(v); }}><SelectTrigger className="w-40"><SelectValue /></SelectTrigger>

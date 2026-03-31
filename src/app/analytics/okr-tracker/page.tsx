@@ -46,7 +46,7 @@ export default function OKRTrackerPage() {
 
   return (
     <div>
-      <PageHeader title="OKR Tracker" description="Track OKR progress with visual indicators" isNew
+      <PageHeader title="OKR Tracker" description="Track OKR progress with visual indicators"
         actions={<Button size="sm" onClick={() => setDialogOpen(true)} className="gap-1.5"><Plus className="h-3.5 w-3.5" />New OKR</Button>} />
       {okrs.length === 0 ? <EmptyState title="No OKRs yet" description="Create your first OKR" actionLabel="New OKR" onAction={() => setDialogOpen(true)} icon={<Target className="h-7 w-7 text-muted-foreground" />} /> : (
         <div className="space-y-3">

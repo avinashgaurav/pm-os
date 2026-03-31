@@ -44,7 +44,7 @@ export default function AssumptionTrackerPage() {
 
   return (
     <div>
-      <PageHeader title="Assumption Tracker" description="Track and validate product assumptions" isNew
+      <PageHeader title="Assumption Tracker" description="Track and validate product assumptions"
         actions={<Button size="sm" onClick={() => { resetForm(); setDialogOpen(true); }} className="gap-1.5"><Plus className="h-3.5 w-3.5" />Add Assumption</Button>} />
       <div className="grid grid-cols-4 gap-4">
         {columns.map(col => {

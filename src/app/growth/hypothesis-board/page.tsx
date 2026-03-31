@@ -41,7 +41,7 @@ export default function HypothesisBoardPage() {
 
   return (
     <div>
-      <PageHeader title="Hypothesis Board" description="Track product hypotheses and experiments" isNew
+      <PageHeader title="Hypothesis Board" description="Track product hypotheses and experiments"
         actions={<Button size="sm" onClick={() => { resetForm(); setDialogOpen(true); }} className="gap-1.5"><Plus className="h-3.5 w-3.5" />Add Hypothesis</Button>} />
       <div className="grid grid-cols-4 gap-4">
         {columns.map(col => {

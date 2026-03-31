@@ -11,7 +11,6 @@ import {
   CommandItem,
   CommandSeparator,
 } from '@/components/ui/command';
-import { Badge } from '@/components/ui/badge';
 import { categories } from '@/lib/constants';
 import { useUIStore } from '@/stores/ui-store';
 
@@ -41,12 +40,9 @@ export function CommandPalette() {
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Quick Actions">
-          <CommandItem onSelect={() => navigate('/')}>
-            <span>Dashboard</span>
-          </CommandItem>
-          <CommandItem onSelect={() => navigate('/settings')}>
-            <span>Settings</span>
-          </CommandItem>
+          <CommandItem onSelect={() => navigate('/')}>Dashboard</CommandItem>
+          <CommandItem onSelect={() => navigate('/workflow')}>My Workflow</CommandItem>
+          <CommandItem onSelect={() => navigate('/settings')}>Settings</CommandItem>
         </CommandGroup>
         <CommandSeparator />
         {categories.map((category) => (
@@ -55,14 +51,8 @@ export function CommandPalette() {
               <CommandItem
                 key={`${category.slug}-${mod.slug}`}
                 onSelect={() => navigate(`/${category.slug}/${mod.slug}`)}
-                className="flex items-center justify-between"
               >
-                <span>{mod.name}</span>
-                {mod.isNew && (
-                  <Badge variant="secondary" className="h-4 px-1 text-[9px] font-medium bg-primary/15 text-primary border-0">
-                    NEW
-                  </Badge>
-                )}
+                {mod.name}
               </CommandItem>
             ))}
           </CommandGroup>

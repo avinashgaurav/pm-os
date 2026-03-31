@@ -9,7 +9,7 @@ export default function Page() {
   if (!mod) return null;
   return (
     <div>
-      <PageHeader title={mod.name} description={mod.description} isNew={mod.isNew} />
+      <PageHeader title={mod.name} description={mod.description} />
       <div className="glass-card rounded-xl p-8 min-h-[500px] flex items-center justify-center">
         <EmptyState
           title="Visual Canvas"
