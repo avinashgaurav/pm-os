@@ -1,22 +1,8 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type {
-  BaseDocument,
-  Assumption,
-  FeedbackItem,
-  Decision,
-  FeatureScore,
-  RiskItem,
-  OKR,
-  Sprint,
-  Release,
-  RoadmapItem,
-  Competitor,
-  Stakeholder,
-  MeetingNote,
-  ChangelogEntry,
-  CompetencyScore,
-  KnowledgeItem,
-  Hypothesis,
+  BaseDocument, Assumption, FeedbackItem, Decision, FeatureScore,
+  RiskItem, OKR, Sprint, Release, RoadmapItem, Competitor, Stakeholder,
+  MeetingNote, ChangelogEntry, CompetencyScore, KnowledgeItem, Hypothesis,
 } from '@/types';
 
 export interface WorkflowStep {
@@ -56,9 +42,9 @@ const db = new Dexie('PMOperatingSystem') as Dexie & {
   hypotheses: EntityTable<Hypothesis, 'id'>;
 };
 
-db.version(1).stores({
+db.version(3).stores({
   workflows: 'id, name, createdAt',
-  documents: 'id, [category+moduleSlug], category, moduleSlug, title, createdAt, updatedAt, starred, archived, *tags',
+  documents: 'id, category, moduleSlug, title, createdAt, updatedAt, starred, archived, *tags',
   assumptions: 'id, status, confidence, *tags, createdAt',
   feedbackItems: 'id, source, sentiment, category, *tags, createdAt',
   decisions: 'id, status, date, *tags, createdAt',
@@ -75,6 +61,13 @@ db.version(1).stores({
   competencyScores: 'id, dimension, date',
   knowledgeItems: 'id, category, *tags, createdAt',
   hypotheses: 'id, status, *tags, createdAt',
+});
+
+// Handle schema upgrade failures by deleting and recreating
+db.open().catch(async (err) => {
+  console.warn('DB open failed, resetting:', err.message);
+  await Dexie.delete('PMOperatingSystem');
+  window.location.reload();
 });
 
 export { db };
