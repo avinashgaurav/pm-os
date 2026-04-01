@@ -43,7 +43,7 @@ export default function CompetencyPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="glass-card rounded-xl p-6">
           <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-4">Competency Radar</h3>
-          <div className="h-[350px]">
+          <div className="h-[350px]" style={{ minWidth: 300 }}>
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={latestScores}>
                 <PolarGrid stroke="oklch(0.25 0.015 270)" />
