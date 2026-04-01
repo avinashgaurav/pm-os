@@ -64,7 +64,7 @@ db.version(3).stores({
 });
 
 // Handle schema upgrade failures by deleting and recreating
-db.open().catch(async (err) => {
+if (typeof window !== "undefined") db.open().catch(async (err) => {
   console.warn('DB open failed, resetting:', err.message);
   await Dexie.delete('PMOperatingSystem');
   window.location.reload();
