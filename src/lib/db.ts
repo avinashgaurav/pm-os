@@ -21,7 +21,7 @@ export interface Workflow {
   updatedAt: string;
 }
 
-const db = new Dexie('PMOperatingSystem') as Dexie & {
+const db = new Dexie('PMOS_v2') as Dexie & {
   workflows: EntityTable<Workflow, 'id'>;
   documents: EntityTable<BaseDocument, 'id'>;
   assumptions: EntityTable<Assumption, 'id'>;
@@ -42,32 +42,25 @@ const db = new Dexie('PMOperatingSystem') as Dexie & {
   hypotheses: EntityTable<Hypothesis, 'id'>;
 };
 
-db.version(3).stores({
+db.version(1).stores({
   workflows: 'id, name, createdAt',
-  documents: 'id, category, moduleSlug, title, createdAt, updatedAt, starred, archived, *tags',
-  assumptions: 'id, status, confidence, *tags, createdAt',
-  feedbackItems: 'id, source, sentiment, category, *tags, createdAt',
-  decisions: 'id, status, date, *tags, createdAt',
-  featureScores: 'id, riceScore, iceScore, status, *tags, createdAt',
-  risks: 'id, severity, likelihood, status, createdAt',
-  okrs: 'id, quarter, year, createdAt',
-  sprints: 'id, startDate, endDate, createdAt',
-  releases: 'id, version, date, status, createdAt',
-  roadmapItems: 'id, quarter, status, priority, createdAt',
-  competitors: 'id, name, *tags, createdAt',
-  stakeholders: 'id, name, influence, interest, createdAt',
-  meetingNotes: 'id, type, date, *tags, createdAt',
-  changelogEntries: 'id, version, date, type, createdAt',
+  documents: 'id, category, moduleSlug, createdAt, updatedAt, starred, *tags',
+  assumptions: 'id, status, createdAt',
+  feedbackItems: 'id, source, sentiment, createdAt',
+  decisions: 'id, status, createdAt',
+  featureScores: 'id, status, createdAt',
+  risks: 'id, status, createdAt',
+  okrs: 'id, createdAt',
+  sprints: 'id, createdAt',
+  releases: 'id, date, createdAt',
+  roadmapItems: 'id, createdAt',
+  competitors: 'id, createdAt',
+  stakeholders: 'id, createdAt',
+  meetingNotes: 'id, createdAt',
+  changelogEntries: 'id, date, createdAt',
   competencyScores: 'id, dimension, date',
-  knowledgeItems: 'id, category, *tags, createdAt',
-  hypotheses: 'id, status, *tags, createdAt',
-});
-
-// Handle schema upgrade failures by deleting and recreating
-if (typeof window !== "undefined") db.open().catch(async (err) => {
-  console.warn('DB open failed, resetting:', err.message);
-  await Dexie.delete('PMOperatingSystem');
-  window.location.reload();
+  knowledgeItems: 'id, category, createdAt',
+  hypotheses: 'id, status, createdAt',
 });
 
 export { db };
