@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "PM OS — Product Management Operating System",
-  description:
-    "The comprehensive Product Management Operating System. 84 interactive modules across 10 categories for modern PMs.",
+  description: "82 ready-to-use PM templates across 10 disciplines. From discovery to launch.",
+  icons: { icon: "/favicon.svg" },
 };
 
 export default function RootLayout({

@@ -10,6 +10,20 @@ import { categories } from '@/lib/constants';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useUIStore } from '@/stores/ui-store';
 
+const categoryAbbr: Record<string, string> = {
+  discovery: 'DI',
+  strategy: 'ST',
+  specs: 'SP',
+  planning: 'PL',
+  analytics: 'AN',
+  competitive: 'CP',
+  communication: 'CM',
+  launch: 'LA',
+  operations: 'OP',
+  growth: 'GR',
+};
+
+
 export function Sidebar() {
   const pathname = usePathname();
   const { sidebarCollapsed, toggleSidebarCollapsed } = useUIStore();
@@ -59,7 +73,7 @@ export function Sidebar() {
           {categories.map((category) => {
             const isExpanded = expandedCategories.includes(category.slug);
             const isActive = pathname.startsWith('/' + category.slug);
-            const monogram = category.name.slice(0, 2).toUpperCase();
+            const monogram = categoryAbbr[category.slug] || category.name.slice(0, 2).toUpperCase();
             if (sidebarCollapsed) {
               return (
                 <Link key={category.slug} href={'/' + category.slug} title={category.name}
