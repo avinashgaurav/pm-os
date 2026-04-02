@@ -25,7 +25,7 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
-    setApiKeyState(getApiKey());
+    setApiKeyState(getApiKey() || "");
     setKeySaved(true);
   }, []);
 
