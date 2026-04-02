@@ -8,6 +8,7 @@ import { Plus, Trash2, Edit2, MoreHorizontal, CheckCircle2, Clock, RotateCcw } f
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatDistanceToNow } from 'date-fns';
 import { db } from '@/lib/db';
+import { AIAnalysisButton } from '@/components/shared/ai-analysis';
 import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';
@@ -145,6 +146,14 @@ export default function DecisionLogPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* AI Analysis */}
+      <div className="mt-6">
+        <AIAnalysisButton category="strategy" moduleSlug="decisions" buttonLabel="AI: Analyze Decisions"
+          getData={() => {
+            try { return decisions.map(d => `${d.title}: ${d.context} → ${d.outcome} (${d.status})`).join('\n'); } catch { return ''; }
+          }} />
+      </div>
     </div>
   );
 }

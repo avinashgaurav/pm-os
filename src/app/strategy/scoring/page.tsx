@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Plus, Trash2, ArrowUpDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { db } from '@/lib/db';
+import { AIAnalysisButton } from '@/components/shared/ai-analysis';
 import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';
@@ -104,6 +105,14 @@ export default function FeatureScoringPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* AI Analysis */}
+      <div className="mt-6">
+        <AIAnalysisButton category="strategy" moduleSlug="scoring" buttonLabel="AI: Review Priorities"
+          getData={() => {
+            try { return features.map(f => `${f.title}: RICE=${f.riceScore} ICE=${f.iceScore}`).join('\n'); } catch { return ''; }
+          }} />
+      </div>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Plus, X, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { nanoid } from 'nanoid';
+import { AIAnalysisButton } from '@/components/shared/ai-analysis';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,6 +75,14 @@ export default function SWOTPage() {
             </div>
           </motion.div>
         ))}
+      </div>
+
+      {/* AI Analysis */}
+      <div className="mt-6">
+        <AIAnalysisButton category="strategy" moduleSlug="swot" buttonLabel="AI: Strategic Actions"
+          getData={() => {
+            try { return JSON.stringify(items); } catch { return ''; }
+          }} />
       </div>
     </div>
   );

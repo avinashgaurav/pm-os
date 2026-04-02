@@ -16,7 +16,7 @@ import { downloadMarkdown } from '@/lib/export';
 import { getModule } from '@/lib/constants';
 import { getTemplate } from '@/lib/templates';
 import { getOutputName } from '@/lib/output-names';
-import { generateWithAI, buildPrompt, getApiKey, setApiKey, hasApiKey } from '@/lib/ai';
+import { generateWithAI, buildModulePrompt, getApiKey, setApiKey, hasApiKey } from '@/lib/ai';
 import type { BaseDocument, CategorySlug, ModuleTemplate } from '@/types';
 
 interface DocumentEditorProps {
@@ -88,7 +88,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     setGenerating(true);
     try {
       const sections = activeTemplate.sections.map(s => ({ label: s.label, value: content[s.key] || '' }));
-      const { system, user } = buildPrompt(mod.name, outputName, title, sections);
+      const { system, user } = buildModulePrompt(category, moduleSlug, outputName, title, sections);
       const output = await generateWithAI(apiKey, system, user);
       setGeneratedOutput(output);
       setStep('output');

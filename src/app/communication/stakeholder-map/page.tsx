@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Plus, X, Users2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { db } from '@/lib/db';
+import { AIAnalysisButton } from '@/components/shared/ai-analysis';
 import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';
@@ -88,6 +89,14 @@ export default function StakeholderMapPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* AI Analysis */}
+      <div className="mt-6">
+        <AIAnalysisButton category="communication" moduleSlug="stakeholder-map" buttonLabel="AI: Engagement Plan"
+          getData={() => {
+            try { return stakeholders.map(s => `${s.name} (${s.role}) - influence:${s.influence} interest:${s.interest}`).join('\n'); } catch { return ''; }
+          }} />
+      </div>
     </div>
   );
 }
