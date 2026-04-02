@@ -7,6 +7,7 @@ import { Plus, Save } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { db } from '@/lib/db';
+import { AIAnalysisButton } from '@/components/shared/ai-analysis';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
@@ -87,6 +88,14 @@ export default function CompetencyPage() {
             </div>
           )}
         </motion.div>
+      </div>
+
+      {/* AI Analysis */}
+      <div className="mt-6">
+        <AIAnalysisButton category="growth" moduleSlug="competency" buttonLabel="AI: Dev Plan"
+          getData={() => {
+            try { return latestScores.map(s => `${s.dimension}: ${s.score}/5`).join('\n'); } catch { return ''; }
+          }} />
       </div>
     </div>
   );

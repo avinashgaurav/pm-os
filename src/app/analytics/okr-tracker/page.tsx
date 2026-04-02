@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Plus, Trash2, Target, ChevronDown, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '@/lib/db';
+import { AIAnalysisButton } from '@/components/shared/ai-analysis';
 import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';
@@ -123,6 +124,14 @@ export default function OKRTrackerPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* AI Analysis */}
+      <div className="mt-6">
+        <AIAnalysisButton category="analytics" moduleSlug="okr-tracker" buttonLabel="AI: Review Progress"
+          getData={() => {
+            try { return okrs.map(o => `${o.objective} (${o.progress}%): ${o.keyResults.map(k => `${k.title} ${k.current}/${k.target}`).join(', ')}`).join('\n'); } catch { return ''; }
+          }} />
+      </div>
     </div>
   );
 }

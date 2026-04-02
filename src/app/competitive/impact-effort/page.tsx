@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Plus, X, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { nanoid } from 'nanoid';
+import { AIAnalysisButton } from '@/components/shared/ai-analysis';
 import { PageHeader } from '@/components/shared/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -62,6 +63,14 @@ export default function ImpactEffortPage() {
             </motion.div>
           ))}
         </div>
+      </div>
+
+      {/* AI Analysis */}
+      <div className="mt-6">
+        <AIAnalysisButton category="competitive" moduleSlug="impact-effort" buttonLabel="AI: Prioritize"
+          getData={() => {
+            try { return items.map(i => `[${i.quadrant}] ${i.text}`).join('\n'); } catch { return ''; }
+          }} />
       </div>
     </div>
   );

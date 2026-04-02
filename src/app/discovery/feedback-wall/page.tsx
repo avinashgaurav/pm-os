@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Plus, Trash2, ThumbsUp, MoreHorizontal } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '@/lib/db';
+import { AIAnalysisButton } from '@/components/shared/ai-analysis';
 import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';
@@ -94,6 +95,14 @@ export default function FeedbackWallPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* AI Analysis */}
+      <div className="mt-6">
+        <AIAnalysisButton category="discovery" moduleSlug="feedback-wall" buttonLabel="AI: Find Patterns"
+          getData={() => {
+            try { return items.map(i => `[${i.sentiment}] ${i.content}`).join('\n'); } catch { return ''; }
+          }} />
+      </div>
     </div>
   );
 }

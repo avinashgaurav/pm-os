@@ -1,3 +1,5 @@
+import { getModulePrompt } from './ai-prompts';
+
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 
 export async function generateWithAI(
@@ -17,7 +19,7 @@ export async function generateWithAI(
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt },
       ],
-      max_tokens: 3000,
+      max_tokens: 4000,
       temperature: 0.7,
     }),
   });
@@ -31,40 +33,58 @@ export async function generateWithAI(
   return data.choices?.[0]?.message?.content || 'No output generated';
 }
 
-export function buildPrompt(
-  moduleName: string,
+export function buildModulePrompt(
+  category: string,
+  moduleSlug: string,
   outputName: string,
   title: string,
   sections: { label: string; value: string }[]
 ): { system: string; user: string } {
-  const system = `You are an expert Product Manager assistant inside PM OS. Your job is to generate professional, actionable PM deliverables.
+  const modulePrompt = getModulePrompt(category, moduleSlug);
 
-Rules:
-- Write in clear, professional prose suitable for sharing with stakeholders
-- Use markdown formatting: ## for sections, - for bullets, **bold** for emphasis
-- Be specific and actionable, not generic
-- Add analysis, recommendations, and insights beyond what the user provided
-- Structure the output as a complete, ready-to-share ${outputName}
+  const system = `${modulePrompt.system}
+
+Format rules:
+- Use markdown: # for title, ## for sections, ### for subsections, - for bullets, **bold** for emphasis
 - Start with a one-paragraph executive summary
-- End with concrete next steps`;
+- Be specific and actionable — no filler or generic advice
+- End with prioritized next steps
+- Write as a ready-to-share professional deliverable`;
 
   const filledSections = sections.filter(s => s.value.trim());
   const sectionText = filledSections.map(s => `### ${s.label}\n${s.value}`).join('\n\n');
 
-  const user = `Generate a complete, professional ${outputName} titled "${title}".
+  const user = `Generate a complete, professional ${outputName} titled "${title}" using the ${modulePrompt.methodology} framework.
 
-Here is the information provided:
+Here is the information provided by the PM:
 
 ${sectionText}
 
-Generate a comprehensive ${outputName} that:
-1. Starts with an executive summary
-2. Expands on each section with professional analysis and recommendations  
-3. Identifies gaps or risks the user may have missed
-4. Ends with prioritized next steps
-5. Uses proper markdown formatting
+Produce a comprehensive ${outputName} in markdown. Add your expert analysis, identify gaps, and provide actionable recommendations beyond what was provided.`;
 
-Output the full ${outputName} in markdown:`;
+  return { system, user };
+}
+
+export function buildAnalysisPrompt(
+  category: string,
+  moduleSlug: string,
+  dataDescription: string
+): { system: string; user: string } {
+  const modulePrompt = getModulePrompt(category, moduleSlug);
+
+  const system = `${modulePrompt.system}
+
+You are reviewing existing data and providing expert analysis. Be specific, actionable, and reference the methodology. Use markdown formatting.`;
+
+  const user = `Analyze the following data and provide expert recommendations using the ${modulePrompt.methodology} framework:
+
+${dataDescription}
+
+Provide:
+1. Key observations and patterns
+2. Gaps or risks identified
+3. Specific, prioritized recommendations
+4. Suggested next actions`;
 
   return { system, user };
 }
