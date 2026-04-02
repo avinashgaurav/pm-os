@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, FileDown, ArrowLeft, Sparkles, Copy, Pencil, Save, Loader2, Key } from 'lucide-react';
+import { Plus, FileDown, ArrowLeft, Sparkles, Copy, Pencil, Save, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -148,33 +148,12 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
 
   const handleCopy = () => { navigator.clipboard.writeText(generatedOutput); toast.success('Copied'); };
 
-  const handleSaveKey = () => {
-    if (keyInput.trim()) {
-      setApiKey(keyInput.trim());
-      setShowKeyInput(false);
-      toast.success('API key saved');
-    }
-  };
-
   const filledCount = activeTemplate.sections.filter(s => content[s.key]?.trim()).length;
 
   return (
     <div>
       <PageHeader title={mod.name} description={mod.description}
         actions={<Button size="sm" onClick={handleNew} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> New {outputName}</Button>} />
-
-      {/* API Key banner */}
-      {showKeyInput && (
-        <div className="glass-card rounded-xl p-4 mb-6 flex items-center gap-3">
-          <Key className="h-4 w-4 text-primary shrink-0" />
-          <div className="flex-1">
-            <p className="text-sm font-medium">Add your Groq API key for AI generation</p>
-            <p className="text-xs text-muted-foreground">Get a free key at console.groq.com/keys</p>
-          </div>
-          <Input value={keyInput} onChange={e => setKeyInput(e.target.value)} placeholder="gsk_..." className="max-w-[280px]" />
-          <Button size="sm" onClick={handleSaveKey}>Save Key</Button>
-        </div>
-      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
         {/* Saved list */}
