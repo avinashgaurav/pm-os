@@ -36,9 +36,20 @@ export function CommandPalette() {
   const { commandPaletteOpen, setCommandPaletteOpen } = useUIStore();
   const [query, setQuery] = useState('');
   const [selected, setSelected] = useState(0);
+  const [isDark, setIsDark] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const close = useCallback(() => setCommandPaletteOpen(false), [setCommandPaletteOpen]);
+
+  // Track theme state so the toggle-theme icon (Sun/Moon) stays in sync after
+  // toggling. Resolved on mount to avoid SSR-time DOM reads inside useMemo.
+  useEffect(() => {
+    const update = () => setIsDark(document.documentElement.classList.contains('dark'));
+    update();
+    const obs = new MutationObserver(update);
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => obs.disconnect();
+  }, []);
 
   // ⌘K toggle + Esc close
   useEffect(() => {
@@ -121,10 +132,7 @@ export function CommandPalette() {
         group: 'Quick actions',
         label: 'Toggle theme',
         description: 'Switch between dark and light',
-        icon:
-          typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
-            ? Sun
-            : Moon,
+        icon: isDark ? Sun : Moon,
         onSelect: toggleTheme,
       },
       {
@@ -153,7 +161,7 @@ export function CommandPalette() {
       }
     }
     return acts;
-  }, [router, exportAll, toggleTheme]);
+  }, [router, exportAll, toggleTheme, isDark]);
 
   // Filter + group.
   const filtered = useMemo(() => {
@@ -167,18 +175,32 @@ export function CommandPalette() {
     );
   }, [allActions, query]);
 
+  // Group items for display + assign each item a stable index for ↑↓ nav.
+  // Precomputing indices avoids a render-body counter that could double under
+  // React StrictMode / Concurrent rendering.
   const grouped = useMemo(() => {
-    const groups = new Map<string, Action[]>();
-    for (const a of filtered) {
-      const arr = groups.get(a.group) ?? [];
-      arr.push(a);
-      groups.set(a.group, arr);
-    }
-    return Array.from(groups.entries());
+    const out: { title: string; items: { action: Action; idx: number }[] }[] = [];
+    const byGroup = new Map<string, { action: Action; idx: number }[]>();
+    filtered.forEach((a, idx) => {
+      const arr = byGroup.get(a.group) ?? [];
+      arr.push({ action: a, idx });
+      byGroup.set(a.group, arr);
+    });
+    for (const [title, items] of byGroup) out.push({ title, items });
+    return out;
   }, [filtered]);
 
-  // Flat indexed list for ↑↓ Enter navigation.
-  const flat = filtered;
+  // Refs let the keydown handler read the current list + selected index
+  // without re-registering the listener on every keystroke. Without this,
+  // there's a brief window between cleanup and re-attach where keys are lost.
+  const filteredRef = useRef(filtered);
+  const selectedRef = useRef(selected);
+  useEffect(() => {
+    filteredRef.current = filtered;
+  }, [filtered]);
+  useEffect(() => {
+    selectedRef.current = selected;
+  }, [selected]);
 
   useEffect(() => {
     setSelected(0);
@@ -189,13 +211,13 @@ export function CommandPalette() {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        setSelected((s) => Math.min(s + 1, flat.length - 1));
+        setSelected((s) => Math.min(s + 1, filteredRef.current.length - 1));
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
         setSelected((s) => Math.max(s - 1, 0));
       } else if (e.key === 'Enter') {
         e.preventDefault();
-        const item = flat[selected];
+        const item = filteredRef.current[selectedRef.current];
         if (item) {
           item.onSelect();
           if (item.kind === 'nav') close();
@@ -204,7 +226,7 @@ export function CommandPalette() {
     };
     document.addEventListener('keydown', onKey);
     return () => document.removeEventListener('keydown', onKey);
-  }, [commandPaletteOpen, flat, selected, close]);
+  }, [commandPaletteOpen, close]);
 
   // Scroll selected into view.
   useEffect(() => {
@@ -216,8 +238,6 @@ export function CommandPalette() {
   }, [selected]);
 
   if (!commandPaletteOpen) return null;
-
-  let runningIdx = 0;
 
   return (
     <div className="fixed inset-0 z-50" onClick={close}>
@@ -240,7 +260,7 @@ export function CommandPalette() {
               <button
                 onClick={() => setQuery('')}
                 className="p-1 rounded hover:bg-accent mr-2"
-                aria-label="Clear"
+                aria-label="Clear search"
               >
                 <X className="h-3.5 w-3.5 text-muted-foreground" />
               </button>
@@ -250,7 +270,7 @@ export function CommandPalette() {
             </Kbd>
           </div>
           <div ref={listRef} className="max-h-[400px] overflow-y-auto p-2">
-            {flat.length === 0 ? (
+            {filtered.length === 0 ? (
               <div className="py-10 text-center">
                 <p className="text-sm text-muted-foreground">
                   No matches for &ldquo;{query}&rdquo;
@@ -260,13 +280,12 @@ export function CommandPalette() {
                 </p>
               </div>
             ) : (
-              grouped.map(([group, items]) => (
-                <div key={group} className="mb-1">
+              grouped.map(({ title, items }) => (
+                <div key={title} className="mb-1">
                   <div className="px-2 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground/60">
-                    {group}
+                    {title}
                   </div>
-                  {items.map((item) => {
-                    const idx = runningIdx++;
+                  {items.map(({ action: item, idx }) => {
                     const isSelected = idx === selected;
                     const Icon = item.icon;
                     return (
@@ -333,8 +352,8 @@ export function CommandPalette() {
               </span>
             </div>
             <span className="flex items-center gap-1.5">
-              <Kbd size="sm">?</Kbd>
-              for all shortcuts
+              <Kbd size="sm">esc</Kbd>
+              then <Kbd size="sm">?</Kbd> for all shortcuts
             </span>
           </div>
         </div>
