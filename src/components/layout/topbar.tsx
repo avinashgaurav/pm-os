@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Search, ChevronRight } from 'lucide-react';
 import { getCategory, getModule } from '@/lib/constants';
 import { useUIStore } from '@/stores/ui-store';
+import { Kbd } from '@/components/ui/kbd';
 import { ThemeToggle } from './theme-toggle';
 
 export function Topbar() {
@@ -26,7 +27,10 @@ export function Topbar() {
         {category && (
           <>
             <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/40" />
-            <Link href={`/${category.slug}`} className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href={`/${category.slug}`}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
               {category.name}
             </Link>
           </>
@@ -42,13 +46,11 @@ export function Topbar() {
       <div className="flex items-center gap-2">
         <button
           onClick={() => setCommandPaletteOpen(true)}
-          className="flex h-8 items-center gap-2 rounded-lg border border-border bg-muted/50 px-3 text-sm text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
+          className="flex h-8 items-center gap-2 rounded-md surface-elevated hairline px-3 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <Search className="h-3.5 w-3.5" />
-          <span className="hidden sm:inline">Search...</span>
-          <kbd className="pointer-events-none hidden h-5 select-none items-center gap-0.5 rounded border border-border bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground sm:flex">
-            <span className="text-xs">⌘</span>K
-          </kbd>
+          <span className="hidden sm:inline">Search</span>
+          <Kbd className="hidden sm:inline-flex">⌘K</Kbd>
         </button>
         <ThemeToggle />
       </div>
