@@ -63,7 +63,10 @@ export function KeyboardCheatsheet() {
         e.preventDefault();
         setOpen((o) => !o);
       } else if (e.key === 'Escape' && open) {
+        // Claim Escape here — cheatsheet sits above the palette in z-index, so
+        // pressing Esc should only dismiss this overlay, not also the palette.
         e.preventDefault();
+        e.stopImmediatePropagation();
         close();
       }
     };
@@ -74,10 +77,10 @@ export function KeyboardCheatsheet() {
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50" onClick={close}>
+    <div className="fixed inset-0 z-[60]" onClick={close}>
       <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
       <div
-        className="fixed top-[10%] left-1/2 -translate-x-1/2 w-full max-w-2xl z-50 px-4"
+        className="fixed top-[10%] left-1/2 -translate-x-1/2 w-full max-w-2xl z-[60] px-4"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="rounded-xl border border-border bg-popover shadow-2xl overflow-hidden">
@@ -106,8 +109,8 @@ export function KeyboardCheatsheet() {
                     >
                       <span className="text-foreground/90">{item.label}</span>
                       <div className="flex items-center gap-1 shrink-0">
-                        {item.keys.map((k, i) => (
-                          <Kbd key={i} size="sm">
+                        {item.keys.map((k) => (
+                          <Kbd key={k} size="sm">
                             {k}
                           </Kbd>
                         ))}
