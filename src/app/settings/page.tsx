@@ -144,7 +144,7 @@ export default function SettingsPage() {
                     return (
                       <button
                         key={p.id}
-                        onClick={() => p.configured && selectProvider(p.id)}
+                        onClick={() => selectProvider(p.id)}
                         disabled={!p.configured}
                         className={`text-left rounded-lg border px-3 py-2.5 transition-colors ${
                           isActive ? 'border-primary bg-primary/5' : 'border-border'
