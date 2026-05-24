@@ -16,7 +16,8 @@ import { downloadMarkdown } from '@/lib/export';
 import { getModule } from '@/lib/constants';
 import { getTemplate } from '@/lib/templates';
 import { getOutputName } from '@/lib/output-names';
-import { generateWithAI, buildModulePrompt, getApiKey, setApiKey, hasApiKey } from '@/lib/ai';
+import Link from 'next/link';
+import { generateWithAI, buildModulePrompt, hasAIPreference } from '@/lib/ai';
 import type { BaseDocument, CategorySlug, ModuleTemplate } from '@/types';
 
 interface DocumentEditorProps {
@@ -38,8 +39,6 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
   const [editingOutput, setEditingOutput] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [showKeyInput, setShowKeyInput] = useState(false);
-  const [keyInput, setKeyInput] = useState('');
 
   if (!mod) return <div className="text-muted-foreground">Module not found</div>;
 
@@ -78,10 +77,8 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
   const handleGenerate = async () => {
     if (!validate()) return;
 
-    const apiKey = getApiKey();
-    if (!apiKey) {
-      setShowKeyInput(true);
-      toast.error('Add your API key to generate with AI');
+    if (!hasAIPreference()) {
+      toast.error('Choose an AI provider in Settings first');
       return;
     }
 
@@ -89,7 +86,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     try {
       const sections = activeTemplate.sections.map(s => ({ label: s.label, value: content[s.key] || '' }));
       const { system, user } = buildModulePrompt(category, moduleSlug, outputName, title, sections);
-      const output = await generateWithAI(apiKey, system, user);
+      const output = await generateWithAI(system, user);
       setGeneratedOutput(output);
       setStep('output');
       toast.success(`${outputName} generated with AI`);
@@ -191,10 +188,10 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
                 <p className="text-sm text-muted-foreground mb-2">{mod.description}</p>
                 <p className="text-xs text-muted-foreground/70 mb-5">Fill in the form, then AI generates a professional {outputName.toLowerCase()} ready to share.</p>
                 <Button onClick={handleNew} className="gap-1.5"><Plus className="h-3.5 w-3.5" /> Create {outputName}</Button>
-                {!hasApiKey() && (
-                  <p className="text-[10px] text-muted-foreground/50 mt-3 cursor-pointer hover:text-muted-foreground" onClick={() => setShowKeyInput(true)}>
-                    Requires API key — click to set up
-                  </p>
+                {!hasAIPreference() && (
+                  <Link href="/settings" className="text-[10px] text-muted-foreground/50 mt-3 inline-block hover:text-muted-foreground">
+                    Pick an AI provider in Settings
+                  </Link>
                 )}
               </div>
             </div>
@@ -241,8 +238,8 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
 
               <div className="flex items-center gap-3 justify-between pt-2">
                 <div className="flex items-center gap-2">
-                  {!hasApiKey() && (
-                    <button onClick={() => setShowKeyInput(true)} className="text-[10px] text-primary hover:underline">Set up API key</button>
+                  {!hasAIPreference() && (
+                    <Link href="/settings" className="text-[10px] text-primary hover:underline">Pick a provider in Settings</Link>
                   )}
                 </div>
                 <div className="flex items-center gap-3">

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Sparkles, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { generateWithAI, buildAnalysisPrompt, getApiKey } from '@/lib/ai';
+import { generateWithAI, buildAnalysisPrompt, hasAIPreference } from '@/lib/ai';
 
 interface AIAnalysisProps {
   category: string;
@@ -19,9 +19,8 @@ export function AIAnalysisButton({ category, moduleSlug, getData, buttonLabel = 
   const [show, setShow] = useState(false);
 
   const handleAnalyze = async () => {
-    const apiKey = getApiKey();
-    if (!apiKey) {
-      toast.error('Add your Groq API key in Settings first');
+    if (!hasAIPreference()) {
+      toast.error('Choose an AI provider in Settings first');
       return;
     }
     const data = getData();
@@ -33,7 +32,7 @@ export function AIAnalysisButton({ category, moduleSlug, getData, buttonLabel = 
     setShow(true);
     try {
       const { system, user } = buildAnalysisPrompt(category, moduleSlug, data);
-      const result = await generateWithAI(apiKey, system, user);
+      const result = await generateWithAI(system, user);
       setResponse(result);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Analysis failed');

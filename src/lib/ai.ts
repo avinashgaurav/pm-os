@@ -1,36 +1,83 @@
 import { getModulePrompt } from './ai-prompts';
 
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+export interface ProviderSummary {
+  id: string;
+  label: string;
+  models: string[];
+  defaultModel: string;
+  docs: string;
+  configured: boolean;
+}
+
+export interface AIPreference {
+  provider: string;
+  model: string;
+}
+
+const PREF_KEY = 'pm-os-ai-pref';
+
+export function getAIPreference(): AIPreference | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(PREF_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      typeof parsed.provider === 'string' &&
+      typeof parsed.model === 'string'
+    ) {
+      return { provider: parsed.provider, model: parsed.model };
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+export function setAIPreference(pref: AIPreference): void {
+  localStorage.setItem(PREF_KEY, JSON.stringify(pref));
+}
+
+export function hasAIPreference(): boolean {
+  return !!getAIPreference();
+}
+
+export async function listProviders(): Promise<ProviderSummary[]> {
+  const res = await fetch('/api/ai', { method: 'GET' });
+  if (!res.ok) throw new Error('Failed to load providers');
+  const data = await res.json();
+  return data.providers;
+}
 
 export async function generateWithAI(
-  apiKey: string,
   systemPrompt: string,
-  userPrompt: string
+  userPrompt: string,
+  options?: { signal?: AbortSignal }
 ): Promise<string> {
-  const res = await fetch(GROQ_API_URL, {
+  const pref = getAIPreference();
+  if (!pref) {
+    throw new Error('No AI provider selected. Open Settings to configure.');
+  }
+
+  const res = await fetch('/api/ai', {
     method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
+    headers: { 'Content-Type': 'application/json' },
+    signal: options?.signal,
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      max_tokens: 4000,
-      temperature: 0.7,
+      provider: pref.provider,
+      model: pref.model,
+      system: systemPrompt,
+      user: userPrompt,
     }),
   });
 
+  const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `API error: ${res.status}`);
+    throw new Error(data?.error || `API error: ${res.status}`);
   }
-
-  const data = await res.json();
-  return data.choices?.[0]?.message?.content || 'No output generated';
+  return data.output || 'No output generated';
 }
 
 export function buildModulePrompt(
@@ -87,17 +134,4 @@ Provide:
 4. Suggested next actions`;
 
   return { system, user };
-}
-
-export function getApiKey(): string | null {
-  if (typeof window === 'undefined') return null;
-  return localStorage.getItem('pm-os-api-key');
-}
-
-export function setApiKey(key: string): void {
-  localStorage.setItem('pm-os-api-key', key);
-}
-
-export function hasApiKey(): boolean {
-  return !!getApiKey();
 }
