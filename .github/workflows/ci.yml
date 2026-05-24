@@ -49,11 +49,8 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Lint (warn only)
-        # Lint failure does not fail the job today — main has 29 pre-existing
-        # ESLint errors. Flip continue-on-error to false once those are cleaned up.
+      - name: Lint
         run: npm run lint
-        continue-on-error: true
 
       - name: Build
         run: npm run build

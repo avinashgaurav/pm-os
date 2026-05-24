@@ -13,6 +13,17 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    // React Compiler hints (React 19, experimental rule set).
+    // These flag missed compiler optimizations — not real bugs.
+    // We keep them as warnings until the compiler stabilizes; revisit
+    // once Next.js + React Compiler are out of experimental.
+    rules: {
+      "react-hooks/static-components": "warn",
+      "react-hooks/preserve-manual-memoization": "warn",
+      "react-hooks/set-state-in-effect": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

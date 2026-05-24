@@ -161,7 +161,7 @@ export default function TestPage() {
 
       <div className="glass-card rounded-xl p-4 font-mono text-xs space-y-1 max-h-[400px] overflow-y-auto">
         {log.length === 0 ? (
-          <p className="text-muted-foreground">Click "Run All Tests" to start</p>
+          <p className="text-muted-foreground">Click &ldquo;Run All Tests&rdquo; to start</p>
         ) : (
           log.map((l, i) => (
             <p key={i} className={l.includes('FAIL') ? 'text-destructive' : l.includes('PASS') ? 'text-green-500' : 'text-foreground'}>
