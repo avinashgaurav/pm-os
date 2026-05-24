@@ -33,8 +33,8 @@ interface ItemDialogProps {
   onOpenChange: (open: boolean) => void;
   title: string;
   fields: FieldDef[];
-  values: Record<string, any>;
-  onChange: (key: string, value: any) => void;
+  values: Record<string, string | number>;
+  onChange: (key: string, value: string | number) => void;
   onSave: () => void;
 }
 
@@ -114,8 +114,8 @@ export function ItemDialog({
 
               {field.type === 'select' && field.options && (
                 <Select
-                  value={values[field.key] ?? ''}
-                  onValueChange={(val) => onChange(field.key, val)}
+                  value={String(values[field.key] ?? '')}
+                  onValueChange={(val) => onChange(field.key, val ?? '')}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder={field.placeholder ?? 'Select...'} />
