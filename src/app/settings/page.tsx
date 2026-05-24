@@ -1,57 +1,64 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, Upload, Trash2, Database, Sun, Moon, Palette, Key, Check, Lock } from 'lucide-react';
+import { Download, Upload, Trash2, Database, Sun, Moon, Palette, Sparkles, Check, AlertCircle, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { PageHeader } from '@/components/shared/page-header';
 import { db } from '@/lib/db';
 import { downloadJSON } from '@/lib/export';
 import { categories } from '@/lib/constants';
-import { getApiKey, setApiKey } from '@/lib/ai';
-
-const ADMIN_PIN = '2026';
+import {
+  listProviders,
+  getAIPreference,
+  setAIPreference,
+  type ProviderSummary,
+  type AIPreference,
+} from '@/lib/ai';
 
 export default function SettingsPage() {
   const [importing, setImporting] = useState(false);
   const [isDark, setIsDark] = useState(true);
-  const [apiKey, setApiKeyState] = useState('');
-  const [keySaved, setKeySaved] = useState(false);
-  const [showKeySection, setShowKeySection] = useState(false);
-  const [pin, setPin] = useState('');
+  const [providers, setProviders] = useState<ProviderSummary[]>([]);
+  const [pref, setPref] = useState<AIPreference | null>(null);
+  const [loadingProviders, setLoadingProviders] = useState(true);
   const totalModules = categories.reduce((s, c) => s + c.modules.length, 0);
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
-    setApiKeyState(getApiKey() || "");
-    setKeySaved(true);
+    setPref(getAIPreference());
+    listProviders()
+      .then(setProviders)
+      .catch(() => toast.error('Could not load AI providers'))
+      .finally(() => setLoadingProviders(false));
   }, []);
 
   const toggleTheme = () => {
-    const next = !isDark; setIsDark(next);
+    const next = !isDark;
+    setIsDark(next);
     document.documentElement.classList.toggle('dark', next);
     localStorage.setItem('pm-os-theme', next ? 'dark' : 'light');
   };
 
-  const handleUnlock = () => {
-    if (pin === ADMIN_PIN) {
-      setShowKeySection(true);
-      toast.success('Admin access granted');
-    } else {
-      toast.error('Incorrect PIN');
-    }
-    setPin('');
+  const selectProvider = (providerId: string) => {
+    const p = providers.find(x => x.id === providerId);
+    if (!p) return;
+    const next = { provider: p.id, model: p.defaultModel };
+    setAIPreference(next);
+    setPref(next);
+    toast.success(`Using ${p.label} (${p.defaultModel})`);
   };
 
-  const handleSaveKey = () => {
-    if (apiKey.trim()) {
-      setApiKey(apiKey.trim());
-      setKeySaved(true);
-      toast.success('API key updated');
-    }
+  const selectModel = (model: string) => {
+    if (!pref) return;
+    const next = { ...pref, model };
+    setAIPreference(next);
+    setPref(next);
+    toast.success(`Model: ${model}`);
   };
+
+  const activeProvider = providers.find(p => p.id === pref?.provider);
 
   const handleExportAll = async () => {
     try {
@@ -93,12 +100,13 @@ export default function SettingsPage() {
 
   const handleReset = async () => {
     if (!confirm('Delete ALL data? This cannot be undone.')) return;
-    await db.delete(); window.location.reload();
+    await db.delete();
+    window.location.reload();
   };
 
   return (
     <div className="max-w-2xl mx-auto">
-      <PageHeader title="Settings" description="Appearance, data management, and configuration" />
+      <PageHeader title="Settings" description="Appearance, AI provider, and data management" />
       <div className="space-y-4">
         <Card>
           <CardHeader>
@@ -106,7 +114,10 @@ export default function SettingsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div><p className="text-sm font-medium">Theme</p><p className="text-xs text-muted-foreground">Dark or light mode</p></div>
+              <div>
+                <p className="text-sm font-medium">Theme</p>
+                <p className="text-xs text-muted-foreground">Dark or light mode</p>
+              </div>
               <Button variant="outline" size="sm" onClick={toggleTheme} className="gap-2">
                 {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 {isDark ? 'Light Mode' : 'Dark Mode'}
@@ -117,30 +128,86 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2"><Key className="h-4 w-4" /> AI Configuration</CardTitle>
-            <CardDescription>AI generation is active across all {totalModules} tools. Admin PIN required to change the API key.</CardDescription>
+            <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4" /> AI Provider</CardTitle>
+            <CardDescription>
+              Pick the model that powers generation across all {totalModules} modules. API keys are configured server-side via environment variables.
+            </CardDescription>
           </CardHeader>
-          <CardContent>
-            {showKeySection ? (
-              <div className="space-y-3">
-                <div className="flex gap-2">
-                  <Input value={apiKey} onChange={e => { setApiKeyState(e.target.value); setKeySaved(false); }}
-                    placeholder="gsk_..." type="password" className="font-mono text-sm" />
-                  <Button onClick={handleSaveKey} disabled={!apiKey.trim() || keySaved} className="gap-1.5 shrink-0">
-                    {keySaved ? <Check className="h-4 w-4" /> : <Key className="h-4 w-4" />}
-                    {keySaved ? 'Saved' : 'Update Key'}
-                  </Button>
-                </div>
-                <p className="text-xs text-muted-foreground">Current key: {apiKey.slice(0, 8)}...{apiKey.slice(-4)}</p>
-              </div>
+          <CardContent className="space-y-4">
+            {loadingProviders ? (
+              <p className="text-sm text-muted-foreground">Loading providers...</p>
             ) : (
-              <div className="flex gap-2 items-center">
-                <Input value={pin} onChange={e => setPin(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleUnlock()}
-                  placeholder="Enter admin PIN" type="password" className="max-w-[200px]" />
-                <Button variant="outline" size="sm" onClick={handleUnlock} className="gap-1.5">
-                  <Lock className="h-3.5 w-3.5" /> Unlock
-                </Button>
-              </div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {providers.map(p => {
+                    const isActive = pref?.provider === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        onClick={() => selectProvider(p.id)}
+                        disabled={!p.configured}
+                        className={`text-left rounded-lg border px-3 py-2.5 transition-colors ${
+                          isActive ? 'border-primary bg-primary/5' : 'border-border'
+                        } ${p.configured ? 'hover:bg-accent cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                      >
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm font-medium">{p.label}</span>
+                          {isActive ? (
+                            <Check className="h-3.5 w-3.5 text-primary" />
+                          ) : p.configured ? (
+                            <span className="text-[10px] text-green-600 dark:text-green-400">Available</span>
+                          ) : (
+                            <AlertCircle className="h-3.5 w-3.5 text-muted-foreground" />
+                          )}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-0.5">
+                          {p.configured ? `${p.models.length} models` : 'Not configured'}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {activeProvider && pref && (
+                  <div className="rounded-lg border border-border p-3 space-y-2">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                      {activeProvider.label} model
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {activeProvider.models.map(m => (
+                        <button
+                          key={m}
+                          onClick={() => selectModel(m)}
+                          className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
+                            pref.model === m
+                              ? 'border-primary bg-primary/10 text-foreground'
+                              : 'border-border hover:bg-accent text-muted-foreground'
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                    <a
+                      href={activeProvider.docs}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1 mt-1"
+                    >
+                      Get an API key <ExternalLink className="h-3 w-3" />
+                    </a>
+                  </div>
+                )}
+
+                {!providers.some(p => p.configured) && (
+                  <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
+                    <p className="text-xs font-medium text-amber-700 dark:text-amber-400">No providers configured</p>
+                    <p className="text-[11px] text-muted-foreground mt-1">
+                      Set at least one of <code className="font-mono">GROQ_API_KEY</code>, <code className="font-mono">OPENAI_API_KEY</code>, <code className="font-mono">ANTHROPIC_API_KEY</code>, <code className="font-mono">GOOGLE_API_KEY</code>, or <code className="font-mono">OLLAMA_URL</code> in your server environment. See <code className="font-mono">.env.example</code>.
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </CardContent>
         </Card>
@@ -162,9 +229,9 @@ export default function SettingsPage() {
           <CardContent className="text-sm text-muted-foreground space-y-1.5">
             <p className="font-medium text-foreground">Product Management Operating System</p>
             <p>{totalModules} AI-powered tools across {categories.length} disciplines</p>
-            <p>AI generation powered by Groq (Llama 3.3 70B)</p>
+            <p>Pluggable LLM providers: Groq, OpenAI, Anthropic, Gemini, Ollama</p>
             <p>All data stored locally in your browser (IndexedDB)</p>
-            <p>No data is sent to any server except for AI generation requests</p>
+            <p>API keys live server-side only — never in the browser bundle</p>
           </CardContent>
         </Card>
       </div>
