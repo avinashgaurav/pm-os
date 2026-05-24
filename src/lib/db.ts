@@ -1,8 +1,22 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type {
-  BaseDocument, Assumption, FeedbackItem, Decision, FeatureScore,
-  RiskItem, OKR, Sprint, Release, RoadmapItem, Competitor, Stakeholder,
-  MeetingNote, ChangelogEntry, CompetencyScore, KnowledgeItem, Hypothesis,
+  BaseDocument,
+  Assumption,
+  FeedbackItem,
+  Decision,
+  FeatureScore,
+  RiskItem,
+  OKR,
+  Sprint,
+  Release,
+  RoadmapItem,
+  Competitor,
+  Stakeholder,
+  MeetingNote,
+  ChangelogEntry,
+  CompetencyScore,
+  KnowledgeItem,
+  Hypothesis,
 } from '@/types';
 
 export interface WorkflowStep {
@@ -62,5 +76,20 @@ db.version(1).stores({
   knowledgeItems: 'id, category, createdAt',
   hypotheses: 'id, status, createdAt',
 });
+
+// Lazy-load Sentry only in the browser to keep the server bundle clean.
+if (typeof window !== 'undefined') {
+  void import('@sentry/nextjs').then(({ captureException, captureMessage }) => {
+    db.on('blocked', () => {
+      captureMessage('Dexie open blocked — another tab holds the DB', { level: 'warning' });
+    });
+    db.on('versionchange', () => {
+      captureMessage('Dexie versionchange fired — schema upgrade requested', { level: 'info' });
+    });
+    db.open().catch((err: unknown) => {
+      captureException(err, { tags: { area: 'dexie', op: 'open' } });
+    });
+  });
+}
 
 export { db };
