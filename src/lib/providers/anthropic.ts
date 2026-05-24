@@ -1,6 +1,6 @@
 import type { ProviderModule } from './types';
 
-const URL = 'https://api.anthropic.com/v1/messages';
+const ENDPOINT = 'https://api.anthropic.com/v1/messages';
 
 export const anthropic: ProviderModule = {
   id: 'anthropic',
@@ -13,7 +13,7 @@ export const anthropic: ProviderModule = {
   isConfigured: () => !!process.env.ANTHROPIC_API_KEY,
 
   async generate({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
-    const res = await fetch(URL, {
+    const res = await fetch(ENDPOINT, {
       method: 'POST',
       headers: {
         'x-api-key': process.env.ANTHROPIC_API_KEY ?? '',

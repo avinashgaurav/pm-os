@@ -1,6 +1,6 @@
 import type { ProviderModule } from './types';
 
-const URL = 'https://api.groq.com/openai/v1/chat/completions';
+const ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
 export const groq: ProviderModule = {
   id: 'groq',
@@ -17,7 +17,7 @@ export const groq: ProviderModule = {
   isConfigured: () => !!process.env.GROQ_API_KEY,
 
   async generate({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
-    const res = await fetch(URL, {
+    const res = await fetch(ENDPOINT, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${process.env.GROQ_API_KEY}`,

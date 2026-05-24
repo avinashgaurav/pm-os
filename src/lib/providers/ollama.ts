@@ -11,7 +11,8 @@ export const ollama: ProviderModule = {
   isConfigured: () => !!process.env.OLLAMA_URL,
 
   async generate({ system, user, model, temperature = 0.7, signal }) {
-    const base = process.env.OLLAMA_URL ?? 'http://localhost:11434';
+    const base = process.env.OLLAMA_URL;
+    if (!base) throw new Error('Ollama not configured');
     const res = await fetch(`${base}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

@@ -1,6 +1,6 @@
 import type { ProviderModule } from './types';
 
-const URL = 'https://api.openai.com/v1/chat/completions';
+const ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 
 export const openai: ProviderModule = {
   id: 'openai',
@@ -13,7 +13,7 @@ export const openai: ProviderModule = {
   isConfigured: () => !!process.env.OPENAI_API_KEY,
 
   async generate({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
-    const res = await fetch(URL, {
+    const res = await fetch(ENDPOINT, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
