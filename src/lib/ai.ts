@@ -5,7 +5,6 @@ export interface ProviderSummary {
   label: string;
   models: string[];
   defaultModel: string;
-  envVar: string;
   docs: string;
   configured: boolean;
 }
@@ -21,7 +20,17 @@ export function getAIPreference(): AIPreference | null {
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem(PREF_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (
+      parsed &&
+      typeof parsed === 'object' &&
+      typeof parsed.provider === 'string' &&
+      typeof parsed.model === 'string'
+    ) {
+      return { provider: parsed.provider, model: parsed.model };
+    }
+    return null;
   } catch {
     return null;
   }

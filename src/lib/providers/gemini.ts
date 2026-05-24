@@ -11,10 +11,13 @@ export const gemini: ProviderModule = {
   isConfigured: () => !!process.env.GOOGLE_API_KEY,
 
   async generate({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GOOGLE_API_KEY}`;
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
     const res = await fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-goog-api-key': process.env.GOOGLE_API_KEY ?? '',
+      },
       signal,
       body: JSON.stringify({
         system_instruction: { parts: [{ text: system }] },

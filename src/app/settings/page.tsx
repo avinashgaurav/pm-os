@@ -161,7 +161,7 @@ export default function SettingsPage() {
                           )}
                         </div>
                         <p className="text-[11px] text-muted-foreground mt-0.5">
-                          {p.configured ? `${p.models.length} models` : `Set ${p.envVar} to enable`}
+                          {p.configured ? `${p.models.length} models` : 'Not configured'}
                         </p>
                       </button>
                     );
