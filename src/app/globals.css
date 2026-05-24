@@ -1,15 +1,32 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import 'shadcn/tailwind.css';
 
 @custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * pm-os design system
+ *
+ * Base:        Raycast — dark canvas, 4-step surface ladder, hairline borders,
+ *              white CTA pill, Inter/Geist with ligatures enabled.
+ * Landings:    xAI — bold display typography, high contrast.
+ * AI moments:  ElevenLabs — gradient pulse during AI generation only.
+ * Boards:      Linear — saturated status pills.
+ * Tables:      Stripe — dense numeric rendering, subtle row borders.
+ * ?-overlay:   Superhuman — keyboard cheatsheet pattern.
+ *
+ * Glass-card patterns from the previous system are dropped. Cards now use the
+ * surface ladder with hairline borders. The .glass-card class name is kept as
+ * a compatibility alias so existing module code keeps rendering — it just
+ * looks different (flat surface + hairline).
+ * ────────────────────────────────────────────────────────────────────────── */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
+  --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-heading: var(--font-geist-sans);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -39,115 +56,319 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
+  /* Raycast radius scale: 4 / 6 / 8 / 10 / 16. */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+  --radius-4xl: 28px;
 }
 
+/* Light mode kept as a fallback. pm-os defaults to dark via <html class="dark">. */
 :root {
-  --background: #FAFBF9;
+  --background: #fafbf9;
   --foreground: #111111;
-  --card: #FFFFFF;
+  --card: #ffffff;
   --card-foreground: #111111;
-  --popover: #FFFFFF;
+  --popover: #ffffff;
   --popover-foreground: #111111;
-  --primary: #003535;
-  --primary-foreground: #FFFFFF;
-  --secondary: #F1F3EF;
+  --primary: #111111;
+  --primary-foreground: #ffffff;
+  --secondary: #f4f4f4;
   --secondary-foreground: #111111;
-  --muted: #F1F3EF;
-  --muted-foreground: #555555;
-  --accent: #F1F3EF;
+  --muted: #f4f4f4;
+  --muted-foreground: #6a6b6c;
+  --accent: #f4f4f4;
   --accent-foreground: #111111;
-  --destructive: #FB3748;
-  --border: #E5E5E5;
-  --input: #E5E5E5;
-  --ring: #00C68C;
-  --chart-1: #00C68C;
-  --chart-2: #13BBCA;
-  --chart-3: #003535;
-  --chart-4: #D0F255;
-  --chart-5: #005656;
-  --radius: 0.75rem;
-  --sidebar: #FFFFFF;
+  --destructive: #fb3748;
+  --border: #e5e5e5;
+  --input: #f4f4f4;
+  --ring: #111111;
+  --chart-1: #57c1ff;
+  --chart-2: #59d499;
+  --chart-3: #ffc533;
+  --chart-4: #ff6161;
+  --chart-5: #b080ff;
+  --radius: 8px;
+  --sidebar: #ffffff;
   --sidebar-foreground: #111111;
-  --sidebar-primary: #003535;
-  --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F1F3EF;
+  --sidebar-primary: #111111;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f4f4f4;
   --sidebar-accent-foreground: #111111;
-  --sidebar-border: #E5E5E5;
-  --sidebar-ring: #00C68C;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #111111;
 }
 
+/* Dark mode — Raycast palette. The default for pm-os. */
 .dark {
-  --background: #001B1F;
-  --foreground: #E7E7E7;
-  --card: #002328;
-  --card-foreground: #E7E7E7;
-  --popover: #002328;
-  --popover-foreground: #E7E7E7;
-  --primary: #00C68C;
-  --primary-foreground: #001B1F;
-  --secondary: #003434;
-  --secondary-foreground: #E7E7E7;
-  --muted: #003434;
-  --muted-foreground: #A7A7A7;
-  --accent: #003434;
-  --accent-foreground: #E7E7E7;
-  --destructive: #FB3748;
-  --border: #005656;
-  --input: #005656;
-  --ring: #00C68C;
-  --chart-1: #00C68C;
-  --chart-2: #13BBCA;
-  --chart-3: #D0F255;
-  --chart-4: #36CC8B;
-  --chart-5: #8AE5CA;
-  --sidebar: #00262C;
-  --sidebar-foreground: #E7E7E7;
-  --sidebar-primary: #00C68C;
-  --sidebar-primary-foreground: #001B1F;
-  --sidebar-accent: #003535;
-  --sidebar-accent-foreground: #E7E7E7;
-  --sidebar-border: #005656;
-  --sidebar-ring: #00C68C;
+  /* 4-step surface ladder (Raycast). */
+  --background: #07080a; /* canvas */
+  --foreground: #f4f4f6; /* ink */
+  --card: #0d0d0d; /* surface */
+  --card-foreground: #f4f4f6;
+  --popover: #101111; /* surface-elevated */
+  --popover-foreground: #f4f4f6;
+
+  /* Primary CTA is the white pill (Raycast). */
+  --primary: #ffffff;
+  --primary-foreground: #18191a;
+
+  --secondary: #101111; /* surface-elevated */
+  --secondary-foreground: #f4f4f6;
+  --muted: #101111;
+  --muted-foreground: #9c9c9d; /* mute */
+  --accent: #121212; /* surface-card */
+  --accent-foreground: #f4f4f6;
+
+  --destructive: #ff6161; /* accent-red */
+  --border: #242728; /* hairline */
+  --input: #101111;
+  --ring: #ffffff;
+
+  /* Saturated category accents — reserved for status / illustration. */
+  --chart-1: #57c1ff; /* blue */
+  --chart-2: #59d499; /* green */
+  --chart-3: #ffc533; /* yellow */
+  --chart-4: #ff6161; /* red */
+  --chart-5: #b080ff; /* purple */
+
+  --sidebar: #07080a;
+  --sidebar-foreground: #cdcdcd; /* body */
+  --sidebar-primary: #ffffff;
+  --sidebar-primary-foreground: #18191a;
+  --sidebar-accent: #101111;
+  --sidebar-accent-foreground: #f4f4f6;
+  --sidebar-border: #242728;
+  --sidebar-ring: #ffffff;
 }
 
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+  html {
+    @apply font-sans;
+    /* Geist stylistic features for the Raycast typographic feel. */
+    font-feature-settings: 'calt', 'kern', 'liga', 'ss03';
+  }
   body {
     @apply bg-background text-foreground;
   }
-  html {
-    @apply font-sans;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
 }
 
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+/* Slim scrollbar to match the dense Raycast/Linear feel. */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Glass-card compatibility shim.
+ * Existing components use `.glass-card`. Keep the class name working but drop
+ * the frosted glass treatment — cards now follow the Raycast surface ladder.
+ * ────────────────────────────────────────────────────────────────────────── */
 .glass-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  transition: all 0.3s cubic-bezier(0.22, 0.61, 0.36, 1);
+  border-radius: var(--radius-lg);
+  transition: border-color 160ms ease;
 }
 .glass-card:hover {
-  border-color: var(--ring);
-  box-shadow: 0 4px 24px rgba(0, 198, 140, 0.08);
-  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.16);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Surface ladder utilities (Raycast).
+ * Use these for explicit surface stacking rather than relying on bg-card etc.
+ * ────────────────────────────────────────────────────────────────────────── */
+.surface-canvas {
+  background: var(--background);
+}
+.surface {
+  background: var(--card);
+}
+.surface-elevated {
+  background: var(--popover);
+}
+.surface-card {
+  background: var(--accent);
+}
+
+.hairline {
+  border: 1px solid var(--border);
+}
+.hairline-soft {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.hairline-strong {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Keycap (Raycast / Superhuman).
+ * Use inside <kbd> or as a class. Renders ⌘K, ?, etc. as a tiny pressed key.
+ * ────────────────────────────────────────────────────────────────────────── */
+.keycap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  background: var(--accent);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  font-family: var(--font-geist-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  line-height: 1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Linear status pills.
+ * Use as a base + one of the modifiers: --backlog, --todo, --progress, --done,
+ * --cancelled, --p0, --p1, --p2.
+ * ────────────────────────────────────────────────────────────────────────── */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1px;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted-foreground);
+}
+.status-pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
+}
+.status-pill--backlog {
+  color: #9c9c9d;
+}
+.status-pill--todo {
+  color: #57c1ff;
+  background: rgba(87, 193, 255, 0.1);
+}
+.status-pill--progress {
+  color: #ffc533;
+  background: rgba(255, 197, 51, 0.12);
+}
+.status-pill--done {
+  color: #59d499;
+  background: rgba(89, 212, 153, 0.12);
+}
+.status-pill--cancelled {
+  color: #6a6b6c;
+}
+.status-pill--p0 {
+  color: #ff6161;
+  background: rgba(255, 97, 97, 0.12);
+}
+.status-pill--p1 {
+  color: #ffc533;
+  background: rgba(255, 197, 51, 0.12);
+}
+.status-pill--p2 {
+  color: #57c1ff;
+  background: rgba(87, 193, 255, 0.1);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * AI generation gradient (ElevenLabs).
+ * Applied via `.ai-generating` toggle on the wrapper — pulses while AI is
+ * thinking, then returns to flat. Reserved for actual AI moments; never
+ * decorate non-AI surfaces with this.
+ * ────────────────────────────────────────────────────────────────────────── */
+@keyframes ai-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.ai-gradient {
+  background-image: linear-gradient(135deg, #b080ff 0%, #ff6bb8 50%, #ffaa5c 100%);
+}
+
+.ai-gradient-text {
+  background-image: linear-gradient(135deg, #b080ff 0%, #ff6bb8 50%, #ffaa5c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.ai-glow-border {
+  position: relative;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    linear-gradient(135deg, #b080ff 0%, #ff6bb8 50%, #ffaa5c 100%) border-box;
+}
+
+.ai-generating {
+  position: relative;
+}
+.ai-generating::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #b080ff, #ff6bb8, #ffaa5c);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: ai-pulse 1.6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * xAI bold-display typography utility.
+ * Use on landing-page headlines: scales with viewport, very tight tracking.
+ * ────────────────────────────────────────────────────────────────────────── */
+.bold-display {
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-weight: 600;
+}
+.bold-display-xl {
+  font-size: clamp(3.5rem, 8vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  font-weight: 600;
+}
+
+/* Legacy gradient-text — kept for any callers; now uses the AI gradient. */
 .gradient-text {
-  background: linear-gradient(135deg, #00C68C 0%, #13BBCA 100%);
+  background-image: linear-gradient(135deg, #b080ff 0%, #ff6bb8 50%, #ffaa5c 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
