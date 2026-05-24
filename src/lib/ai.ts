@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/nextjs';
 import { getModulePrompt } from './ai-prompts';
 
 export interface ProviderSummary {
@@ -75,7 +76,11 @@ export async function generateWithAI(
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new Error(data?.error || `API error: ${res.status}`);
+    const err = new Error(data?.error || `API error: ${res.status}`);
+    Sentry.captureException(err, {
+      tags: { area: 'ai', provider: pref.provider, status: String(res.status) },
+    });
+    throw err;
   }
   return data.output || 'No output generated';
 }
@@ -98,8 +103,8 @@ Format rules:
 - End with prioritized next steps
 - Write as a ready-to-share professional deliverable`;
 
-  const filledSections = sections.filter(s => s.value.trim());
-  const sectionText = filledSections.map(s => `### ${s.label}\n${s.value}`).join('\n\n');
+  const filledSections = sections.filter((s) => s.value.trim());
+  const sectionText = filledSections.map((s) => `### ${s.label}\n${s.value}`).join('\n\n');
 
   const user = `Generate a complete, professional ${outputName} titled "${title}" using the ${modulePrompt.methodology} framework.
 

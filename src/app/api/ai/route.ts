@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import * as Sentry from '@sentry/nextjs';
 import { getProvider, isValidProviderId, listProviders } from '@/lib/providers';
 
 export const runtime = 'nodejs';
@@ -63,6 +64,9 @@ export async function POST(req: Request) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : 'unknown';
     console.error(`[api/ai] ${p.id} generation failed:`, msg);
+    Sentry.captureException(err, {
+      tags: { area: 'ai-route', provider: p.id, model: chosenModel },
+    });
     return NextResponse.json({ error: 'AI generation failed' }, { status: 502 });
   }
 }
