@@ -85,6 +85,69 @@ export async function generateWithAI(
   return data.output || 'No output generated';
 }
 
+// Stream AI output as it generates. Calls `onDelta` for each text chunk.
+// Resolves with the full concatenated output once the stream ends, or with
+// the partial output if the caller aborts via the signal.
+export async function generateStreamWithAI(
+  systemPrompt: string,
+  userPrompt: string,
+  options: { signal?: AbortSignal; onDelta: (chunk: string, full: string) => void }
+): Promise<string> {
+  const pref = getAIPreference();
+  if (!pref) {
+    throw new Error('No AI provider selected. Open Settings to configure.');
+  }
+
+  let res: Response;
+  try {
+    res = await fetch('/api/ai/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: options.signal,
+      body: JSON.stringify({
+        provider: pref.provider,
+        model: pref.model,
+        system: systemPrompt,
+        user: userPrompt,
+      }),
+    });
+  } catch (err) {
+    // fetch() rejects with AbortError if the signal fires before any response.
+    if ((err as { name?: string })?.name === 'AbortError') return '';
+    throw err;
+  }
+
+  if (!res.ok || !res.body) {
+    const data = await res.json().catch(() => ({}));
+    const err = new Error(data?.error || `API error: ${res.status}`);
+    Sentry.captureException(err, {
+      tags: { area: 'ai-stream', provider: pref.provider, status: String(res.status) },
+    });
+    throw err;
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let full = '';
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value, { stream: true });
+      if (chunk) {
+        full += chunk;
+        options.onDelta(chunk, full);
+      }
+    }
+  } catch (err) {
+    // Aborted reads throw — return what we've collected so far.
+    if ((err as { name?: string })?.name !== 'AbortError') throw err;
+  } finally {
+    reader.releaseLock();
+  }
+  return full;
+}
+
 export function buildModulePrompt(
   category: string,
   moduleSlug: string,

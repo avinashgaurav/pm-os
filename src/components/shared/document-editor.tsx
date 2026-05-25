@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Plus,
   FileDown,
@@ -11,6 +11,7 @@ import {
   Save,
   Loader2,
   ChevronDown,
+  Square,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -34,7 +35,7 @@ import { getModule } from '@/lib/constants';
 import { getTemplate } from '@/lib/templates';
 import { getOutputName } from '@/lib/output-names';
 import Link from 'next/link';
-import { generateWithAI, buildModulePrompt, hasAIPreference } from '@/lib/ai';
+import { generateStreamWithAI, buildModulePrompt, hasAIPreference } from '@/lib/ai';
 import type { BaseDocument, CategorySlug, ModuleTemplate } from '@/types';
 
 interface DocumentEditorProps {
@@ -58,6 +59,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
   const [editingOutput, setEditingOutput] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const abortRef = useRef<AbortController | null>(null);
 
   if (!mod) return <div className="text-muted-foreground">Module not found</div>;
 
@@ -128,37 +130,62 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
       return;
     }
 
+    const controller = new AbortController();
+    abortRef.current = controller;
     setGenerating(true);
+    setGeneratedOutput('');
+    setStep('output');
+
+    let finalOutput = '';
+    let aborted = false;
     try {
       const sections = activeTemplate.sections.map((s) => ({
         label: s.label,
         value: content[s.key] || '',
       }));
       const { system, user } = buildModulePrompt(category, moduleSlug, outputName, title, sections);
-      const output = await generateWithAI(system, user);
-      setGeneratedOutput(output);
-      setStep('output');
-      toast.success(`${outputName} generated with AI`);
-
-      // Auto-save
-      const saveContent = { ...content, _output: output };
-      if (activeDocId) {
-        await updateDocument(activeDocId, { title, content: saveContent });
-      } else {
-        const doc = await createDocument({
-          title,
-          category,
-          moduleSlug,
-          tags: [],
-          content: saveContent,
-        });
-        setActiveDocId(doc.id);
-      }
+      finalOutput = await generateStreamWithAI(system, user, {
+        signal: controller.signal,
+        onDelta: (_chunk, full) => setGeneratedOutput(full),
+      });
+      aborted = controller.signal.aborted;
+      if (!aborted) toast.success(`${outputName} generated with AI`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Generation failed';
       toast.error(msg);
+    } finally {
+      abortRef.current = null;
+      setGenerating(false);
     }
-    setGenerating(false);
+
+    // Persist whatever we received — full result or partial after Stop.
+    if (finalOutput) {
+      const saveContent = { ...content, _output: finalOutput };
+      try {
+        if (activeDocId) {
+          await updateDocument(activeDocId, { title, content: saveContent });
+        } else {
+          const doc = await createDocument({
+            title,
+            category,
+            moduleSlug,
+            tags: [],
+            content: saveContent,
+          });
+          setActiveDocId(doc.id);
+        }
+      } catch {
+        // Persistence failure is non-fatal — the output is in state.
+      }
+      if (aborted) toast.success(`Stopped — saved partial ${outputName}`);
+    } else if (aborted) {
+      // No tokens arrived before Stop — return to input step.
+      setStep('input');
+    }
+  };
+
+  const handleStop = () => {
+    abortRef.current?.abort();
   };
 
   const handleSave = async () => {
@@ -243,7 +270,6 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     navigator.clipboard.writeText(generatedOutput);
     toast.success('Copied');
   };
-
 
   const filledCount = activeTemplate.sections.filter((s) => content[s.key]?.trim()).length;
 
@@ -444,25 +470,45 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <button
                   onClick={() => setStep('input')}
-                  className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  disabled={generating}
+                  className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" /> Edit Inputs
                 </button>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <Button variant="outline" size="sm" onClick={handleCopy} className="gap-1.5">
+                  {generating && (
+                    <Button variant="outline" size="sm" onClick={handleStop} className="gap-1.5">
+                      <Square className="h-3 w-3 fill-current" /> Stop
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCopy}
+                    disabled={generating}
+                    className="gap-1.5"
+                  >
                     <Copy className="h-3.5 w-3.5" /> Copy
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setEditingOutput(!editingOutput)}
+                    disabled={generating}
                     className="gap-1.5"
                   >
                     <Pencil className="h-3.5 w-3.5" /> {editingOutput ? 'Preview' : 'Edit'}
                   </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger
-                      render={<Button variant="outline" size="sm" className="gap-1.5" />}
+                      render={
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          disabled={generating}
+                          className="gap-1.5"
+                        />
+                      }
                     >
                       <FileDown className="h-3.5 w-3.5" /> Export{' '}
                       <ChevronDown className="h-3 w-3 opacity-60" />
@@ -478,17 +524,21 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                  <Button size="sm" onClick={handleSave} className="gap-1.5">
+                  <Button size="sm" onClick={handleSave} disabled={generating} className="gap-1.5">
                     <Save className="h-3.5 w-3.5" /> Save
                   </Button>
                 </div>
               </div>
 
-              <div className="surface hairline rounded-xl p-6 min-h-[400px]">
+              <div
+                className={`surface hairline rounded-xl p-6 min-h-[400px] ${generating ? 'ai-generating' : ''}`}
+              >
                 <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border">
-                  <Sparkles className="h-4 w-4 text-foreground/70" />
+                  <Sparkles
+                    className={`h-4 w-4 text-foreground/70 ${generating ? 'animate-pulse' : ''}`}
+                  />
                   <span className="ai-gradient-text text-xs font-semibold uppercase tracking-widest">
-                    AI-Generated {outputName}
+                    {generating ? 'Streaming' : 'AI-Generated'} {outputName}
                   </span>
                 </div>
                 {editingOutput ? (
