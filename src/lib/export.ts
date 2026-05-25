@@ -17,6 +17,10 @@ export function exportToMarkdown(doc: BaseDocument): string {
   lines.push('');
 
   for (const [key, value] of Object.entries(doc.content)) {
+    // Internal keys (_output, _generatedOutput) hold the AI-rendered body — skip
+    // them in the section list. _generatedOutput is a legacy alias kept for
+    // backward compat with older saved documents.
+    if (key.startsWith('_')) continue;
     if (value && value.trim()) {
       const label = key
         .replace(/([A-Z])/g, ' $1')
@@ -77,13 +81,7 @@ interface ThemeSpec {
   mutedColor: [number, number, number];
   ruleColor: [number, number, number];
   drawHeader: (doc: jsPDF, pageW: number) => void;
-  drawFooter: (
-    doc: jsPDF,
-    pageW: number,
-    pageH: number,
-    pageNum: number,
-    totalPages?: number
-  ) => void;
+  drawFooter: (doc: jsPDF, pageW: number, pageH: number, pageNum: number) => void;
 }
 
 function getTheme(theme: PdfTheme): ThemeSpec {
@@ -180,16 +178,20 @@ export function exportToPdf(doc: BaseDocument, theme: PdfTheme = 'default'): jsP
       color: [number, number, number];
       lineGap: number;
       gapAfter: number;
+      gapBefore?: number;
     }
   ) => {
     pdf.setFont(opts.font, opts.style);
     pdf.setFontSize(opts.size);
     pdf.setTextColor(...opts.color);
     const lines = pdf.splitTextToSize(text, contentW) as string[];
+    let first = true;
     for (const line of lines) {
-      ensureRoom(opts.lineGap);
+      ensureRoom(opts.lineGap + (first && opts.gapBefore ? opts.gapBefore : 0));
+      if (first && opts.gapBefore) y += opts.gapBefore;
       pdf.text(line, t.marginLeft, y);
       y += opts.lineGap;
+      first = false;
     }
     y += opts.gapAfter;
   };
@@ -224,7 +226,7 @@ export function exportToPdf(doc: BaseDocument, theme: PdfTheme = 'default'): jsP
     renderMarkdown(aiOutput);
   } else {
     for (const [key, value] of Object.entries(doc.content)) {
-      if (!value || !value.trim()) continue;
+      if (key.startsWith('_') || !value || !value.trim()) continue;
       const label = key
         .replace(/([A-Z])/g, ' $1')
         .replace(/^./, (s) => s.toUpperCase())
@@ -241,7 +243,6 @@ export function exportToPdf(doc: BaseDocument, theme: PdfTheme = 'default'): jsP
     const sizes = theme === 'premium' ? [20, 15, 12] : [16, 13, 11];
     const gaps = theme === 'premium' ? [8, 6, 5] : [6, 5, 4];
     const idx = level - 1;
-    if (level === 2) y += 3; // breathing room above h2
     writeWrapped(text, {
       font: t.headingFont,
       style: 'bold',
@@ -249,6 +250,9 @@ export function exportToPdf(doc: BaseDocument, theme: PdfTheme = 'default'): jsP
       color: t.headingColor,
       lineGap: gaps[idx],
       gapAfter: 3,
+      // breathing room above h2 — applied after a page-break check so the gap
+      // never disappears when a heading lands at the top of a new page
+      gapBefore: level === 2 ? 3 : 0,
     });
   }
 
@@ -263,16 +267,19 @@ export function exportToPdf(doc: BaseDocument, theme: PdfTheme = 'default'): jsP
     });
   }
 
-  function bullet(text: string) {
+  function bullet(text: string, level = 0) {
     pdf.setFont(t.bodyFont, 'normal');
     pdf.setFontSize(10.5);
     pdf.setTextColor(...t.bodyColor);
-    const indent = 6;
-    const lines = pdf.splitTextToSize(text, contentW - indent) as string[];
+    const indentStep = 5;
+    const markerOffset = level * indentStep;
+    const textOffset = markerOffset + 5;
+    const lines = pdf.splitTextToSize(text, contentW - textOffset) as string[];
+    const marker = level === 0 ? '•' : level === 1 ? '◦' : '▪';
     lines.forEach((line, i) => {
       ensureRoom(5);
-      if (i === 0) pdf.text('•', t.marginLeft, y);
-      pdf.text(line, t.marginLeft + indent, y);
+      if (i === 0) pdf.text(marker, t.marginLeft + markerOffset, y);
+      pdf.text(line, t.marginLeft + textOffset, y);
       y += 5;
     });
     y += 1;
@@ -298,18 +305,20 @@ export function exportToPdf(doc: BaseDocument, theme: PdfTheme = 'default'): jsP
         continue;
       }
       seenContent = true;
-      if (line.startsWith('# ')) {
-        heading(line.slice(2), 1);
-      } else if (line.startsWith('## ')) {
-        heading(line.slice(3), 2);
-      } else if (line.startsWith('### ')) {
-        heading(line.slice(4), 3);
-      } else if (line.startsWith('- ') || line.startsWith('* ')) {
+      const trimmed = line.trimStart();
+      const indentLevel = Math.min(2, Math.floor((line.length - trimmed.length) / 2));
+      if (trimmed.startsWith('# ')) {
+        heading(trimmed.slice(2), 1);
+      } else if (trimmed.startsWith('## ')) {
+        heading(trimmed.slice(3), 2);
+      } else if (trimmed.startsWith('### ')) {
+        heading(trimmed.slice(4), 3);
+      } else if (trimmed.startsWith('- ') || trimmed.startsWith('* ')) {
         // strip markdown bold inside bullets
-        bullet(line.slice(2).replace(/\*\*(.+?)\*\*/g, '$1'));
-      } else if (/^\d+\.\s/.test(line)) {
-        bullet(line.replace(/^\d+\.\s/, '').replace(/\*\*(.+?)\*\*/g, '$1'));
-      } else if (line.startsWith('> ')) {
+        bullet(trimmed.slice(2).replace(/\*\*(.+?)\*\*/g, '$1'), indentLevel);
+      } else if (/^\d+\.\s/.test(trimmed)) {
+        bullet(trimmed.replace(/^\d+\.\s/, '').replace(/\*\*(.+?)\*\*/g, '$1'), indentLevel);
+      } else if (trimmed.startsWith('> ')) {
         writeWrapped(line.slice(2), {
           font: t.bodyFont,
           style: 'italic',

@@ -207,18 +207,22 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     toast.success('Deleted');
   };
 
-  const buildExportDoc = (): BaseDocument => ({
-    id: activeDocId || 'preview',
-    title: title || outputName,
-    category,
-    moduleSlug,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-    tags: [],
-    starred: false,
-    archived: false,
-    content: { ...content, _output: generatedOutput },
-  });
+  const buildExportDoc = (): BaseDocument => {
+    const saved = activeDocId ? documents.find((d) => d.id === activeDocId) : undefined;
+    const now = new Date().toISOString();
+    return {
+      id: activeDocId || 'preview',
+      title: title || outputName,
+      category,
+      moduleSlug,
+      createdAt: saved?.createdAt ?? now,
+      updatedAt: saved?.updatedAt ?? now,
+      tags: saved?.tags ?? [],
+      starred: false,
+      archived: false,
+      content: { ...content, _output: generatedOutput },
+    };
+  };
 
   const handleExportMd = () => {
     downloadMarkdown(buildExportDoc());
