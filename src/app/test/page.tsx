@@ -12,7 +12,8 @@ export default function TestPage() {
   const docCount = useLiveQuery(() => db.documents.count()) ?? 0;
   const allDocs = useLiveQuery(() => db.documents.toArray()) ?? [];
 
-  const addLog = (msg: string) => setLog(prev => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
+  const addLog = (msg: string) =>
+    setLog((prev) => [...prev, `[${new Date().toLocaleTimeString()}] ${msg}`]);
 
   const runTests = async () => {
     setRunning(true);
@@ -39,9 +40,12 @@ export default function TestPage() {
         tags: ['test'],
         content: {
           problem: 'Mobile checkout abandonment is 68%, causing $2M annual revenue loss',
-          targetUsers: 'Mobile shoppers aged 25-45 who add items to cart but dont complete purchase',
-          goals: 'Reduce abandonment by 30% in Q2\nIncrease mobile conversion to 4.5%\nImprove checkout NPS from 32 to 50',
-          _output: '# Test PRD — Mobile Checkout\n> PRD Generator | Generated April 1, 2026\n\n## Problem Statement\nMobile checkout abandonment is 68%, causing $2M annual revenue loss\n\n## Target Users\nMobile shoppers aged 25-45\n\n## Goals & Success Metrics\n- Reduce abandonment by 30% in Q2\n- Increase mobile conversion to 4.5%\n- Improve checkout NPS from 32 to 50\n\n---\n*PRD Generator — PM OS*'
+          targetUsers:
+            'Mobile shoppers aged 25-45 who add items to cart but dont complete purchase',
+          goals:
+            'Reduce abandonment by 30% in Q2\nIncrease mobile conversion to 4.5%\nImprove checkout NPS from 32 to 50',
+          _output:
+            '# Test PRD — Mobile Checkout\n> PRD Generator | Generated April 1, 2026\n\n## Problem Statement\nMobile checkout abandonment is 68%, causing $2M annual revenue loss\n\n## Target Users\nMobile shoppers aged 25-45\n\n## Goals & Success Metrics\n- Reduce abandonment by 30% in Q2\n- Increase mobile conversion to 4.5%\n- Improve checkout NPS from 32 to 50\n\n---\n*PRD Generator — PM OS*',
         },
       };
       await db.documents.add(doc);
@@ -58,7 +62,10 @@ export default function TestPage() {
 
       // Test 4: Update it
       addLog('Test 4: Updating document...');
-      await db.documents.update(doc.id, { title: 'Updated PRD — Mobile Checkout v2', updatedAt: new Date().toISOString() });
+      await db.documents.update(doc.id, {
+        title: 'Updated PRD — Mobile Checkout v2',
+        updatedAt: new Date().toISOString(),
+      });
       const updated = await db.documents.get(doc.id);
       if (updated?.title === 'Updated PRD — Mobile Checkout v2') {
         addLog('PASS: Document updated correctly');
@@ -73,7 +80,9 @@ export default function TestPage() {
 
       // Test 6: Filter by category
       addLog('Test 6: Filtering by category+module...');
-      const filtered = await db.documents.filter(d => d.category === 'specs' && d.moduleSlug === 'prd').toArray();
+      const filtered = await db.documents
+        .filter((d) => d.category === 'specs' && d.moduleSlug === 'prd')
+        .toArray();
       addLog(`PASS: Found ${filtered.length} docs in specs/prd`);
 
       // Test 7: Create a second doc in different module
@@ -90,8 +99,10 @@ export default function TestPage() {
         tags: ['survey'],
         content: {
           objective: 'Measure customer satisfaction after checkout redesign',
-          questions: 'How easy was the checkout process?\nWould you recommend us?\nWhat could we improve?',
-          _output: '# Customer Satisfaction Survey Q2\n> Survey Generator | Generated April 1, 2026\n\n## Survey Objective\nMeasure customer satisfaction after checkout redesign\n\n## Questions\n- How easy was the checkout process? (Scale 1-5)\n- Would you recommend us? (NPS)\n- What could we improve? (Open-ended)\n\n---\n*Survey Generator — PM OS*'
+          questions:
+            'How easy was the checkout process?\nWould you recommend us?\nWhat could we improve?',
+          _output:
+            '# Customer Satisfaction Survey Q2\n> Survey Generator | Generated April 1, 2026\n\n## Survey Objective\nMeasure customer satisfaction after checkout redesign\n\n## Questions\n- How easy was the checkout process? (Scale 1-5)\n- Would you recommend us? (NPS)\n- What could we improve? (Open-ended)\n\n---\n*Survey Generator — PM OS*',
         },
       });
       addLog('PASS: Survey document created');
@@ -137,34 +148,53 @@ export default function TestPage() {
   return (
     <div className="max-w-2xl mx-auto">
       <h1 className="text-xl font-bold mb-4">PM OS — QA Test Suite</h1>
-      
+
       <div className="flex gap-3 mb-6">
-        <button onClick={runTests} disabled={running}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-50">
+        <button
+          onClick={runTests}
+          disabled={running}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium disabled:opacity-50"
+        >
           {running ? 'Running...' : 'Run All Tests'}
         </button>
-        <button onClick={clearAll}
-          className="px-4 py-2 bg-destructive text-white rounded-lg text-sm font-medium">
+        <button
+          onClick={clearAll}
+          className="px-4 py-2 bg-destructive text-white rounded-lg text-sm font-medium"
+        >
           Clear Test Data
         </button>
       </div>
 
-      <div className="glass-card rounded-xl p-4 mb-6">
-        <p className="text-sm"><strong>Live document count:</strong> {docCount}</p>
-        <p className="text-sm"><strong>Documents in DB:</strong></p>
-        {allDocs.map(d => (
+      <div className="surface hairline rounded-xl p-4 mb-6">
+        <p className="text-sm">
+          <strong>Live document count:</strong> {docCount}
+        </p>
+        <p className="text-sm">
+          <strong>Documents in DB:</strong>
+        </p>
+        {allDocs.map((d) => (
           <div key={d.id} className="text-xs text-muted-foreground ml-4 py-0.5">
-            [{d.category}/{d.moduleSlug}] {d.title} — {d.content._output ? 'has output' : 'no output'}
+            [{d.category}/{d.moduleSlug}] {d.title} —{' '}
+            {d.content._output ? 'has output' : 'no output'}
           </div>
         ))}
       </div>
 
-      <div className="glass-card rounded-xl p-4 font-mono text-xs space-y-1 max-h-[400px] overflow-y-auto">
+      <div className="surface hairline rounded-xl p-4 font-mono text-xs space-y-1 max-h-[400px] overflow-y-auto">
         {log.length === 0 ? (
           <p className="text-muted-foreground">Click &ldquo;Run All Tests&rdquo; to start</p>
         ) : (
           log.map((l, i) => (
-            <p key={i} className={l.includes('FAIL') ? 'text-destructive' : l.includes('PASS') ? 'text-green-500' : 'text-foreground'}>
+            <p
+              key={i}
+              className={
+                l.includes('FAIL')
+                  ? 'text-destructive'
+                  : l.includes('PASS')
+                    ? 'text-green-500'
+                    : 'text-foreground'
+              }
+            >
               {l}
             </p>
           ))

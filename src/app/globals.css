@@ -15,10 +15,9 @@
  * Tables:      Stripe — dense numeric rendering, subtle row borders.
  * ?-overlay:   Superhuman — keyboard cheatsheet pattern.
  *
- * Glass-card patterns from the previous system are dropped. Cards now use the
- * surface ladder with hairline borders. The .glass-card class name is kept as
- * a compatibility alias so existing module code keeps rendering — it just
- * looks different (flat surface + hairline).
+ * All cards use the surface ladder with hairline borders — `surface` /
+ * `surface-elevated` / `surface-card` paired with `hairline`. The previous
+ * `.glass-card` shim has been retired.
  * ────────────────────────────────────────────────────────────────────────── */
 
 @theme inline {
@@ -173,21 +172,6 @@
 }
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.16);
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
- * Glass-card compatibility shim.
- * Existing components use `.glass-card`. Keep the class name working but drop
- * the frosted glass treatment — cards now follow the Raycast surface ladder.
- * ────────────────────────────────────────────────────────────────────────── */
-.glass-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  transition: border-color 160ms ease;
-}
-.glass-card:hover {
-  border-color: rgba(255, 255, 255, 0.16);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
