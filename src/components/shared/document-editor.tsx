@@ -35,12 +35,38 @@ import { getModule } from '@/lib/constants';
 import { getTemplate } from '@/lib/templates';
 import { getOutputName } from '@/lib/output-names';
 import Link from 'next/link';
-import { generateStreamWithAI, buildModulePrompt, hasAIPreference } from '@/lib/ai';
+import { generateStreamWithAI, buildModulePrompt, hasAIPreference, AIError } from '@/lib/ai';
 import type { BaseDocument, CategorySlug, ModuleTemplate } from '@/types';
 
 interface DocumentEditorProps {
   category: CategorySlug;
   moduleSlug: string;
+}
+
+// Pure helper — kept at module scope so it isn't recreated on every render
+// and can be unit-tested independently.
+function tailoredErrorMessage(err: unknown): string {
+  if (err instanceof AIError) {
+    switch (err.kind) {
+      case 'auth':
+        return 'Auth failed — check your API key in Settings.';
+      case 'rate_limit': {
+        const secs = err.retryAfterMs ? Math.ceil(err.retryAfterMs / 1000) : null;
+        return secs
+          ? `Rate limited — try again in ${secs}s.`
+          : 'Rate limited — try again in a moment.';
+      }
+      case 'network':
+        return 'Network error reaching the AI provider — check your connection.';
+      case 'server':
+        return 'Provider is having a bad time — try again, or switch provider in Settings.';
+      case 'model':
+        return err.message || 'Model rejected the request.';
+      case 'aborted':
+        return 'Cancelled.';
+    }
+  }
+  return err instanceof Error ? err.message : 'Generation failed';
 }
 
 export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
@@ -165,8 +191,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
       if (!aborted) toast.success(`${outputName} generated with AI`);
     } catch (err: unknown) {
       streamErrored = true;
-      const msg = err instanceof Error ? err.message : 'Generation failed';
-      toast.error(msg);
+      toast.error(tailoredErrorMessage(err));
     }
 
     // Persist whatever we received — full result or partial after Stop. Stay

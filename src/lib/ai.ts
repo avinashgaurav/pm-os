@@ -1,5 +1,9 @@
 import * as Sentry from '@sentry/nextjs';
 import { getModulePrompt } from './ai-prompts';
+import { AIError, parseRetryAfter, type AIErrorKind } from './providers/errors';
+
+export { AIError } from './providers/errors';
+export type { AIErrorKind } from './providers/errors';
 
 export interface ProviderSummary {
   id: string;
@@ -76,11 +80,7 @@ export async function generateWithAI(
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    const err = new Error(data?.error || `API error: ${res.status}`);
-    Sentry.captureException(err, {
-      tags: { area: 'ai', provider: pref.provider, status: String(res.status) },
-    });
-    throw err;
+    throw aiErrorFromResponse(res, data, pref.provider, 'ai');
   }
   return data.output || 'No output generated';
 }
@@ -119,11 +119,7 @@ export async function generateStreamWithAI(
 
   if (!res.ok || !res.body) {
     const data = await res.json().catch(() => ({}));
-    const err = new Error(data?.error || `API error: ${res.status}`);
-    Sentry.captureException(err, {
-      tags: { area: 'ai-stream', provider: pref.provider, status: String(res.status) },
-    });
-    throw err;
+    throw aiErrorFromResponse(res, data, pref.provider, 'ai-stream');
   }
 
   const reader = res.body.getReader();
@@ -157,6 +153,39 @@ function isAbortError(err: unknown, signal?: AbortSignal): boolean {
   if (err && typeof err === 'object' && (err as { name?: string }).name === 'AbortError')
     return true;
   return !!signal?.aborted;
+}
+
+// Build an AIError from a failed API response. The route includes a `kind`
+// field on error payloads (auth/rate_limit/model/server/...); we trust it but
+// fall back to classifying off the HTTP status if the body is opaque.
+function aiErrorFromResponse(
+  res: Response,
+  data: { error?: string; kind?: AIErrorKind },
+  provider: string,
+  sentryArea: string
+): AIError {
+  const kind: AIErrorKind =
+    data?.kind ||
+    (res.status === 401 || res.status === 403
+      ? 'auth'
+      : res.status === 429 || res.status === 408
+        ? 'rate_limit'
+        : res.status >= 500
+          ? 'server'
+          : 'model');
+  const message = data?.error || `API error: ${res.status}`;
+  const err = new AIError(kind, message, {
+    status: res.status,
+    provider,
+    retryAfterMs: parseRetryAfter(res.headers.get('retry-after')),
+  });
+  // Only capture genuine failures; auth/rate-limit are expected UX states.
+  if (kind === 'server' || kind === 'network') {
+    Sentry.captureException(err, {
+      tags: { area: sentryArea, provider, status: String(res.status), kind },
+    });
+  }
+  return err;
 }
 
 export function buildModulePrompt(

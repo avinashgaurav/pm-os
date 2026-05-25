@@ -1,5 +1,7 @@
 import type { ProviderModule } from './types';
 import { lines } from './stream-utils';
+import { fetchWithRetry } from './retry';
+import { AIError } from './errors';
 
 // Ollama takes generation knobs through `options`. `num_predict` is the
 // equivalent of max_tokens — currently omitted to mirror the rest of the
@@ -28,31 +30,33 @@ export const ollama: ProviderModule = {
 
   async generate({ system, user, model, temperature = 0.7, signal }) {
     const base = process.env.OLLAMA_URL;
-    if (!base) throw new Error('Ollama not configured');
-    const res = await fetch(`${base}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-      body: body(system, user, model, temperature, false),
-    });
-
-    if (!res.ok) throw new Error(`Ollama error: ${res.status}`);
-
+    if (!base) throw new AIError('auth', 'Ollama not configured', { provider: 'ollama' });
+    const res = await fetchWithRetry(
+      `${base}/api/chat`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body(system, user, model, temperature, false),
+      },
+      { signal, provider: 'ollama' }
+    );
     const data = await res.json();
     return data.message?.content ?? '';
   },
 
   async *generateStream({ system, user, model, temperature = 0.7, signal }) {
     const base = process.env.OLLAMA_URL;
-    if (!base) throw new Error('Ollama not configured');
-    const res = await fetch(`${base}/api/chat`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal,
-      body: body(system, user, model, temperature, true),
-    });
-
-    if (!res.ok || !res.body) throw new Error(`Ollama error: ${res.status}`);
+    if (!base) throw new AIError('auth', 'Ollama not configured', { provider: 'ollama' });
+    const res = await fetchWithRetry(
+      `${base}/api/chat`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: body(system, user, model, temperature, true),
+      },
+      { signal, provider: 'ollama' }
+    );
+    if (!res.body) return;
 
     // Ollama streams NDJSON: one JSON object per line, each with a `message`
     // shape. The terminating object carries `done: true` and no content delta.

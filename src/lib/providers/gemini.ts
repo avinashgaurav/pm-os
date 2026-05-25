@@ -1,5 +1,6 @@
 import type { ProviderModule } from './types';
 import { sseData } from './stream-utils';
+import { fetchWithRetry } from './retry';
 
 function body(system: string, user: string, temperature: number, maxTokens: number) {
   return JSON.stringify({
@@ -28,18 +29,11 @@ export const gemini: ProviderModule = {
 
   async generate({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: headers(),
-      signal,
-      body: body(system, user, temperature, maxTokens),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `Gemini error: ${res.status}`);
-    }
-
+    const res = await fetchWithRetry(
+      url,
+      { method: 'POST', headers: headers(), body: body(system, user, temperature, maxTokens) },
+      { signal, provider: 'gemini' }
+    );
     const data = await res.json();
     return data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
   },
@@ -47,17 +41,12 @@ export const gemini: ProviderModule = {
   async *generateStream({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
     // `alt=sse` switches Gemini's streamGenerateContent to SSE framing.
     const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:streamGenerateContent?alt=sse`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: headers(),
-      signal,
-      body: body(system, user, temperature, maxTokens),
-    });
-
-    if (!res.ok || !res.body) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `Gemini error: ${res.status}`);
-    }
+    const res = await fetchWithRetry(
+      url,
+      { method: 'POST', headers: headers(), body: body(system, user, temperature, maxTokens) },
+      { signal, provider: 'gemini' }
+    );
+    if (!res.body) return;
 
     for await (const payload of sseData(res.body)) {
       const text = (

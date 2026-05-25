@@ -1,5 +1,6 @@
 import type { ProviderModule } from './types';
 import { sseData } from './stream-utils';
+import { fetchWithRetry } from './retry';
 
 const ENDPOINT = 'https://api.openai.com/v1/chat/completions';
 
@@ -23,6 +24,13 @@ function buildBody(
   });
 }
 
+function headers() {
+  return {
+    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+    'Content-Type': 'application/json',
+  };
+}
+
 export const openai: ProviderModule = {
   id: 'openai',
   label: 'OpenAI',
@@ -34,41 +42,30 @@ export const openai: ProviderModule = {
   isConfigured: () => !!process.env.OPENAI_API_KEY,
 
   async generate({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
-    const res = await fetch(ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
+    const res = await fetchWithRetry(
+      ENDPOINT,
+      {
+        method: 'POST',
+        headers: headers(),
+        body: buildBody(system, user, model, temperature, maxTokens, false),
       },
-      signal,
-      body: buildBody(system, user, model, temperature, maxTokens, false),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `OpenAI error: ${res.status}`);
-    }
-
+      { signal, provider: 'openai' }
+    );
     const data = await res.json();
     return data.choices?.[0]?.message?.content ?? '';
   },
 
   async *generateStream({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
-    const res = await fetch(ENDPOINT, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-        'Content-Type': 'application/json',
+    const res = await fetchWithRetry(
+      ENDPOINT,
+      {
+        method: 'POST',
+        headers: headers(),
+        body: buildBody(system, user, model, temperature, maxTokens, true),
       },
-      signal,
-      body: buildBody(system, user, model, temperature, maxTokens, true),
-    });
-
-    if (!res.ok || !res.body) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `OpenAI error: ${res.status}`);
-    }
-
+      { signal, provider: 'openai' }
+    );
+    if (!res.body) return;
     for await (const payload of sseData(res.body)) {
       const delta = (payload as { choices?: { delta?: { content?: string } }[] }).choices?.[0]
         ?.delta?.content;
