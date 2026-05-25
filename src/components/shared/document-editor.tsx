@@ -228,7 +228,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
             Saved ({documents.length})
           </h3>
           {documents.length === 0 ? (
-            <div className="glass-card rounded-xl p-6 text-center">
+            <div className="surface hairline rounded-xl p-6 text-center">
               <p className="text-sm font-medium mb-1">{mod.name}</p>
               <p className="text-xs text-muted-foreground mb-4">{mod.description}</p>
               <Button size="sm" onClick={handleNew}>
@@ -260,7 +260,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
         {/* Main */}
         <div>
           {step === 'list' && (
-            <div className="glass-card rounded-2xl flex items-center justify-center min-h-[450px]">
+            <div className="surface hairline rounded-xl flex items-center justify-center min-h-[450px]">
               <div className="text-center p-8 max-w-md">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 mx-auto mb-4">
                   <Sparkles className="h-6 w-6 text-primary" />
@@ -305,7 +305,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
                 </span>
               </div>
 
-              <div id="field-title" className="glass-card rounded-xl p-5">
+              <div id="field-title" className="surface hairline rounded-xl p-5">
                 <Label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                   Title *
                 </Label>
@@ -325,7 +325,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
                 <div
                   key={section.key}
                   id={`field-${section.key}`}
-                  className="glass-card rounded-xl p-5"
+                  className="surface hairline rounded-xl p-5"
                 >
                   <Label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                     {section.label}
@@ -378,7 +378,11 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
                   >
                     <Save className="h-3.5 w-3.5" /> Save Draft
                   </Button>
-                  <div className={generating ? 'ai-generating rounded-lg' : ''}>
+                  <div
+                    className={
+                      generating ? 'ai-generating rounded-lg inline-block' : 'inline-block'
+                    }
+                  >
                     <Button
                       onClick={handleGenerate}
                       disabled={generating || !title.trim()}

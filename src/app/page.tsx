@@ -152,14 +152,9 @@ export default function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.25 }}
       >
-        <div className="flex items-baseline justify-between mb-3">
-          <h2 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            Disciplines
-          </h2>
-          <span className="text-[10px] text-muted-foreground/60">
-            {totalModules} tools across {categories.length} disciplines
-          </span>
-        </div>
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          Disciplines
+        </h2>
         <motion.div
           variants={stagger}
           initial="hidden"
