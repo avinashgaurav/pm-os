@@ -1,7 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Plus, FileDown, ArrowLeft, Sparkles, Copy, Pencil, Save, Loader2 } from 'lucide-react';
+import {
+  Plus,
+  FileDown,
+  ArrowLeft,
+  Sparkles,
+  Copy,
+  Pencil,
+  Save,
+  Loader2,
+  ChevronDown,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,10 +19,17 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { PageHeader } from './page-header';
 import { DocumentCard } from './document-card';
 import { useDocuments } from '@/hooks/use-documents';
-import { downloadMarkdown } from '@/lib/export';
+import { downloadMarkdown, downloadPdf, type PdfTheme } from '@/lib/export';
 import { getModule } from '@/lib/constants';
 import { getTemplate } from '@/lib/templates';
 import { getOutputName } from '@/lib/output-names';
@@ -190,22 +207,43 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     toast.success('Deleted');
   };
 
+  const buildExportDoc = (): BaseDocument => {
+    const saved = activeDocId ? documents.find((d) => d.id === activeDocId) : undefined;
+    const now = new Date().toISOString();
+    return {
+      id: activeDocId || 'preview',
+      title: title || outputName,
+      category,
+      moduleSlug,
+      createdAt: saved?.createdAt ?? now,
+      updatedAt: saved?.updatedAt ?? now,
+      tags: saved?.tags ?? [],
+      starred: false,
+      archived: false,
+      content: { ...content, _output: generatedOutput },
+    };
+  };
+
   const handleExportMd = () => {
-    const text = generatedOutput;
-    const blob = new Blob([text], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${(title || outputName).replace(/[^a-zA-Z0-9]/g, '-').toLowerCase()}.md`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadMarkdown(buildExportDoc());
     toast.success('Exported as Markdown');
+  };
+
+  const handleExportPdf = (theme: PdfTheme) => {
+    try {
+      downloadPdf(buildExportDoc(), theme);
+      toast.success(theme === 'premium' ? 'Exported as PDF — Premium' : 'Exported as PDF');
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'PDF export failed';
+      toast.error(msg);
+    }
   };
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generatedOutput);
     toast.success('Copied');
   };
+
 
   const filledCount = activeTemplate.sections.filter((s) => content[s.key]?.trim()).length;
 
@@ -422,9 +460,24 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
                   >
                     <Pencil className="h-3.5 w-3.5" /> {editingOutput ? 'Preview' : 'Edit'}
                   </Button>
-                  <Button variant="outline" size="sm" onClick={handleExportMd} className="gap-1.5">
-                    <FileDown className="h-3.5 w-3.5" /> Export
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={<Button variant="outline" size="sm" className="gap-1.5" />}
+                    >
+                      <FileDown className="h-3.5 w-3.5" /> Export{' '}
+                      <ChevronDown className="h-3 w-3 opacity-60" />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={handleExportMd}>Markdown (.md)</DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={() => handleExportPdf('default')}>
+                        PDF — Default
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleExportPdf('premium')}>
+                        PDF — Premium
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <Button size="sm" onClick={handleSave} className="gap-1.5">
                     <Save className="h-3.5 w-3.5" /> Save
                   </Button>
