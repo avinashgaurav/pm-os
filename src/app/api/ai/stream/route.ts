@@ -8,14 +8,13 @@ export const runtime = 'nodejs';
 const MAX_PROMPT_CHARS = 50_000;
 const MAX_BODY_BYTES = 200_000;
 
-let warnedNoToken = false;
 function checkAuth(req: Request): boolean {
   const expected = process.env.PM_OS_API_TOKEN;
   if (!expected) {
-    if (!warnedNoToken) {
-      console.warn('[api/ai/stream] PM_OS_API_TOKEN not set — route is unauthenticated');
-      warnedNoToken = true;
-    }
+    // Serverless isolates each get their own module scope, so a "warn once"
+    // flag fires per cold start rather than truly once. Warn unconditionally —
+    // a misconfigured deploy is worth seeing in every log line.
+    console.warn('[api/ai/stream] PM_OS_API_TOKEN not set — route is unauthenticated');
     return true;
   }
   return req.headers.get('x-pm-os-token') === expected;
@@ -67,7 +66,7 @@ export async function POST(req: Request) {
 
   const p = getProvider(provider);
   if (!p.isConfigured()) {
-    return NextResponse.json({ error: 'Provider not available' }, { status: 503 });
+    return NextResponse.json({ error: 'Provider not available', kind: 'auth' }, { status: 503 });
   }
   if (!p.generateStream) {
     return NextResponse.json({ error: 'Provider does not support streaming' }, { status: 501 });
@@ -102,6 +101,9 @@ export async function POST(req: Request) {
     firstResult = await iterator.next();
   } catch (err) {
     clearTimeout(timeoutId);
+    // Release any resources the iterator may have opened (provider response
+    // body) before bailing.
+    iterator.return?.().catch(() => {});
     return errorResponseFor(err, p.id, chosenModel);
   }
 

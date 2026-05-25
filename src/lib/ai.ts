@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/nextjs';
 import { getModulePrompt } from './ai-prompts';
-import { AIError, type AIErrorKind } from './providers/errors';
+import { AIError, parseRetryAfter, type AIErrorKind } from './providers/errors';
 
 export { AIError } from './providers/errors';
 export type { AIErrorKind } from './providers/errors';
@@ -174,11 +174,10 @@ function aiErrorFromResponse(
           ? 'server'
           : 'model');
   const message = data?.error || `API error: ${res.status}`;
-  const retryAfter = res.headers.get('retry-after');
   const err = new AIError(kind, message, {
     status: res.status,
     provider,
-    retryAfterMs: retryAfter ? Number(retryAfter) * 1000 : undefined,
+    retryAfterMs: parseRetryAfter(res.headers.get('retry-after')),
   });
   // Only capture genuine failures; auth/rate-limit are expected UX states.
   if (kind === 'server' || kind === 'network') {

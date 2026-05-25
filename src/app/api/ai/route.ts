@@ -8,14 +8,12 @@ export const runtime = 'nodejs';
 const MAX_PROMPT_CHARS = 50_000;
 const MAX_BODY_BYTES = 200_000;
 
-let warnedNoToken = false;
 function checkAuth(req: Request): boolean {
   const expected = process.env.PM_OS_API_TOKEN;
   if (!expected) {
-    if (!warnedNoToken) {
-      console.warn('[api/ai] PM_OS_API_TOKEN not set — route is unauthenticated');
-      warnedNoToken = true;
-    }
+    // Per-isolate "warn once" is unreliable in serverless — warn unconditionally
+    // so a misconfigured deploy is visible in every log line.
+    console.warn('[api/ai] PM_OS_API_TOKEN not set — route is unauthenticated');
     return true;
   }
   return req.headers.get('x-pm-os-token') === expected;
