@@ -11,7 +11,7 @@ import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { StatusPill, type StatusVariant } from '@/components/ui/status-pill';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Select,
@@ -20,10 +20,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-const statusColors: Record<string, string> = {
-  planned: 'bg-zinc-500/10 text-zinc-400',
-  'in-progress': 'bg-blue-500/10 text-blue-400',
-  released: 'bg-green-500/10 text-green-400',
+const statusVariants: Record<string, StatusVariant> = {
+  planned: 'todo',
+  'in-progress': 'progress',
+  released: 'done',
+};
+const statusLabels: Record<string, string> = {
+  planned: 'Planned',
+  'in-progress': 'In Progress',
+  released: 'Released',
 };
 export default function ReleaseCalendarPage() {
   const releases = useLiveQuery(() => db.releases.orderBy('date').reverse().toArray()) ?? [];
@@ -101,9 +106,10 @@ export default function ReleaseCalendarPage() {
                   {format(new Date(r.date), 'MMM d, yyyy')}
                 </p>
               </div>
-              <Badge className={`${statusColors[r.status] || ''} border-0 text-[10px]`}>
-                {r.status}
-              </Badge>
+              <StatusPill
+                variant={statusVariants[r.status] ?? 'todo'}
+                label={statusLabels[r.status] ?? r.status}
+              />
               <button
                 onClick={async () => {
                   await db.releases.delete(r.id);

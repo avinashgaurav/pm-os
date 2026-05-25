@@ -278,6 +278,10 @@
   color: #57c1ff;
   background: rgba(87, 193, 255, 0.1);
 }
+.status-pill--p3 {
+  color: #59d499;
+  background: rgba(89, 212, 153, 0.12);
+}
 
 /* ─────────────────────────────────────────────────────────────────────────────
  * AI generation gradient (ElevenLabs).
