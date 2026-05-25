@@ -8,7 +8,7 @@ import { PageHeader } from '@/components/shared/page-header';
 import { EmptyState } from '@/components/shared/empty-state';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
+import { StatusPill, type StatusVariant } from '@/components/ui/status-pill';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Select,
@@ -30,16 +30,16 @@ interface BacklogItem {
   status: string;
   effort: string;
 }
-const priorities = [
-  { value: 'P0', label: 'P0 — Critical', color: 'bg-red-500/10 text-red-400' },
-  { value: 'P1', label: 'P1 — High', color: 'bg-orange-500/10 text-orange-400' },
-  { value: 'P2', label: 'P2 — Medium', color: 'bg-yellow-500/10 text-yellow-400' },
-  { value: 'P3', label: 'P3 — Low', color: 'bg-green-500/10 text-green-400' },
+const priorities: { value: string; label: string; variant: StatusVariant }[] = [
+  { value: 'P0', label: 'P0 — Critical', variant: 'p0' },
+  { value: 'P1', label: 'P1 — High', variant: 'p1' },
+  { value: 'P2', label: 'P2 — Medium', variant: 'p2' },
+  { value: 'P3', label: 'P3 — Low', variant: 'p3' },
 ];
-const statuses = [
-  { value: 'todo', label: 'To Do', color: 'bg-zinc-500/10 text-zinc-400' },
-  { value: 'in-progress', label: 'In Progress', color: 'bg-blue-500/10 text-blue-400' },
-  { value: 'done', label: 'Done', color: 'bg-green-500/10 text-green-400' },
+const statuses: { value: string; label: string; variant: StatusVariant }[] = [
+  { value: 'todo', label: 'To Do', variant: 'todo' },
+  { value: 'in-progress', label: 'In Progress', variant: 'progress' },
+  { value: 'done', label: 'Done', variant: 'done' },
 ];
 export default function BacklogPage() {
   const [items, setItems] = useState<BacklogItem[]>([]);
@@ -92,16 +92,17 @@ export default function BacklogPage() {
               key={item.id}
               className="group flex items-center gap-3 surface hairline rounded-xl px-4 py-3"
             >
-              <Badge
-                className={`${gp(item.priority)?.color} border-0 text-[10px] font-mono shrink-0`}
-              >
-                {item.priority}
-              </Badge>
+              <StatusPill
+                variant={gp(item.priority)?.variant ?? 'p2'}
+                label={item.priority}
+                className="shrink-0"
+              />
               <span className="text-sm flex-1">{item.title}</span>
               <span className="text-[10px] font-mono text-muted-foreground/50">{item.effort}</span>
-              <Badge className={`${gs(item.status)?.color} border-0 text-[10px]`}>
-                {gs(item.status)?.label}
-              </Badge>
+              <StatusPill
+                variant={gs(item.status)?.variant ?? 'todo'}
+                label={gs(item.status)?.label}
+              />
               <DropdownMenu>
                 <DropdownMenuTrigger className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-accent">
                   <MoreHorizontal className="h-3.5 w-3.5 text-muted-foreground" />

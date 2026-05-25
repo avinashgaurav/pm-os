@@ -62,7 +62,7 @@ export default function DependenciesPage() {
               key={d.id}
               className="group flex items-center gap-3 surface hairline rounded-xl px-5 py-3"
             >
-              <span className="text-sm font-medium px-3 py-1 rounded-lg bg-primary/10 text-primary">
+              <span className="text-sm font-medium px-3 py-1 rounded-lg surface-card hairline text-foreground">
                 {d.from}
               </span>
               <div className="flex items-center gap-1 text-muted-foreground">
@@ -70,7 +70,9 @@ export default function DependenciesPage() {
                 <ArrowRight className="h-3.5 w-3.5" />
                 <div className="w-8 h-px bg-border" />
               </div>
-              <span className="text-sm font-medium px-3 py-1 rounded-lg bg-accent">{d.to}</span>
+              <span className="text-sm font-medium px-3 py-1 rounded-lg surface-card hairline text-foreground">
+                {d.to}
+              </span>
               <button
                 onClick={() => {
                   setDeps((p) => p.filter((x) => x.id !== d.id));

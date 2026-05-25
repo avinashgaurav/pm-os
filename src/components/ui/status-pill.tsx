@@ -9,7 +9,8 @@ export type StatusVariant =
   | 'cancelled'
   | 'p0'
   | 'p1'
-  | 'p2';
+  | 'p2'
+  | 'p3';
 
 interface StatusPillProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant: StatusVariant;
@@ -25,6 +26,7 @@ const labels: Record<StatusVariant, string> = {
   p0: 'P0',
   p1: 'P1',
   p2: 'P2',
+  p3: 'P3',
 };
 
 // Linear-style status pill. Use for sprint cards, backlog rows, risk register,

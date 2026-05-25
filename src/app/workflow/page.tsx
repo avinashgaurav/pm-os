@@ -219,7 +219,7 @@ function StepCard({
     <motion.div layout {...cardPop} className="surface hairline rounded-2xl p-5">
       <div className="flex items-start gap-4">
         {/* Step number badge */}
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary font-bold text-sm font-mono">
+        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-chart-5/20 text-chart-5 font-bold text-sm font-mono">
           {index + 1}
         </div>
 
@@ -376,7 +376,7 @@ function PipelineView({ workflow, onEdit }: { workflow: WorkflowType; onEdit: ()
                     className="surface hairline rounded-2xl p-5 w-56 flex flex-col"
                   >
                     <div className="flex items-center gap-2.5 mb-2">
-                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary font-bold text-xs font-mono">
+                      <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-chart-5/20 text-chart-5 font-bold text-xs font-mono">
                         {i + 1}
                       </span>
                       <h3 className="text-sm font-semibold truncate">{step.label}</h3>
@@ -428,7 +428,7 @@ function PipelineView({ workflow, onEdit }: { workflow: WorkflowType; onEdit: ()
             return (
               <motion.div key={step.id} variants={fadeUp}>
                 <p className="text-xs font-semibold text-muted-foreground mb-2 flex items-center gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-md bg-primary/10 text-primary text-[10px] font-bold font-mono">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-md bg-chart-5/20 text-chart-5 text-[10px] font-bold font-mono">
                     {step.order + 1}
                   </span>
                   {step.label}
