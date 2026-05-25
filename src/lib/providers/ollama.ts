@@ -1,6 +1,9 @@
 import type { ProviderModule } from './types';
 import { lines } from './stream-utils';
 
+// Ollama takes generation knobs through `options`. `num_predict` is the
+// equivalent of max_tokens — currently omitted to mirror the rest of the
+// providers' implicit defaults; pre-existing behaviour, not changed by this PR.
 function body(system: string, user: string, model: string, temperature: number, stream: boolean) {
   return JSON.stringify({
     model,

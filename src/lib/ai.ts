@@ -113,7 +113,7 @@ export async function generateStreamWithAI(
     });
   } catch (err) {
     // fetch() rejects with AbortError if the signal fires before any response.
-    if ((err as { name?: string })?.name === 'AbortError') return '';
+    if (isAbortError(err, options.signal)) return '';
     throw err;
   }
 
@@ -140,12 +140,23 @@ export async function generateStreamWithAI(
       }
     }
   } catch (err) {
-    // Aborted reads throw — return what we've collected so far.
-    if ((err as { name?: string })?.name !== 'AbortError') throw err;
+    // Abort: return the partial. Server-side stream errors (controller.error)
+    // surface here too — rethrow so the caller toasts the failure cleanly.
+    if (!isAbortError(err, options.signal)) throw err;
   } finally {
     reader.releaseLock();
   }
   return full;
+}
+
+// Robust abort detection: DOMException name match where available, falling
+// back to the consumed signal's `aborted` flag if the runtime throws a
+// non-DOMException AbortError (older fetch implementations, undici quirks).
+function isAbortError(err: unknown, signal?: AbortSignal): boolean {
+  if (err instanceof DOMException && err.name === 'AbortError') return true;
+  if (err && typeof err === 'object' && (err as { name?: string }).name === 'AbortError')
+    return true;
+  return !!signal?.aborted;
 }
 
 export function buildModulePrompt(

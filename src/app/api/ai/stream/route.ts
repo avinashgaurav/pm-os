@@ -7,9 +7,16 @@ export const runtime = 'nodejs';
 const MAX_PROMPT_CHARS = 50_000;
 const MAX_BODY_BYTES = 200_000;
 
+let warnedNoToken = false;
 function checkAuth(req: Request): boolean {
   const expected = process.env.PM_OS_API_TOKEN;
-  if (!expected) return true;
+  if (!expected) {
+    if (!warnedNoToken) {
+      console.warn('[api/ai/stream] PM_OS_API_TOKEN not set — route is unauthenticated');
+      warnedNoToken = true;
+    }
+    return true;
+  }
   return req.headers.get('x-pm-os-token') === expected;
 }
 
@@ -18,14 +25,21 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const lenHeader = req.headers.get('content-length');
-  if (lenHeader && Number(lenHeader) > MAX_BODY_BYTES) {
+  // Measure actual body size — header-only check trivially bypassed when the
+  // client omits content-length.
+  let bodyBuf: ArrayBuffer;
+  try {
+    bodyBuf = await req.arrayBuffer();
+  } catch {
+    return NextResponse.json({ error: 'Could not read body' }, { status: 400 });
+  }
+  if (bodyBuf.byteLength > MAX_BODY_BYTES) {
     return NextResponse.json({ error: 'Request too large' }, { status: 413 });
   }
 
   let body: unknown;
   try {
-    body = await req.json();
+    body = JSON.parse(new TextDecoder().decode(bodyBuf));
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
@@ -59,17 +73,22 @@ export async function POST(req: Request) {
   }
 
   const chosenModel = model && p.models.includes(model) ? model : p.defaultModel;
+  const generateStream = p.generateStream;
 
   // Forward the client's abort signal upstream so cancelling on the client
   // terminates the provider request rather than letting tokens keep flowing.
+  // Add a server-side timeout so runaway requests are bounded even if the
+  // client disconnect signal doesn't propagate (some HTTP/2 + proxy topologies).
+  const SERVER_TIMEOUT_MS = 60_000;
   const upstream = new AbortController();
   req.signal.addEventListener('abort', () => upstream.abort());
+  const timeoutId = setTimeout(() => upstream.abort(), SERVER_TIMEOUT_MS);
 
   const encoder = new TextEncoder();
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        for await (const delta of p.generateStream!({
+        for await (const delta of generateStream({
           system,
           user,
           model: chosenModel,
@@ -79,18 +98,23 @@ export async function POST(req: Request) {
         }
         controller.close();
       } catch (err) {
-        // If the client disconnected we don't need to report — it's expected.
+        // Close the stream uncleanly so the client's reader.read() rejects.
+        // This keeps the error out of the user's saved output (vs emitting a
+        // text chunk that gets concatenated into _output).
         if (!upstream.signal.aborted) {
-          const msg = err instanceof Error ? err.message : 'stream failed';
           Sentry.captureException(err, {
             tags: { area: 'ai-stream-route', provider: p.id, model: chosenModel },
           });
-          // Surface the error to the client as a final tagged delta so the UI
-          // can render the partial output and report what went wrong.
-          controller.enqueue(encoder.encode(`\n\n[stream error: ${msg}]`));
         }
-        controller.close();
+        controller.error(err);
+      } finally {
+        clearTimeout(timeoutId);
       }
+    },
+    cancel() {
+      // Reader released — propagate to the provider request.
+      upstream.abort();
+      clearTimeout(timeoutId);
     },
   });
 

@@ -133,11 +133,17 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     const controller = new AbortController();
     abortRef.current = controller;
     setGenerating(true);
-    setGeneratedOutput('');
     setStep('output');
+
+    // Snapshot the previously displayed output so we can restore it if Stop
+    // fires before any delta arrives (zero-delta abort against an existing
+    // saved doc would otherwise blank the user's prior work).
+    const priorOutput = generatedOutput;
+    let firstDelta = true;
 
     let finalOutput = '';
     let aborted = false;
+    let streamErrored = false;
     try {
       const sections = activeTemplate.sections.map((s) => ({
         label: s.label,
@@ -146,19 +152,26 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
       const { system, user } = buildModulePrompt(category, moduleSlug, outputName, title, sections);
       finalOutput = await generateStreamWithAI(system, user, {
         signal: controller.signal,
-        onDelta: (_chunk, full) => setGeneratedOutput(full),
+        onDelta: (_chunk, full) => {
+          if (firstDelta) {
+            // Clear prior output only once the new stream actually produces
+            // something. Until then, prior output stays on screen.
+            firstDelta = false;
+          }
+          setGeneratedOutput(full);
+        },
       });
       aborted = controller.signal.aborted;
       if (!aborted) toast.success(`${outputName} generated with AI`);
     } catch (err: unknown) {
+      streamErrored = true;
       const msg = err instanceof Error ? err.message : 'Generation failed';
       toast.error(msg);
-    } finally {
-      abortRef.current = null;
-      setGenerating(false);
     }
 
-    // Persist whatever we received — full result or partial after Stop.
+    // Persist whatever we received — full result or partial after Stop. Stay
+    // in the generating state until persistence completes so a re-click of
+    // Generate can't race the save.
     if (finalOutput) {
       const saveContent = { ...content, _output: finalOutput };
       try {
@@ -178,10 +191,15 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
         // Persistence failure is non-fatal — the output is in state.
       }
       if (aborted) toast.success(`Stopped — saved partial ${outputName}`);
-    } else if (aborted) {
-      // No tokens arrived before Stop — return to input step.
-      setStep('input');
+    } else if (aborted || streamErrored) {
+      // No tokens arrived. Restore the prior output so we don't clobber the
+      // user's previously saved result with an empty string.
+      setGeneratedOutput(priorOutput);
+      if (!priorOutput) setStep('input');
     }
+
+    abortRef.current = null;
+    setGenerating(false);
   };
 
   const handleStop = () => {
