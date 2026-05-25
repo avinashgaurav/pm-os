@@ -16,7 +16,7 @@ export function StatCard({ label, value, icon, color }: StatCardProps) {
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.2 }}
-      className="glass-card rounded-xl p-5"
+      className="surface hairline rounded-xl p-5"
     >
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">

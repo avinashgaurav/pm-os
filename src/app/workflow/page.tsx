@@ -101,8 +101,8 @@ function WelcomeScreen({ onCreate }: { onCreate: () => void }) {
       </div>
       <h2 className="text-2xl font-bold tracking-tight mb-3">Workflow Mapper</h2>
       <p className="text-sm text-muted-foreground mb-8 leading-relaxed max-w-md mx-auto">
-        Map your PM workflow to get a personalized module list. Define the steps in your
-        product process and link the PM OS modules you use at each stage.
+        Map your PM workflow to get a personalized module list. Define the steps in your product
+        process and link the PM OS modules you use at each stage.
       </p>
       <Button size="lg" onClick={onCreate} className="gap-2">
         <Plus className="h-4 w-4" />
@@ -143,9 +143,7 @@ function LinkModulesDialog({
       <DialogContent className="sm:max-w-md max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Link Modules to &quot;{step.label}&quot;</DialogTitle>
-          <DialogDescription>
-            Select the modules you use during this step.
-          </DialogDescription>
+          <DialogDescription>Select the modules you use during this step.</DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-[50vh] -mx-4 px-4">
           {Object.entries(grouped).map(([catName, modules]) => (
@@ -215,16 +213,10 @@ function StepCard({
   onMoveDown: (id: string) => void;
   onToggleModule: (stepId: string, path: string) => void;
 }) {
-  const linkedModules = step.moduleLinks
-    .map(resolveModuleLink)
-    .filter(Boolean);
+  const linkedModules = step.moduleLinks.map(resolveModuleLink).filter(Boolean);
 
   return (
-    <motion.div
-      layout
-      {...cardPop}
-      className="glass-card rounded-2xl p-5"
-    >
+    <motion.div layout {...cardPop} className="surface hairline rounded-2xl p-5">
       <div className="flex items-start gap-4">
         {/* Step number badge */}
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary font-bold text-sm font-mono">
@@ -250,10 +242,7 @@ function StepCard({
 
           {/* Module links */}
           <div className="flex flex-wrap items-center gap-2">
-            <LinkModulesDialog
-              step={step}
-              onToggle={(path) => onToggleModule(step.id, path)}
-            />
+            <LinkModulesDialog step={step} onToggle={(path) => onToggleModule(step.id, path)} />
             {linkedModules.map((mod) =>
               mod ? (
                 <Badge
@@ -305,13 +294,7 @@ function StepCard({
 }
 
 /** Horizontal pipeline view for the saved workflow */
-function PipelineView({
-  workflow,
-  onEdit,
-}: {
-  workflow: WorkflowType;
-  onEdit: () => void;
-}) {
+function PipelineView({ workflow, onEdit }: { workflow: WorkflowType; onEdit: () => void }) {
   const sortedSteps = useMemo(
     () => [...workflow.steps].sort((a, b) => a.order - b.order),
     [workflow.steps]
@@ -328,7 +311,8 @@ function PipelineView({
   // Unique flat module list
   const allUniqueModules = useMemo(() => {
     const seen = new Set<string>();
-    const result: Array<NonNullable<ReturnType<typeof resolveModuleLink>> & { stepLabel: string }> = [];
+    const result: Array<NonNullable<ReturnType<typeof resolveModuleLink>> & { stepLabel: string }> =
+      [];
     for (const { step, modules } of modulesByStep) {
       for (const mod of modules) {
         if (!mod) continue;
@@ -389,7 +373,7 @@ function PipelineView({
                       duration: 0.35,
                       ease: [0.22, 0.61, 0.36, 1] as const,
                     }}
-                    className="glass-card rounded-2xl p-5 w-56 flex flex-col"
+                    className="surface hairline rounded-2xl p-5 w-56 flex flex-col"
                   >
                     <div className="flex items-center gap-2.5 mb-2">
                       <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/15 text-primary font-bold text-xs font-mono">
@@ -456,7 +440,7 @@ function PipelineView({
                       <Link
                         key={`${mod.category}/${mod.slug}`}
                         href={`/${mod.category}/${mod.slug}`}
-                        className="group glass-card rounded-xl p-3 flex items-center gap-3"
+                        className="group surface hairline rounded-xl p-3 flex items-center gap-3"
                       >
                         <div
                           className="flex h-8 w-8 items-center justify-center rounded-lg shrink-0"
@@ -549,9 +533,7 @@ export default function WorkflowPage() {
   }, []);
 
   const updateStep = useCallback((id: string, patch: Partial<WorkflowStep>) => {
-    setSteps((prev) =>
-      prev.map((s) => (s.id === id ? { ...s, ...patch } : s))
-    );
+    setSteps((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   }, []);
 
   const deleteStep = useCallback((id: string) => {
@@ -580,9 +562,7 @@ export default function WorkflowPage() {
         const has = s.moduleLinks.includes(path);
         return {
           ...s,
-          moduleLinks: has
-            ? s.moduleLinks.filter((p) => p !== path)
-            : [...s.moduleLinks, path],
+          moduleLinks: has ? s.moduleLinks.filter((p) => p !== path) : [...s.moduleLinks, path],
         };
       })
     );
@@ -645,10 +625,7 @@ export default function WorkflowPage() {
   if (existingWorkflow && !editing) {
     return (
       <div className="max-w-5xl mx-auto glow-bg">
-        <PipelineView
-          workflow={existingWorkflow}
-          onEdit={() => startEditing(false)}
-        />
+        <PipelineView workflow={existingWorkflow} onEdit={() => startEditing(false)} />
       </div>
     );
   }
