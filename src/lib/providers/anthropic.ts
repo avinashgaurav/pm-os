@@ -1,5 +1,6 @@
 import type { ProviderModule } from './types';
 import { sseData } from './stream-utils';
+import { fetchWithRetry } from './retry';
 
 const ENDPOINT = 'https://api.anthropic.com/v1/messages';
 
@@ -40,35 +41,31 @@ export const anthropic: ProviderModule = {
   isConfigured: () => !!process.env.ANTHROPIC_API_KEY,
 
   async generate({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
-    const res = await fetch(ENDPOINT, {
-      method: 'POST',
-      headers: headers(),
-      signal,
-      body: buildBody(system, user, model, temperature, maxTokens, false),
-    });
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `Anthropic error: ${res.status}`);
-    }
-
+    const res = await fetchWithRetry(
+      ENDPOINT,
+      {
+        method: 'POST',
+        headers: headers(),
+        body: buildBody(system, user, model, temperature, maxTokens, false),
+      },
+      { signal, provider: 'anthropic' }
+    );
     const data = await res.json();
     const block = data.content?.[0];
     return block?.type === 'text' ? block.text : '';
   },
 
   async *generateStream({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
-    const res = await fetch(ENDPOINT, {
-      method: 'POST',
-      headers: headers(),
-      signal,
-      body: buildBody(system, user, model, temperature, maxTokens, true),
-    });
-
-    if (!res.ok || !res.body) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err?.error?.message || `Anthropic error: ${res.status}`);
-    }
+    const res = await fetchWithRetry(
+      ENDPOINT,
+      {
+        method: 'POST',
+        headers: headers(),
+        body: buildBody(system, user, model, temperature, maxTokens, true),
+      },
+      { signal, provider: 'anthropic' }
+    );
+    if (!res.body) return;
 
     // Anthropic SSE emits typed events: message_start, content_block_start,
     // content_block_delta (carries text deltas), content_block_stop,
