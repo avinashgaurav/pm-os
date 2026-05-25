@@ -21,4 +21,7 @@ export interface ProviderInfo {
 export interface ProviderModule extends ProviderInfo {
   isConfigured: () => boolean;
   generate: (args: GenerateArgs) => Promise<string>;
+  // Optional streaming variant: yields incremental text deltas. Providers that
+  // omit this fall back to the non-streaming path.
+  generateStream?: (args: GenerateArgs) => AsyncIterable<string>;
 }
