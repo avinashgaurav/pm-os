@@ -321,6 +321,12 @@
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+@media (forced-colors: active) {
+  .ai-gradient-text {
+    -webkit-text-fill-color: unset;
+    background-image: none;
+  }
+}
 
 .ai-glow-border {
   position: relative;
