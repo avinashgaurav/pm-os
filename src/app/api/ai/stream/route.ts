@@ -96,28 +96,41 @@ export async function POST(req: Request) {
     signal: upstream.signal,
   })[Symbol.asyncIterator]();
 
-  let firstResult: IteratorResult<string>;
+  // The iterator yields StreamDelta — { type: 'text', delta } or
+  // { type: 'usage', usage }. Text deltas are written to the body; the usage
+  // event is serialized as JSON and appended after a record-separator byte
+  // (\x1E) so the client can split it off cleanly without ever mixing it into
+  // the user's saved output.
+  let firstResult: IteratorResult<import('@/lib/providers/types').StreamDelta>;
   try {
     firstResult = await iterator.next();
   } catch (err) {
     clearTimeout(timeoutId);
-    // Release any resources the iterator may have opened (provider response
-    // body) before bailing.
     iterator.return?.().catch(() => {});
     return errorResponseFor(err, p.id, chosenModel);
   }
 
+  const RS = '\x1E';
   const encoder = new TextEncoder();
+  const writeEvent = (
+    controller: ReadableStreamDefaultController<Uint8Array>,
+    ev: import('@/lib/providers/types').StreamDelta
+  ) => {
+    if (ev.type === 'text') {
+      if (ev.delta) controller.enqueue(encoder.encode(ev.delta));
+    } else {
+      controller.enqueue(encoder.encode(RS + JSON.stringify({ usage: ev.usage })));
+    }
+  };
+
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
       try {
-        if (!firstResult.done && firstResult.value) {
-          controller.enqueue(encoder.encode(firstResult.value));
-        }
+        if (!firstResult.done) writeEvent(controller, firstResult.value);
         while (true) {
           const { value, done } = await iterator.next();
           if (done) break;
-          if (value) controller.enqueue(encoder.encode(value));
+          writeEvent(controller, value);
         }
         controller.close();
       } catch (err) {

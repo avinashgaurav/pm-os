@@ -1,6 +1,7 @@
 import type { ProviderModule } from './types';
 import { sseData } from './stream-utils';
 import { fetchWithRetry } from './retry';
+import { makeUsage } from './usage';
 
 const ENDPOINT = 'https://api.groq.com/openai/v1/chat/completions';
 
@@ -21,6 +22,8 @@ function buildBody(
     max_tokens: maxTokens,
     temperature,
     stream,
+    // Ask the streaming endpoint to emit a final usage event.
+    ...(stream ? { stream_options: { include_usage: true } } : {}),
   });
 }
 
@@ -52,7 +55,12 @@ export const groq: ProviderModule = {
       { signal, provider: 'groq' }
     );
     const data = await res.json();
-    return data.choices?.[0]?.message?.content ?? '';
+    const text = data.choices?.[0]?.message?.content ?? '';
+    const usage = data.usage as { prompt_tokens?: number; completion_tokens?: number } | undefined;
+    return {
+      text,
+      usage: makeUsage('groq', model, usage?.prompt_tokens ?? 0, usage?.completion_tokens ?? 0),
+    };
   },
 
   async *generateStream({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
@@ -66,10 +74,22 @@ export const groq: ProviderModule = {
       { signal, provider: 'groq' }
     );
     if (!res.body) return;
+
+    let inputTokens = 0;
+    let outputTokens = 0;
     for await (const payload of sseData(res.body)) {
-      const delta = (payload as { choices?: { delta?: { content?: string } }[] }).choices?.[0]
-        ?.delta?.content;
-      if (delta) yield delta;
+      const p = payload as {
+        choices?: { delta?: { content?: string } }[];
+        usage?: { prompt_tokens?: number; completion_tokens?: number };
+      };
+      const delta = p.choices?.[0]?.delta?.content;
+      if (delta) yield { type: 'text', delta };
+      // Groq emits usage on the final event with an empty choices array.
+      if (p.usage) {
+        inputTokens = p.usage.prompt_tokens ?? inputTokens;
+        outputTokens = p.usage.completion_tokens ?? outputTokens;
+      }
     }
+    yield { type: 'usage', usage: makeUsage('groq', model, inputTokens, outputTokens) };
   },
 };

@@ -35,7 +35,14 @@ import { getModule } from '@/lib/constants';
 import { getTemplate } from '@/lib/templates';
 import { getOutputName } from '@/lib/output-names';
 import Link from 'next/link';
-import { generateStreamWithAI, buildModulePrompt, hasAIPreference, AIError } from '@/lib/ai';
+import {
+  generateStreamWithAI,
+  buildModulePrompt,
+  hasAIPreference,
+  AIError,
+  formatUsage,
+  type Usage,
+} from '@/lib/ai';
 import type { BaseDocument, CategorySlug, ModuleTemplate } from '@/types';
 
 interface DocumentEditorProps {
@@ -82,6 +89,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
   const [content, setContent] = useState<Record<string, string>>({});
   const [step, setStep] = useState<'list' | 'input' | 'output'>('list');
   const [generatedOutput, setGeneratedOutput] = useState('');
+  const [lastUsage, setLastUsage] = useState<Usage | null>(null);
   const [editingOutput, setEditingOutput] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -160,6 +168,9 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     abortRef.current = controller;
     setGenerating(true);
     setStep('output');
+    // Clear the previous run's usage pill so an aborted-then-restarted flow
+    // doesn't show stale numbers until the new stream completes.
+    setLastUsage(null);
 
     // Snapshot the previously displayed output so we can restore it if Stop
     // fires before any delta arrives (zero-delta abort against an existing
@@ -176,7 +187,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
         value: content[s.key] || '',
       }));
       const { system, user } = buildModulePrompt(category, moduleSlug, outputName, title, sections);
-      finalOutput = await generateStreamWithAI(system, user, {
+      const result = await generateStreamWithAI(system, user, {
         signal: controller.signal,
         onDelta: (_chunk, full) => {
           if (firstDelta) {
@@ -187,6 +198,8 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
           setGeneratedOutput(full);
         },
       });
+      finalOutput = result.text;
+      if (result.usage) setLastUsage(result.usage);
       aborted = controller.signal.aborted;
       if (!aborted) toast.success(`${outputName} generated with AI`);
     } catch (err: unknown) {
@@ -576,13 +589,23 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
               <div
                 className={`surface hairline rounded-xl p-6 min-h-[400px] ${generating ? 'ai-generating' : ''}`}
               >
-                <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border">
-                  <Sparkles
-                    className={`h-4 w-4 text-foreground/70 ${generating ? 'animate-pulse' : ''}`}
-                  />
-                  <span className="ai-gradient-text text-xs font-semibold uppercase tracking-widest">
-                    {generating ? 'Streaming' : 'AI-Generated'} {outputName}
-                  </span>
+                <div className="flex items-center justify-between gap-2 mb-4 pb-3 border-b border-border">
+                  <div className="flex items-center gap-2">
+                    <Sparkles
+                      className={`h-4 w-4 text-foreground/70 ${generating ? 'animate-pulse' : ''}`}
+                    />
+                    <span className="ai-gradient-text text-xs font-semibold uppercase tracking-widest">
+                      {generating ? 'Streaming' : 'AI-Generated'} {outputName}
+                    </span>
+                  </div>
+                  {!generating && lastUsage && (
+                    <span
+                      title={`Estimated · ${lastUsage.model} · ${lastUsage.inputTokens.toLocaleString()} in / ${lastUsage.outputTokens.toLocaleString()} out`}
+                      className="text-[10px] font-mono text-muted-foreground tabular-nums"
+                    >
+                      {formatUsage(lastUsage)}
+                    </span>
+                  )}
                 </div>
                 {editingOutput ? (
                   <Textarea

@@ -2,6 +2,7 @@ import type { ProviderModule } from './types';
 import { lines } from './stream-utils';
 import { fetchWithRetry } from './retry';
 import { AIError } from './errors';
+import { makeUsage } from './usage';
 
 // Ollama takes generation knobs through `options`. `num_predict` is the
 // equivalent of max_tokens — currently omitted to mirror the rest of the
@@ -41,7 +42,11 @@ export const ollama: ProviderModule = {
       { signal, provider: 'ollama' }
     );
     const data = await res.json();
-    return data.message?.content ?? '';
+    const text = data.message?.content ?? '';
+    // Ollama returns prompt_eval_count + eval_count on the final response.
+    const inputTokens = data.prompt_eval_count ?? 0;
+    const outputTokens = data.eval_count ?? 0;
+    return { text, usage: makeUsage('ollama', model, inputTokens, outputTokens) };
   },
 
   async *generateStream({ system, user, model, temperature = 0.7, signal }) {
@@ -58,19 +63,32 @@ export const ollama: ProviderModule = {
     );
     if (!res.body) return;
 
-    // Ollama streams NDJSON: one JSON object per line, each with a `message`
-    // shape. The terminating object carries `done: true` and no content delta.
+    let inputTokens = 0;
+    let outputTokens = 0;
+    // Ollama NDJSON: one JSON object per line, each with a `message` shape.
+    // The terminating object carries `done: true` plus prompt_eval_count and
+    // eval_count.
     for await (const line of lines(res.body)) {
       const t = line.trim();
       if (!t) continue;
       try {
-        const evt = JSON.parse(t) as { message?: { content?: string }; done?: boolean };
+        const evt = JSON.parse(t) as {
+          message?: { content?: string };
+          done?: boolean;
+          prompt_eval_count?: number;
+          eval_count?: number;
+        };
         const content = evt.message?.content;
-        if (content) yield content;
-        if (evt.done) break;
+        if (content) yield { type: 'text', delta: content };
+        if (evt.done) {
+          inputTokens = evt.prompt_eval_count ?? inputTokens;
+          outputTokens = evt.eval_count ?? outputTokens;
+          break;
+        }
       } catch {
         // Skip malformed line.
       }
     }
+    yield { type: 'usage', usage: makeUsage('ollama', model, inputTokens, outputTokens) };
   },
 };

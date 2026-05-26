@@ -90,8 +90,13 @@ export async function POST(req: Request) {
   const chosenModel = model && p.models.includes(model) ? model : p.defaultModel;
 
   try {
-    const output = await p.generate({ system, user, model: chosenModel, signal: req.signal });
-    return NextResponse.json({ output, provider: p.id, model: chosenModel });
+    const result = await p.generate({ system, user, model: chosenModel, signal: req.signal });
+    return NextResponse.json({
+      output: result.text,
+      provider: p.id,
+      model: chosenModel,
+      usage: result.usage,
+    });
   } catch (err) {
     if (err instanceof AIError) {
       const status = statusForKind(err.kind);

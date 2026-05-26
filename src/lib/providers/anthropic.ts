@@ -1,6 +1,7 @@
 import type { ProviderModule } from './types';
 import { sseData } from './stream-utils';
 import { fetchWithRetry } from './retry';
+import { makeUsage } from './usage';
 
 const ENDPOINT = 'https://api.anthropic.com/v1/messages';
 
@@ -52,7 +53,12 @@ export const anthropic: ProviderModule = {
     );
     const data = await res.json();
     const block = data.content?.[0];
-    return block?.type === 'text' ? block.text : '';
+    const text = block?.type === 'text' ? block.text : '';
+    const usage = data.usage as { input_tokens?: number; output_tokens?: number } | undefined;
+    return {
+      text,
+      usage: makeUsage('anthropic', model, usage?.input_tokens ?? 0, usage?.output_tokens ?? 0),
+    };
   },
 
   async *generateStream({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
@@ -67,15 +73,26 @@ export const anthropic: ProviderModule = {
     );
     if (!res.body) return;
 
-    // Anthropic SSE emits typed events: message_start, content_block_start,
-    // content_block_delta (carries text deltas), content_block_stop,
-    // message_delta, message_stop. We only need content_block_delta.
+    // Anthropic SSE: message_start carries input_tokens, content_block_delta
+    // carries text, message_delta carries the running output_tokens count.
+    let inputTokens = 0;
+    let outputTokens = 0;
     for await (const payload of sseData(res.body)) {
-      const evt = payload as { type?: string; delta?: { type?: string; text?: string } };
-      if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
+      const evt = payload as {
+        type?: string;
+        delta?: { type?: string; text?: string };
+        message?: { usage?: { input_tokens?: number } };
+        usage?: { output_tokens?: number };
+      };
+      if (evt.type === 'message_start') {
+        inputTokens = evt.message?.usage?.input_tokens ?? inputTokens;
+      } else if (evt.type === 'content_block_delta' && evt.delta?.type === 'text_delta') {
         const text = evt.delta.text;
-        if (text) yield text;
+        if (text) yield { type: 'text', delta: text };
+      } else if (evt.type === 'message_delta') {
+        outputTokens = evt.usage?.output_tokens ?? outputTokens;
       }
     }
+    yield { type: 'usage', usage: makeUsage('anthropic', model, inputTokens, outputTokens) };
   },
 };

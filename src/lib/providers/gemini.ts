@@ -1,6 +1,7 @@
 import type { ProviderModule } from './types';
 import { sseData } from './stream-utils';
 import { fetchWithRetry } from './retry';
+import { makeUsage } from './usage';
 
 function body(system: string, user: string, temperature: number, maxTokens: number) {
   return JSON.stringify({
@@ -35,7 +36,19 @@ export const gemini: ProviderModule = {
       { signal, provider: 'gemini' }
     );
     const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    const meta = data.usageMetadata as
+      | { promptTokenCount?: number; candidatesTokenCount?: number }
+      | undefined;
+    return {
+      text,
+      usage: makeUsage(
+        'gemini',
+        model,
+        meta?.promptTokenCount ?? 0,
+        meta?.candidatesTokenCount ?? 0
+      ),
+    };
   },
 
   async *generateStream({ system, user, model, temperature = 0.7, maxTokens = 4000, signal }) {
@@ -48,13 +61,20 @@ export const gemini: ProviderModule = {
     );
     if (!res.body) return;
 
+    let inputTokens = 0;
+    let outputTokens = 0;
     for await (const payload of sseData(res.body)) {
-      const text = (
-        payload as {
-          candidates?: { content?: { parts?: { text?: string }[] } }[];
-        }
-      ).candidates?.[0]?.content?.parts?.[0]?.text;
-      if (text) yield text;
+      const p = payload as {
+        candidates?: { content?: { parts?: { text?: string }[] } }[];
+        usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
+      };
+      const text = p.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text) yield { type: 'text', delta: text };
+      if (p.usageMetadata) {
+        inputTokens = p.usageMetadata.promptTokenCount ?? inputTokens;
+        outputTokens = p.usageMetadata.candidatesTokenCount ?? outputTokens;
+      }
     }
+    yield { type: 'usage', usage: makeUsage('gemini', model, inputTokens, outputTokens) };
   },
 };
