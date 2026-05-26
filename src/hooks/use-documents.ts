@@ -3,21 +3,23 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/lib/db';
 import type { BaseDocument, CategorySlug } from '@/types';
+import { BaseDocumentSchema } from '@/lib/schemas';
+import { safeRows } from '@/lib/schemas/safe-read';
 import { nanoid } from 'nanoid';
 
 export function useDocuments(category?: CategorySlug, moduleSlug?: string) {
-  const documents = useLiveQuery(
-    async () => {
-      let results = await db.documents.toArray();
-      if (category && moduleSlug) {
-        results = results.filter(d => d.category === category && d.moduleSlug === moduleSlug);
-      } else if (category) {
-        results = results.filter(d => d.category === category);
-      }
-      return results.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-    },
-    [category, moduleSlug]
-  );
+  const documents = useLiveQuery(async () => {
+    const rawResults = await db.documents.toArray();
+    // Drop rows that don't match the current schema. Older versions / corrupt
+    // local data may yield shapes that would crash the editor downstream.
+    let results = safeRows(BaseDocumentSchema, rawResults, 'documents');
+    if (category && moduleSlug) {
+      results = results.filter((d) => d.category === category && d.moduleSlug === moduleSlug);
+    } else if (category) {
+      results = results.filter((d) => d.category === category);
+    }
+    return results.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  }, [category, moduleSlug]);
 
   const createDocument = async (
     data: Omit<BaseDocument, 'id' | 'createdAt' | 'updatedAt' | 'starred' | 'archived'>
@@ -60,17 +62,17 @@ export function useDocuments(category?: CategorySlug, moduleSlug?: string) {
 }
 
 export function useRecentDocuments(limit = 10) {
-  return useLiveQuery(
-    async () => {
-      const all = await db.documents.toArray();
-      return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, limit);
-    },
-    [limit]
-  );
+  return useLiveQuery(async () => {
+    const all = safeRows(BaseDocumentSchema, await db.documents.toArray(), 'documents');
+    return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, limit);
+  }, [limit]);
 }
 
 export function useStarredDocuments() {
-  return useLiveQuery(() => db.documents.filter(d => d.starred).toArray());
+  return useLiveQuery(async () => {
+    const all = safeRows(BaseDocumentSchema, await db.documents.toArray(), 'documents');
+    return all.filter((d) => d.starred);
+  });
 }
 
 export function useDocumentCount() {
