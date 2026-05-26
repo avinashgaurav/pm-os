@@ -305,11 +305,21 @@ export const WorkflowSchema = z.object({
 });
 
 // ── AI API responses ────────────────────────────────────────────────────────
-// /api/ai POST success: { output: string, provider: ProviderId, model: string }
+// /api/ai POST success: { output, provider, model, usage }
+export const UsageSchema = z.object({
+  inputTokens: z.number(),
+  outputTokens: z.number(),
+  totalTokens: z.number(),
+  estimatedCostUsd: z.number(),
+  provider: z.string(),
+  model: z.string(),
+});
+
 export const AIGenerateResponseSchema = z.object({
   output: z.string(),
   provider: z.string(),
   model: z.string(),
+  usage: UsageSchema.optional(),
 });
 
 // Any /api/ai* failure response: { error: string, kind?: AIErrorKind, provider?: string }
