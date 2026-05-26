@@ -1,10 +1,13 @@
 import * as Sentry from '@sentry/nextjs';
 import { getModulePrompt } from './ai-prompts';
 import { AIError, parseRetryAfter, type AIErrorKind } from './providers/errors';
-import { AIGenerateResponseSchema, ProvidersListResponseSchema } from './schemas';
+import type { Usage } from './providers/usage';
+import { AIGenerateResponseSchema, ProvidersListResponseSchema, UsageSchema } from './schemas';
 
 export { AIError } from './providers/errors';
 export type { AIErrorKind } from './providers/errors';
+export type { Usage } from './providers/usage';
+export { formatUsage } from './providers/usage';
 
 export interface ProviderSummary {
   id: string;
@@ -68,11 +71,16 @@ export async function listProviders(): Promise<ProviderSummary[]> {
   return parsed.data.providers;
 }
 
+export interface AIResult {
+  text: string;
+  usage?: Usage;
+}
+
 export async function generateWithAI(
   systemPrompt: string,
   userPrompt: string,
   options?: { signal?: AbortSignal }
-): Promise<string> {
+): Promise<AIResult> {
   const pref = getAIPreference();
   if (!pref) {
     throw new Error('No AI provider selected. Open Settings to configure.');
@@ -107,17 +115,27 @@ export async function generateWithAI(
     });
     throw err;
   }
-  return parsed.data.output || 'No output generated';
+  return {
+    text: parsed.data.output || 'No output generated',
+    usage: parsed.data.usage,
+  };
 }
 
 // Stream AI output as it generates. Calls `onDelta` for each text chunk.
-// Resolves with the full concatenated output once the stream ends, or with
-// the partial output if the caller aborts via the signal.
+// Resolves with the full concatenated output + usage envelope once the stream
+// ends, or with the partial output if the caller aborts via the signal.
+//
+// Wire protocol: text deltas arrive as raw UTF-8 bytes. After the final text
+// delta, the route emits a single \x1E (record separator) byte followed by a
+// JSON object `{"usage": {...}}`. Anything after the RS is stripped from the
+// rendered text and parsed as usage.
+const USAGE_SENTINEL = '\x1E';
+
 export async function generateStreamWithAI(
   systemPrompt: string,
   userPrompt: string,
   options: { signal?: AbortSignal; onDelta: (chunk: string, full: string) => void }
-): Promise<string> {
+): Promise<AIResult> {
   const pref = getAIPreference();
   if (!pref) {
     throw new Error('No AI provider selected. Open Settings to configure.');
@@ -138,7 +156,7 @@ export async function generateStreamWithAI(
     });
   } catch (err) {
     // fetch() rejects with AbortError if the signal fires before any response.
-    if (isAbortError(err, options.signal)) return '';
+    if (isAbortError(err, options.signal)) return { text: '' };
     throw err;
   }
 
@@ -150,16 +168,40 @@ export async function generateStreamWithAI(
   const reader = res.body.getReader();
   const decoder = new TextDecoder();
   let full = '';
+  let usageTail = '';
+  let inUsage = false;
+
+  const handleChunk = (chunk: string) => {
+    if (inUsage) {
+      usageTail += chunk;
+      return;
+    }
+    const sentinelIdx = chunk.indexOf(USAGE_SENTINEL);
+    if (sentinelIdx < 0) {
+      full += chunk;
+      options.onDelta(chunk, full);
+      return;
+    }
+    // Split this chunk: text before sentinel, usage JSON after.
+    const before = chunk.slice(0, sentinelIdx);
+    if (before) {
+      full += before;
+      options.onDelta(before, full);
+    }
+    inUsage = true;
+    usageTail += chunk.slice(sentinelIdx + 1);
+  };
+
   try {
     while (true) {
       const { value, done } = await reader.read();
       if (done) break;
       const chunk = decoder.decode(value, { stream: true });
-      if (chunk) {
-        full += chunk;
-        options.onDelta(chunk, full);
-      }
+      if (chunk) handleChunk(chunk);
     }
+    // Flush any UTF-8 bytes the decoder buffered across chunk boundaries.
+    const tail = decoder.decode();
+    if (tail) handleChunk(tail);
   } catch (err) {
     // Abort: return the partial. Server-side stream errors (controller.error)
     // surface here too — rethrow so the caller toasts the failure cleanly.
@@ -167,7 +209,21 @@ export async function generateStreamWithAI(
   } finally {
     reader.releaseLock();
   }
-  return full;
+
+  let usage: Usage | undefined;
+  if (usageTail) {
+    try {
+      const raw = JSON.parse(usageTail.trim()) as { usage?: unknown };
+      // Validate the payload — the wire is server-trusted but we still gate
+      // every JSON-from-network through a schema parse before treating it as
+      // a typed domain object.
+      const parsed = UsageSchema.safeParse(raw?.usage);
+      if (parsed.success) usage = parsed.data;
+    } catch {
+      // Malformed tail — drop silently. Usage is non-critical.
+    }
+  }
+  return { text: full, usage };
 }
 
 // Robust abort detection: DOMException name match where available, falling

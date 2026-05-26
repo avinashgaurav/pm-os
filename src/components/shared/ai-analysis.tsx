@@ -38,7 +38,7 @@ export function AIAnalysisButton({
     try {
       const { system, user } = buildAnalysisPrompt(category, moduleSlug, data);
       const result = await generateWithAI(system, user);
-      setResponse(result);
+      setResponse(result.text);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Analysis failed');
     }
