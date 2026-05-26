@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { getModulePrompt } from './ai-prompts';
 import { AIError, parseRetryAfter, type AIErrorKind } from './providers/errors';
+import { AIGenerateResponseSchema, ProvidersListResponseSchema } from './schemas';
 
 export { AIError } from './providers/errors';
 export type { AIErrorKind } from './providers/errors';
@@ -53,7 +54,16 @@ export async function listProviders(): Promise<ProviderSummary[]> {
   const res = await fetch('/api/ai', { method: 'GET' });
   if (!res.ok) throw new Error('Failed to load providers');
   const data = await res.json();
-  return data.providers;
+  // Validate the response shape — Settings rendering depends on this.
+  const parsed = ProvidersListResponseSchema.safeParse(data);
+  if (!parsed.success) {
+    Sentry.captureMessage('Invalid /api/ai providers response', {
+      level: 'warning',
+      extra: { issues: parsed.error.issues.slice(0, 3) },
+    });
+    return [];
+  }
+  return parsed.data.providers;
 }
 
 export async function generateWithAI(
@@ -82,7 +92,18 @@ export async function generateWithAI(
   if (!res.ok) {
     throw aiErrorFromResponse(res, data, pref.provider, 'ai');
   }
-  return data.output || 'No output generated';
+  // Validate the success shape so a drift in the route's response can't crash
+  // the editor — fall through to "No output generated" on schema fail.
+  const parsed = AIGenerateResponseSchema.safeParse(data);
+  if (!parsed.success) {
+    Sentry.captureMessage('Invalid /api/ai response shape', {
+      level: 'warning',
+      tags: { provider: pref.provider },
+      extra: { issues: parsed.error.issues.slice(0, 3) },
+    });
+    return 'No output generated';
+  }
+  return parsed.data.output || 'No output generated';
 }
 
 // Stream AI output as it generates. Calls `onDelta` for each text chunk.
