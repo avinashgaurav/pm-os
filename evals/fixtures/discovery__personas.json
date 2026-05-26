@@ -1,0 +1,17 @@
+{
+  "title": "First-time PM persona — Maya",
+  "sections": [
+    {
+      "label": "Context & Background",
+      "value": "Maya is 27, a first-time product manager at a Series A SaaS company (50 employees). Promoted from a customer success role 4 months ago. Manages a single product surface: the analytics dashboard."
+    },
+    {
+      "label": "Key Inputs",
+      "value": "Interviewed 6 new PMs at similar-stage companies. Most reported being thrown into PRD writing without a template. 80% used ChatGPT for first drafts. Top frustrations: vague stakeholder briefs, no clear definition of done, fear of looking 'junior' when asking for examples."
+    },
+    {
+      "label": "Goals & Objectives",
+      "value": "Ship her first 'real' PRD that engineering doesn't immediately ask 50 clarifying questions about. Build credibility within the first 90 days. Stop relying on her old CS instincts and start thinking like a PM."
+    }
+  ]
+}

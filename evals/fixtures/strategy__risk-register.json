@@ -1,0 +1,17 @@
+{
+  "title": "Q2 — Mobile Checkout Risks",
+  "sections": [
+    {
+      "label": "Context & Background",
+      "value": "Mobile checkout redesign is on a tight 8-week timeline. Cross-functional dependency on the payments team (Stripe migration in flight separately). Mobile team is also covering on-call rotations."
+    },
+    {
+      "label": "Key Inputs",
+      "value": "Stripe deprecation forces a parallel migration. iOS 18 changed PassKit autofill behavior; tested only on simulator. Customer support reported a spike in 'cart cleared' complaints from older Android devices last week."
+    },
+    {
+      "label": "Constraints & Considerations",
+      "value": "Cannot pause the Stripe migration. Cannot ship a regression to web checkout. Q2 board review on June 28 — risks must be quantified by then."
+    }
+  ]
+}
