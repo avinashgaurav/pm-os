@@ -55,13 +55,15 @@ export async function listProviders(): Promise<ProviderSummary[]> {
   if (!res.ok) throw new Error('Failed to load providers');
   const data = await res.json();
   // Validate the response shape — Settings rendering depends on this.
+  // Throw on failure so the Settings page's existing .catch handler shows a
+  // user-visible error instead of an empty list that looks like "no providers".
   const parsed = ProvidersListResponseSchema.safeParse(data);
   if (!parsed.success) {
     Sentry.captureMessage('Invalid /api/ai providers response', {
-      level: 'warning',
+      level: 'error',
       extra: { issues: parsed.error.issues.slice(0, 3) },
     });
-    return [];
+    throw new Error('AI providers response did not match expected schema');
   }
   return parsed.data.providers;
 }
@@ -92,16 +94,18 @@ export async function generateWithAI(
   if (!res.ok) {
     throw aiErrorFromResponse(res, data, pref.provider, 'ai');
   }
-  // Validate the success shape so a drift in the route's response can't crash
-  // the editor — fall through to "No output generated" on schema fail.
+  // Validate the success shape. The route is in this same repo so a contract
+  // break is a real bug — throw instead of swallowing it, so callers retry or
+  // surface the failure to the user instead of silently treating it as an
+  // empty AI response.
   const parsed = AIGenerateResponseSchema.safeParse(data);
   if (!parsed.success) {
-    Sentry.captureMessage('Invalid /api/ai response shape', {
-      level: 'warning',
-      tags: { provider: pref.provider },
+    const err = new Error(`/api/ai response schema mismatch (provider: ${pref.provider})`);
+    Sentry.captureException(err, {
+      tags: { area: 'ai', provider: pref.provider },
       extra: { issues: parsed.error.issues.slice(0, 3) },
     });
-    return 'No output generated';
+    throw err;
   }
   return parsed.data.output || 'No output generated';
 }

@@ -63,13 +63,16 @@ export function useDocuments(category?: CategorySlug, moduleSlug?: string) {
 
 export function useRecentDocuments(limit = 10) {
   return useLiveQuery(async () => {
-    const all = await db.documents.toArray();
+    const all = safeRows(BaseDocumentSchema, await db.documents.toArray(), 'documents');
     return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)).slice(0, limit);
   }, [limit]);
 }
 
 export function useStarredDocuments() {
-  return useLiveQuery(() => db.documents.filter((d) => d.starred).toArray());
+  return useLiveQuery(async () => {
+    const all = safeRows(BaseDocumentSchema, await db.documents.toArray(), 'documents');
+    return all.filter((d) => d.starred);
+  });
 }
 
 export function useDocumentCount() {

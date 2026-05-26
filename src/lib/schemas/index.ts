@@ -1,9 +1,11 @@
 // Runtime validation schemas for everything that crosses a trust boundary:
-// rows read from Dexie (older versions drift, browsers leak corruption) and
-// JSON returned by the /api/ai routes. Schemas mirror the TypeScript types in
-// src/types — keep them in sync when you change a stored shape.
+// rows read from Dexie (older versions drift, local data can corrupt) and
+// JSON returned by the /api/ai routes. One schema per Dexie table (17 total)
+// + 3 AI API response schemas. Type-level guards at the bottom of this file
+// fail tsc if a schema and its mirror TypeScript type drift apart.
 
 import { z } from 'zod';
+import type * as Types from '@/types';
 
 // ── Categorical helpers ──────────────────────────────────────────────────────
 export const CategorySlugSchema = z.enum([
@@ -330,3 +332,63 @@ export const ProvidersListResponseSchema = z.object({
     })
   ),
 });
+
+// ── Schema/type drift guards ────────────────────────────────────────────────
+// Each AssertEquals<A, B> below resolves to `true` only when the Zod-inferred
+// type matches the TypeScript interface exactly. If you change a type in
+// src/types/index.ts without updating the schema (or vice versa), tsc will
+// fail on the matching line. Free safety net; compile-time only.
+type AssertEquals<A, B> =
+  (<T>() => T extends A ? 1 : 2) extends <T>() => T extends B ? 1 : 2 ? true : never;
+// Each statement below is `true` if the pair matches, `never` if they drift.
+// Bound to a `true` annotation so drift produces a clear "Type 'never' is not
+// assignable to 'true'" tsc error.
+const _checkBaseDocument: AssertEquals<
+  z.infer<typeof BaseDocumentSchema>,
+  Types.BaseDocument
+> = true;
+const _checkAssumption: AssertEquals<z.infer<typeof AssumptionSchema>, Types.Assumption> = true;
+const _checkFeedback: AssertEquals<z.infer<typeof FeedbackItemSchema>, Types.FeedbackItem> = true;
+const _checkDecision: AssertEquals<z.infer<typeof DecisionSchema>, Types.Decision> = true;
+const _checkFeatureScore: AssertEquals<
+  z.infer<typeof FeatureScoreSchema>,
+  Types.FeatureScore
+> = true;
+const _checkRiskItem: AssertEquals<z.infer<typeof RiskItemSchema>, Types.RiskItem> = true;
+const _checkSprint: AssertEquals<z.infer<typeof SprintSchema>, Types.Sprint> = true;
+const _checkRelease: AssertEquals<z.infer<typeof ReleaseSchema>, Types.Release> = true;
+const _checkRoadmapItem: AssertEquals<z.infer<typeof RoadmapItemSchema>, Types.RoadmapItem> = true;
+const _checkOKR: AssertEquals<z.infer<typeof OKRSchema>, Types.OKR> = true;
+const _checkCompetitor: AssertEquals<z.infer<typeof CompetitorSchema>, Types.Competitor> = true;
+const _checkStakeholder: AssertEquals<z.infer<typeof StakeholderSchema>, Types.Stakeholder> = true;
+const _checkMeetingNote: AssertEquals<z.infer<typeof MeetingNoteSchema>, Types.MeetingNote> = true;
+const _checkChangelogEntry: AssertEquals<
+  z.infer<typeof ChangelogEntrySchema>,
+  Types.ChangelogEntry
+> = true;
+const _checkCompetencyScore: AssertEquals<
+  z.infer<typeof CompetencyScoreSchema>,
+  Types.CompetencyScore
+> = true;
+const _checkKnowledgeItem: AssertEquals<
+  z.infer<typeof KnowledgeItemSchema>,
+  Types.KnowledgeItem
+> = true;
+const _checkHypothesis: AssertEquals<z.infer<typeof HypothesisSchema>, Types.Hypothesis> = true;
+void _checkBaseDocument;
+void _checkAssumption;
+void _checkFeedback;
+void _checkDecision;
+void _checkFeatureScore;
+void _checkRiskItem;
+void _checkSprint;
+void _checkRelease;
+void _checkRoadmapItem;
+void _checkOKR;
+void _checkCompetitor;
+void _checkStakeholder;
+void _checkMeetingNote;
+void _checkChangelogEntry;
+void _checkCompetencyScore;
+void _checkKnowledgeItem;
+void _checkHypothesis;
