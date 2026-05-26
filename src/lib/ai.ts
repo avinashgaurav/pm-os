@@ -2,7 +2,7 @@ import * as Sentry from '@sentry/nextjs';
 import { getModulePrompt } from './ai-prompts';
 import { AIError, parseRetryAfter, type AIErrorKind } from './providers/errors';
 import type { Usage } from './providers/usage';
-import { AIGenerateResponseSchema, ProvidersListResponseSchema } from './schemas';
+import { AIGenerateResponseSchema, ProvidersListResponseSchema, UsageSchema } from './schemas';
 
 export { AIError } from './providers/errors';
 export type { AIErrorKind } from './providers/errors';
@@ -199,6 +199,9 @@ export async function generateStreamWithAI(
       const chunk = decoder.decode(value, { stream: true });
       if (chunk) handleChunk(chunk);
     }
+    // Flush any UTF-8 bytes the decoder buffered across chunk boundaries.
+    const tail = decoder.decode();
+    if (tail) handleChunk(tail);
   } catch (err) {
     // Abort: return the partial. Server-side stream errors (controller.error)
     // surface here too — rethrow so the caller toasts the failure cleanly.
@@ -210,8 +213,12 @@ export async function generateStreamWithAI(
   let usage: Usage | undefined;
   if (usageTail) {
     try {
-      const parsed = JSON.parse(usageTail.trim()) as { usage?: Usage };
-      usage = parsed.usage;
+      const raw = JSON.parse(usageTail.trim()) as { usage?: unknown };
+      // Validate the payload — the wire is server-trusted but we still gate
+      // every JSON-from-network through a schema parse before treating it as
+      // a typed domain object.
+      const parsed = UsageSchema.safeParse(raw?.usage);
+      if (parsed.success) usage = parsed.data;
     } catch {
       // Malformed tail — drop silently. Usage is non-critical.
     }

@@ -17,9 +17,10 @@ export interface Usage {
 }
 
 // Per-model pricing in USD per million tokens (input, output). Sourced from
-// the provider's public pricing page; update when models or prices change.
-// Models not listed here fall through to a conservative zero estimate so the
-// pill renders "—" instead of misleading numbers.
+// each provider's public pricing page (estimates only — actual billing
+// depends on account tier and any volume discounts). Models not listed here
+// are treated as "unknown pricing" by formatUsage, which renders just the
+// token count without a misleading $0 cost figure.
 const PRICING: Record<string, { in: number; out: number }> = {
   // Groq — https://groq.com/pricing
   'llama-3.3-70b-versatile': { in: 0.59, out: 0.79 },
@@ -66,10 +67,20 @@ export function makeUsage(
   };
 }
 
-// Format a Usage as a short pill string: "1,234 tokens · ~$0.012"
+// True when we have a published rate for this model (vs. an unknown one,
+// where formatUsage must omit the cost rather than show a misleading $0).
+export function hasPricing(model: string): boolean {
+  return model in PRICING;
+}
+
+// Format a Usage as a short pill string. Three cases:
+//   • Known rate, nonzero cost: "1,234 tokens · ~$0.012"
+//   • Known rate, zero cost (Ollama / free-tier models): "1,234 tokens · free"
+//   • Unknown rate: "1,234 tokens"   (no cost figure — would be misleading)
 export function formatUsage(u: Usage): string {
   const tokens = u.totalTokens.toLocaleString();
-  if (u.estimatedCostUsd === 0) return `${tokens} tokens`;
+  if (!hasPricing(u.model)) return `${tokens} tokens`;
+  if (u.estimatedCostUsd === 0) return `${tokens} tokens · free`;
   const cost = u.estimatedCostUsd < 0.01 ? '<$0.01' : `~$${u.estimatedCostUsd.toFixed(3)}`;
   return `${tokens} tokens · ${cost}`;
 }

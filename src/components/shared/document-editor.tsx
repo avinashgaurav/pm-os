@@ -168,6 +168,9 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
     abortRef.current = controller;
     setGenerating(true);
     setStep('output');
+    // Clear the previous run's usage pill so an aborted-then-restarted flow
+    // doesn't show stale numbers until the new stream completes.
+    setLastUsage(null);
 
     // Snapshot the previously displayed output so we can restore it if Stop
     // fires before any delta arrives (zero-delta abort against an existing
@@ -597,7 +600,7 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
                   </div>
                   {!generating && lastUsage && (
                     <span
-                      title={`${lastUsage.model} · ${lastUsage.inputTokens.toLocaleString()} in / ${lastUsage.outputTokens.toLocaleString()} out`}
+                      title={`Estimated · ${lastUsage.model} · ${lastUsage.inputTokens.toLocaleString()} in / ${lastUsage.outputTokens.toLocaleString()} out`}
                       className="text-[10px] font-mono text-muted-foreground tabular-nums"
                     >
                       {formatUsage(lastUsage)}

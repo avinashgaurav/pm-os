@@ -6,6 +6,7 @@
 
 import { z } from 'zod';
 import type * as Types from '@/types';
+import type { Usage } from '@/lib/providers/usage';
 
 // ── Categorical helpers ──────────────────────────────────────────────────────
 export const CategorySlugSchema = z.enum([
@@ -385,6 +386,7 @@ const _checkKnowledgeItem: AssertEquals<
   Types.KnowledgeItem
 > = true;
 const _checkHypothesis: AssertEquals<z.infer<typeof HypothesisSchema>, Types.Hypothesis> = true;
+const _checkUsage: AssertEquals<z.infer<typeof UsageSchema>, Usage> = true;
 void _checkBaseDocument;
 void _checkAssumption;
 void _checkFeedback;
@@ -402,3 +404,4 @@ void _checkChangelogEntry;
 void _checkCompetencyScore;
 void _checkKnowledgeItem;
 void _checkHypothesis;
+void _checkUsage;
