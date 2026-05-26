@@ -35,8 +35,19 @@ export interface Workflow {
   updatedAt: string;
 }
 
+// Key-value bucket for app-level preferences (cold-start wizard answers,
+// future onboarding flags, anything that isn't a per-entity row). Use
+// stable string keys like 'cold_start_v1' so we can version state without
+// schema migrations.
+export interface Preference {
+  key: string;
+  value: unknown;
+  updatedAt: string;
+}
+
 const db = new Dexie('PMOS_v2') as Dexie & {
   workflows: EntityTable<Workflow, 'id'>;
+  preferences: EntityTable<Preference, 'key'>;
   documents: EntityTable<BaseDocument, 'id'>;
   assumptions: EntityTable<Assumption, 'id'>;
   feedbackItems: EntityTable<FeedbackItem, 'id'>;
@@ -75,6 +86,13 @@ db.version(1).stores({
   competencyScores: 'id, dimension, date',
   knowledgeItems: 'id, category, createdAt',
   hypotheses: 'id, status, createdAt',
+});
+
+// v2: add `preferences` key/value store for app-level flags (cold-start
+// wizard answers, onboarding state). No data migration needed — older
+// browsers just see an empty preferences table.
+db.version(2).stores({
+  preferences: 'key, updatedAt',
 });
 
 // Lazy-load Sentry only in the browser to keep the server bundle clean.
