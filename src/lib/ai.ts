@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/nextjs';
 import { getModulePrompt } from './ai-prompts';
 import { AIError, parseRetryAfter, type AIErrorKind } from './providers/errors';
+import { AIGenerateResponseSchema, ProvidersListResponseSchema } from './schemas';
 
 export { AIError } from './providers/errors';
 export type { AIErrorKind } from './providers/errors';
@@ -53,7 +54,18 @@ export async function listProviders(): Promise<ProviderSummary[]> {
   const res = await fetch('/api/ai', { method: 'GET' });
   if (!res.ok) throw new Error('Failed to load providers');
   const data = await res.json();
-  return data.providers;
+  // Validate the response shape — Settings rendering depends on this.
+  // Throw on failure so the Settings page's existing .catch handler shows a
+  // user-visible error instead of an empty list that looks like "no providers".
+  const parsed = ProvidersListResponseSchema.safeParse(data);
+  if (!parsed.success) {
+    Sentry.captureMessage('Invalid /api/ai providers response', {
+      level: 'error',
+      extra: { issues: parsed.error.issues.slice(0, 3) },
+    });
+    throw new Error('AI providers response did not match expected schema');
+  }
+  return parsed.data.providers;
 }
 
 export async function generateWithAI(
@@ -82,7 +94,20 @@ export async function generateWithAI(
   if (!res.ok) {
     throw aiErrorFromResponse(res, data, pref.provider, 'ai');
   }
-  return data.output || 'No output generated';
+  // Validate the success shape. The route is in this same repo so a contract
+  // break is a real bug — throw instead of swallowing it, so callers retry or
+  // surface the failure to the user instead of silently treating it as an
+  // empty AI response.
+  const parsed = AIGenerateResponseSchema.safeParse(data);
+  if (!parsed.success) {
+    const err = new Error(`/api/ai response schema mismatch (provider: ${pref.provider})`);
+    Sentry.captureException(err, {
+      tags: { area: 'ai', provider: pref.provider },
+      extra: { issues: parsed.error.issues.slice(0, 3) },
+    });
+    throw err;
+  }
+  return parsed.data.output || 'No output generated';
 }
 
 // Stream AI output as it generates. Calls `onDelta` for each text chunk.
