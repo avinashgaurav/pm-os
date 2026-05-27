@@ -42,6 +42,10 @@ const args = process.argv.slice(2);
 const CHECK_MODE = args.includes('--check');
 const onlyIdx = args.indexOf('--only');
 const ONLY = onlyIdx >= 0 ? args[onlyIdx + 1] : null;
+if (onlyIdx >= 0 && !ONLY) {
+  console.error('[eval] --only requires an argument, e.g. --only specs/prd');
+  process.exit(2);
+}
 
 function pickProvider() {
   const configured = listProviders().filter((p) => p.isConfigured());
@@ -52,8 +56,7 @@ function pickProvider() {
   }
   // Stable order so snapshots don't drift just because a different key is set.
   const order = ['groq', 'openai', 'anthropic', 'gemini', 'ollama'];
-  configured.sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id));
-  return configured[0];
+  return [...configured].sort((a, b) => order.indexOf(a.id) - order.indexOf(b.id))[0];
 }
 
 async function readFixture(
@@ -86,7 +89,7 @@ async function fileExists(path: string): Promise<boolean> {
 
 interface Result {
   key: string;
-  status: 'unchanged' | 'updated' | 'new' | 'drifted';
+  status: 'unchanged' | 'updated' | 'new' | 'drifted' | 'error';
   bytes: number;
 }
 
@@ -177,7 +180,10 @@ async function main() {
       results.push(r);
     } catch (err) {
       console.error(`[eval] FAILED ${file}: ${err instanceof Error ? err.message : err}`);
-      results.push({ key: file, status: 'drifted', bytes: 0 });
+      // 'error' (infra/provider failure) is distinct from 'drifted' (a real
+      // prompt-output change) so CI logs don't mislabel a network blip as a
+      // regression. Both still fail --check.
+      results.push({ key: file, status: 'error', bytes: 0 });
     }
   }
 
@@ -191,6 +197,12 @@ async function main() {
   console.log(`  total: ${results.length} | ${JSON.stringify(counts)}`);
 
   if (CHECK_MODE) {
+    const errored = results.filter((r) => r.status === 'error');
+    if (errored.length > 0) {
+      console.error(`\n[eval] ${errored.length} fixture(s) FAILED to run (infra/provider error).`);
+      console.error('       This is not a prompt regression — check provider availability.');
+      process.exit(1);
+    }
     const drifted = results.filter((r) => r.status === 'drifted' || r.status === 'new');
     if (drifted.length > 0) {
       console.error(`\n[eval] DRIFT detected on ${drifted.length} snapshot(s).`);
