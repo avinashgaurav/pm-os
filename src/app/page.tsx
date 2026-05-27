@@ -1,10 +1,14 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { categories } from '@/lib/constants';
+import { categories, getModule } from '@/lib/constants';
 import { useDocumentCount, useRecentDocuments } from '@/hooks/use-documents';
+import { useIsFirstVisit } from '@/hooks/use-cold-start';
+import { recommendModules } from '@/lib/cold-start';
+import { ColdStartWizard } from '@/components/onboarding/cold-start-wizard';
 import { formatDistanceToNow } from 'date-fns';
 
 const stagger = { hidden: {}, show: { transition: { staggerChildren: 0.04 } } };
@@ -31,6 +35,20 @@ export default function Dashboard() {
   const recentDocs = useRecentDocuments(6);
   const totalModules = categories.reduce((sum, c) => sum + c.modules.length, 0);
   const hasDocuments = (totalDocs ?? 0) > 0;
+
+  // Single Dexie subscription returns both the first-visit flag and the saved
+  // preference — avoids a second live query that would re-render on writes.
+  const { isFirst, pref: coldStart } = useIsFirstVisit();
+  const [wizardOpen, setWizardOpen] = useState(false);
+  useEffect(() => {
+    if (isFirst === true) setWizardOpen(true);
+  }, [isFirst]);
+
+  const recommended = coldStart
+    ? recommendModules(coldStart)
+        .map((r) => ({ ...r, mod: getModule(r.category, r.moduleSlug) }))
+        .filter((r) => r.mod !== undefined)
+    : [];
 
   return (
     <div className="max-w-6xl mx-auto">
@@ -146,6 +164,45 @@ export default function Dashboard() {
         </motion.div>
       )}
 
+      {/* Recommended (cold-start) */}
+      {recommended.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.22 }}
+          className="mb-10"
+        >
+          <h2 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+            Recommended for you
+          </h2>
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            animate="show"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          >
+            {recommended.map((r) => (
+              <motion.div key={`${r.category}/${r.moduleSlug}`} variants={fadeUp}>
+                <Link
+                  href={`/${r.category}/${r.moduleSlug}`}
+                  className="group surface hairline rounded-lg p-4 block hover:bg-accent transition-colors"
+                  title={r.reason}
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <h3 className="text-sm font-semibold">{r.mod?.name}</h3>
+                    <ArrowRight className="h-3.5 w-3.5 text-muted-foreground/30 group-hover:text-foreground transition-colors" />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground line-clamp-2 mb-2">
+                    {r.mod?.description}
+                  </p>
+                  <span className="text-[10px] text-muted-foreground/60">{r.reason}</span>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </motion.div>
+      )}
+
       {/* Disciplines */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -188,6 +245,8 @@ export default function Dashboard() {
           ))}
         </motion.div>
       </motion.div>
+
+      <ColdStartWizard open={wizardOpen} onClose={() => setWizardOpen(false)} />
     </div>
   );
 }
