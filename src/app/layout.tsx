@@ -16,7 +16,8 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'PM OS — Product Management Operating System',
   description: '82 ready-to-use PM templates across 10 disciplines. From discovery to launch.',
-  icons: { icon: '/favicon.svg' },
+  // Favicon is provided by the src/app/icon.svg file convention — Next injects
+  // the <link rel="icon"> automatically, so no manual `icons` entry is needed.
 };
 
 export default function RootLayout({
