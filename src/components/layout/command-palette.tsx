@@ -6,6 +6,8 @@ import { useUIStore } from '@/stores/ui-store';
 import { categories } from '@/lib/constants';
 import { db } from '@/lib/db';
 import { downloadJSON } from '@/lib/export';
+import { recordVisit } from '@/lib/module-visits';
+import { useRecentModules, useFrequentModules } from '@/hooks/use-module-visits';
 import {
   Search,
   X,
@@ -16,6 +18,8 @@ import {
   Sun,
   Moon,
   Download,
+  Clock,
+  TrendingUp,
 } from 'lucide-react';
 import { Kbd } from '@/components/ui/kbd';
 
@@ -156,24 +160,66 @@ export function CommandPalette() {
           description: mod.description,
           hint: mod.archetype,
           accent: cat.color,
-          onSelect: () => router.push(`/${cat.slug}/${mod.slug}`),
+          onSelect: () => {
+            void recordVisit(`${cat.slug}/${mod.slug}`, { source: 'palette' });
+            router.push(`/${cat.slug}/${mod.slug}`);
+          },
         });
       }
     }
     return acts;
   }, [router, exportAll, toggleTheme, isDark]);
 
-  // Filter + group.
+  // Recent + Frequent — surfaced as their own groups at the top of the list
+  // when the user opens the palette with no query. De-duplicated: if a module
+  // is in Recent, it won't appear again in Frequent.
+  const recent = useRecentModules(5);
+  const frequent = useFrequentModules(5);
+  const recentFrequentActions = useMemo<Action[]>(() => {
+    if (query.trim()) return []; // typed queries fall back to the flat filter
+    if (!recent || !frequent) return [];
+    const recentSlugs = new Set(recent.map((r) => `${r.category}/${r.moduleSlug}`));
+    const make = (
+      group: string,
+      mod: {
+        category: string;
+        moduleSlug: string;
+        mod: { name: string; description: string; archetype: string };
+      },
+      icon: React.ComponentType<{ className?: string }>
+    ): Action => ({
+      id: `${group.toLowerCase()}-${mod.category}-${mod.moduleSlug}`,
+      kind: 'nav',
+      group,
+      label: mod.mod.name,
+      description: mod.mod.description,
+      hint: mod.mod.archetype,
+      icon,
+      onSelect: () => {
+        void recordVisit(`${mod.category}/${mod.moduleSlug}`, { source: 'palette' });
+        router.push(`/${mod.category}/${mod.moduleSlug}`);
+      },
+    });
+    return [
+      ...recent.map((r) => make('Recent', r, Clock)),
+      ...frequent
+        .filter((f) => !recentSlugs.has(`${f.category}/${f.moduleSlug}`))
+        .map((f) => make('Frequent', f, TrendingUp)),
+    ];
+  }, [recent, frequent, query, router]);
+
+  // Filter + group. With no query, prepend Recent + Frequent so users see
+  // their most-used modules without scrolling past every category.
   const filtered = useMemo(() => {
     const q = query.toLowerCase().trim();
-    if (!q) return allActions;
+    if (!q) return [...recentFrequentActions, ...allActions];
     return allActions.filter(
       (a) =>
         a.label.toLowerCase().includes(q) ||
         a.description?.toLowerCase().includes(q) ||
         a.group.toLowerCase().includes(q)
     );
-  }, [allActions, query]);
+  }, [allActions, recentFrequentActions, query]);
 
   // Group items for display + assign each item a stable index for ↑↓ nav.
   // Precomputing indices avoids a render-body counter that could double under
