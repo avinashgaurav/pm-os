@@ -53,6 +53,9 @@ interface DocumentEditorProps {
   moduleSlug: string;
 }
 
+// sessionStorage key for the per-session "Hide suggestions" dismissal.
+const SUGGEST_KEY = 'pm-os-hide-flow-suggestions';
+
 // Pure helper — kept at module scope so it isn't recreated on every render
 // and can be unit-tested independently.
 function tailoredErrorMessage(err: unknown): string {
@@ -110,13 +113,14 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
   const prefilledRef = useRef(false);
   useEffect(() => {
     if (prefilledRef.current) return;
+    if (!mod) return; // invalid module — nothing to prefill
     const fromTitle = new URLSearchParams(window.location.search).get('from');
     if (fromTitle) {
       prefilledRef.current = true;
       setActiveDocId(null);
       setContent({});
       setGeneratedOutput('');
-      setTitle(`${fromTitle} — ${getOutputName(moduleSlug, mod?.name ?? '')}`);
+      setTitle(`${fromTitle} — ${getOutputName(moduleSlug, mod.name)}`);
       setStep('input');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,7 +128,6 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
 
   // Suggestions are dismissable per session — sessionStorage keeps them hidden
   // across re-renders / in-tab navigation without persisting forever.
-  const SUGGEST_KEY = 'pm-os-hide-flow-suggestions';
   useEffect(() => {
     try {
       if (sessionStorage.getItem(SUGGEST_KEY) === '1') setSuggestionsHidden(true);

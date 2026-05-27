@@ -1,13 +1,15 @@
 // "What naturally comes next" map. After saving a doc in one module, the
 // editor surfaces 2-3 suggested next modules with a one-line rationale.
 //
-// Adding a new flow is one line: key is "<category>/<moduleSlug>", value is an
-// ordered list of next steps. Unmapped modules simply show no suggestions.
-//
-// Keep rationales short and imperative — they render as the card row label.
+// Adding a flow: add an entry keyed by "<category>/<moduleSlug>" with an
+// ordered list of next steps. Unmapped modules show no suggestions. `category`
+// is typed as CategorySlug so a wrong category fails tsc rather than producing
+// a dead navigation target at runtime.
+
+import type { CategorySlug } from '@/types';
 
 export interface NextStep {
-  category: string;
+  category: CategorySlug;
   moduleSlug: string;
   // Imperative one-liner shown on the card row, e.g. "Generate user stories".
   label: string;
@@ -25,7 +27,7 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
       rationale: 'Break the PRD into stories engineering can estimate',
     },
     {
-      category: 'launch',
+      category: 'communication',
       moduleSlug: 'release-notes',
       label: 'Draft release notes',
       rationale: 'Turn the shipped scope into a customer-facing note',
@@ -221,7 +223,7 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
   ],
   'launch/announcement': [
     {
-      category: 'launch',
+      category: 'communication',
       moduleSlug: 'release-notes',
       label: 'Write release notes',
       rationale: 'Document what shipped for customers',
