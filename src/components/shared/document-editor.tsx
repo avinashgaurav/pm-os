@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Plus,
   FileDown,
@@ -12,6 +12,7 @@ import {
   Loader2,
   ChevronDown,
   Square,
+  ArrowRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -35,6 +36,7 @@ import { getModule } from '@/lib/constants';
 import { getTemplate } from '@/lib/templates';
 import { getOutputName } from '@/lib/output-names';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   generateStreamWithAI,
   buildModulePrompt,
@@ -43,6 +45,7 @@ import {
   formatUsage,
   type Usage,
 } from '@/lib/ai';
+import { getNextSteps } from '@/lib/module-flows';
 import type { BaseDocument, CategorySlug, ModuleTemplate } from '@/types';
 
 interface DocumentEditorProps {
@@ -93,11 +96,61 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
   const [editingOutput, setEditingOutput] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [suggestionsHidden, setSuggestionsHidden] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+
+  const router = useRouter();
+
+  // Backlink prefill (#50 / epic #32 item 8): when arriving from a "What's
+  // next" click, the source doc title rides along in `?from`. Open a fresh
+  // doc with the title seeded so the new deliverable references its parent.
+  // Read from window.location (client-only) rather than useSearchParams() to
+  // avoid forcing a Suspense bailout on every statically-prerendered module
+  // page.
+  const prefilledRef = useRef(false);
+  useEffect(() => {
+    if (prefilledRef.current) return;
+    const fromTitle = new URLSearchParams(window.location.search).get('from');
+    if (fromTitle) {
+      prefilledRef.current = true;
+      setActiveDocId(null);
+      setContent({});
+      setGeneratedOutput('');
+      setTitle(`${fromTitle} — ${getOutputName(moduleSlug, mod?.name ?? '')}`);
+      setStep('input');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Suggestions are dismissable per session — sessionStorage keeps them hidden
+  // across re-renders / in-tab navigation without persisting forever.
+  const SUGGEST_KEY = 'pm-os-hide-flow-suggestions';
+  useEffect(() => {
+    try {
+      if (sessionStorage.getItem(SUGGEST_KEY) === '1') setSuggestionsHidden(true);
+    } catch {
+      // sessionStorage unavailable (private mode) — fall back to in-memory state.
+    }
+  }, []);
 
   if (!mod) return <div className="text-muted-foreground">Module not found</div>;
 
   const outputName = getOutputName(moduleSlug, mod.name);
+  const nextSteps = getNextSteps(category, moduleSlug);
+
+  const hideSuggestions = () => {
+    setSuggestionsHidden(true);
+    try {
+      sessionStorage.setItem(SUGGEST_KEY, '1');
+    } catch {
+      // ignore
+    }
+  };
+
+  const goToNextStep = (cat: string, slug: string) => {
+    const srcTitle = title.trim() || outputName;
+    router.push(`/${cat}/${slug}?from=${encodeURIComponent(srcTitle)}`);
+  };
   const activeTemplate: ModuleTemplate = template || {
     moduleSlug,
     category,
@@ -701,6 +754,43 @@ export function DocumentEditor({ category, moduleSlug }: DocumentEditorProps) {
                   </div>
                 )}
               </div>
+
+              {/* What's next — flow suggestions */}
+              {!generating && generatedOutput && nextSteps.length > 0 && !suggestionsHidden && (
+                <div className="surface hairline rounded-xl p-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="h-3.5 w-3.5 text-foreground/70" />
+                      <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                        What’s next
+                      </span>
+                    </div>
+                    <button
+                      onClick={hideSuggestions}
+                      className="text-[10px] text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      Hide suggestions
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                    {nextSteps.map((s) => (
+                      <button
+                        key={`${s.category}/${s.moduleSlug}`}
+                        onClick={() => goToNextStep(s.category, s.moduleSlug)}
+                        className="text-left surface-card hairline rounded-lg p-3 hover:bg-accent transition-colors group"
+                      >
+                        <div className="flex items-center justify-between gap-2 mb-0.5">
+                          <span className="text-xs font-medium">{s.label}</span>
+                          <ArrowRight className="h-3 w-3 text-muted-foreground/40 group-hover:text-foreground transition-colors shrink-0" />
+                        </div>
+                        <p className="text-[11px] text-muted-foreground leading-snug">
+                          {s.rationale}
+                        </p>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
