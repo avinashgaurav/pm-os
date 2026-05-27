@@ -1,0 +1,25 @@
+{
+  "title": "Mobile Checkout Redesign",
+  "sections": [
+    {
+      "label": "Problem Statement",
+      "value": "Mobile checkout abandonment is 68%, costing about $2M in annual revenue. The current flow has 9 form fields, no autofill, and three confirmation steps. Telemetry shows the biggest drop-off is on the shipping address screen (42% of abandons)."
+    },
+    {
+      "label": "Target Users",
+      "value": "Mobile shoppers aged 25-45 who add items to cart but do not complete purchase. Skewed toward iOS (62%). Average order value $84."
+    },
+    {
+      "label": "Goals & Success Metrics",
+      "value": "Cut abandonment from 68% to 45% in Q2.\nLift mobile conversion from 2.8% to 4.5%.\nRaise checkout NPS from 32 to 50."
+    },
+    {
+      "label": "User Stories & Requirements",
+      "value": "As a mobile shopper, I want autofill from Apple/Google Pay so I can pay in two taps. As a returning user, I want my last shipping address pre-selected. As a guest, I want to check out without creating an account."
+    },
+    {
+      "label": "Scope & Constraints",
+      "value": "Out of scope: web checkout (separate project). Tech constraint: must stay on existing Stripe integration. Timeline: 8 weeks to GA."
+    }
+  ]
+}

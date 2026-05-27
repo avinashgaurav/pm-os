@@ -1,0 +1,17 @@
+{
+  "title": "Q2 — Mobile Growth",
+  "sections": [
+    {
+      "label": "Context & Background",
+      "value": "Series B SaaS, $20M ARR. Mobile is 38% of usage but 8% of new signups. Leadership wants mobile to be a parity surface, not a downgrade."
+    },
+    {
+      "label": "Goals & Objectives",
+      "value": "Make mobile a real signup channel. Reduce mobile drop-off across the funnel. Match desktop activation rate within two quarters."
+    },
+    {
+      "label": "Constraints & Considerations",
+      "value": "Mobile team is 4 engineers + 1 designer. No native rewrite — must work on React Native. Cannot break the existing desktop flow."
+    }
+  ]
+}

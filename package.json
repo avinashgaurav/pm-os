@@ -9,6 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "eval": "tsx scripts/eval-prompts.ts",
+    "eval:check": "tsx scripts/eval-prompts.ts --check",
     "prepare": "husky"
   },
   "dependencies": {
@@ -51,6 +53,7 @@
     "lint-staged": "^17.0.5",
     "prettier": "^3.8.3",
     "tailwindcss": "^4",
+    "tsx": "^4.22.3",
     "typescript": "^5"
   },
   "lint-staged": {

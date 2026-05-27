@@ -1,0 +1,17 @@
+{
+  "title": "Mobile Checkout Redesign — GTM",
+  "sections": [
+    {
+      "label": "Context & Background",
+      "value": "Shipping a faster mobile checkout in Q2. The 2-tap Apple/Google Pay flow is the marquee improvement. Expected to lift mobile conversion from 2.8% to 4.5%."
+    },
+    {
+      "label": "Goals & Objectives",
+      "value": "Drive awareness within the existing user base. Position as a 'frictionless mobile' story to win back lapsed mobile shoppers. Generate 3+ press mentions in commerce-trade publications."
+    },
+    {
+      "label": "Constraints & Considerations",
+      "value": "No external launch event budget. Sales team is not involved (B2C SMB). Lifecycle email is the primary channel. Cannot mention specific abandonment metrics in public-facing copy (competitive sensitivity)."
+    }
+  ]
+}
