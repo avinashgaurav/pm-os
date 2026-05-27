@@ -125,7 +125,10 @@ export default function SettingsPage() {
 
   const handleResetOnboarding = async () => {
     await clearColdStartPreference();
-    toast.success('Onboarding reset — wizard will run on next visit to home');
+    // The wizard only re-runs for users with no saved documents (the
+    // isFirstVisit gate), so phrase this neutrally rather than promising a
+    // re-prompt that won't happen for existing users.
+    toast.success('Onboarding preferences cleared');
   };
 
   return (

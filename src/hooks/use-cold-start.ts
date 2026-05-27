@@ -10,6 +10,12 @@ import {
 import { safeRow } from '@/lib/schemas/safe-read';
 import { z } from 'zod';
 
+const PrefRowSchema = z.object({
+  key: z.literal(COLD_START_KEY),
+  value: ColdStartPreferenceSchema,
+  updatedAt: z.string(),
+});
+
 // Liveness check: returns the validated ColdStartPreference if the user has
 // completed the wizard, or null if they haven't.
 export function useColdStartPreference(): ColdStartPreference | null | undefined {
@@ -18,12 +24,7 @@ export function useColdStartPreference(): ColdStartPreference | null | undefined
     if (!row) return null;
     // Validate-on-read: an old payload that no longer matches the schema is
     // treated as "no preference" and the wizard re-runs. Better than crashing.
-    const PrefRow = z.object({
-      key: z.literal(COLD_START_KEY),
-      value: ColdStartPreferenceSchema,
-      updatedAt: z.string(),
-    });
-    const valid = safeRow(PrefRow, row, 'preferences');
+    const valid = safeRow(PrefRowSchema, row, 'preferences');
     return valid?.value ?? null;
   });
 }
@@ -43,9 +44,17 @@ export async function clearColdStartPreference(): Promise<void> {
 // Detect "first ever visit" — no documents stored AND no preference row yet.
 // We use this gate so existing users (with any saved doc) never see the
 // wizard, even if they happen to clear preferences for some reason.
-export function useIsFirstVisit(): boolean | undefined {
+// Returns the pref alongside the boolean so the home page reads both from a
+// single Dexie subscription instead of subscribing twice (a second
+// useColdStartPreference() would fire its own re-render on every write).
+export function useIsFirstVisit(): {
+  isFirst: boolean | undefined;
+  pref: ColdStartPreference | null | undefined;
+} {
   const docCount = useLiveQuery(() => db.documents.count());
   const pref = useColdStartPreference();
-  if (docCount === undefined || pref === undefined) return undefined;
-  return docCount === 0 && pref === null;
+  if (docCount === undefined || pref === undefined) {
+    return { isFirst: undefined, pref: undefined };
+  }
+  return { isFirst: docCount === 0 && pref === null, pref };
 }

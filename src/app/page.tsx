@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { categories, getModule } from '@/lib/constants';
 import { useDocumentCount, useRecentDocuments } from '@/hooks/use-documents';
-import { useColdStartPreference, useIsFirstVisit } from '@/hooks/use-cold-start';
+import { useIsFirstVisit } from '@/hooks/use-cold-start';
 import { recommendModules } from '@/lib/cold-start';
 import { ColdStartWizard } from '@/components/onboarding/cold-start-wizard';
 import { formatDistanceToNow } from 'date-fns';
@@ -36,12 +36,13 @@ export default function Dashboard() {
   const totalModules = categories.reduce((sum, c) => sum + c.modules.length, 0);
   const hasDocuments = (totalDocs ?? 0) > 0;
 
-  const isFirstVisit = useIsFirstVisit();
-  const coldStart = useColdStartPreference();
+  // Single Dexie subscription returns both the first-visit flag and the saved
+  // preference — avoids a second live query that would re-render on writes.
+  const { isFirst, pref: coldStart } = useIsFirstVisit();
   const [wizardOpen, setWizardOpen] = useState(false);
   useEffect(() => {
-    if (isFirstVisit === true) setWizardOpen(true);
-  }, [isFirstVisit]);
+    if (isFirst === true) setWizardOpen(true);
+  }, [isFirst]);
 
   const recommended = coldStart
     ? recommendModules(coldStart)

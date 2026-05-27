@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sparkles, ArrowRight, ArrowLeft, X } from 'lucide-react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
@@ -32,6 +32,21 @@ export function ColdStartWizard({ open, onClose }: ColdStartWizardProps) {
   const [focus, setFocus] = useState<Focus | null>(null);
   const [maturity, setMaturity] = useState<Maturity | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  // Ref mirror of `submitting` so the onOpenChange guard reads the live value
+  // (the closure captured at render time would be stale during an in-flight save).
+  const submittingRef = useRef(false);
+
+  // Reset to a clean state whenever the dialog (re)opens — e.g. after
+  // "Reset Onboarding", the component stays mounted, so without this the
+  // prior session's answers would persist.
+  useEffect(() => {
+    if (open) {
+      setStep(0);
+      setRole(null);
+      setFocus(null);
+      setMaturity(null);
+    }
+  }, [open]);
 
   const canAdvance =
     (step === 0 && role !== null) ||
@@ -44,6 +59,8 @@ export function ColdStartWizard({ open, onClose }: ColdStartWizardProps) {
       return;
     }
     if (!role || !focus || !maturity) return;
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     setSubmitting(true);
     const pref: ColdStartPreference = {
       role,
@@ -55,12 +72,17 @@ export function ColdStartWizard({ open, onClose }: ColdStartWizardProps) {
     try {
       await saveColdStartPreference(pref);
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
       onClose();
     }
   };
 
   const handleSkip = async () => {
+    // Guard against the close button + onOpenChange firing a second save
+    // while the first is still in flight.
+    if (submittingRef.current) return;
+    submittingRef.current = true;
     // Save a sentinel so we don't re-prompt. We persist the answers the user
     // did give (if any) so the recommendations engine has whatever signal we
     // captured; if they skipped step 1, fall back to a neutral default of
@@ -76,6 +98,7 @@ export function ColdStartWizard({ open, onClose }: ColdStartWizardProps) {
     try {
       await saveColdStartPreference(pref);
     } finally {
+      submittingRef.current = false;
       setSubmitting(false);
       onClose();
     }
@@ -108,8 +131,8 @@ export function ColdStartWizard({ open, onClose }: ColdStartWizardProps) {
   const cur = steps[step];
 
   return (
-    <Dialog open={open} onOpenChange={(o) => !o && handleSkip()}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+    <Dialog open={open} onOpenChange={(o) => !o && !submittingRef.current && handleSkip()}>
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden" showCloseButton={false}>
         <div className="flex items-center justify-between px-5 pt-5 pb-3">
           <div className="flex items-center gap-2">
             <Sparkles className="h-4 w-4 text-foreground/70" />
