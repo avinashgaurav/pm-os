@@ -1,9 +1,7 @@
 'use client';
 
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useEffect } from 'react';
 import { db } from '@/lib/db';
-import { recordVisit } from '@/lib/module-visits';
 import { getModule } from '@/lib/constants';
 import type { ModuleConfig } from '@/types';
 
@@ -46,14 +44,6 @@ export function useFrequentModules(limit = 5): VisitedModule[] | undefined {
   }, [limit]);
 }
 
-// Fire-and-forget visit tracker for a module page. Drop into the page's body
-// so the counter bumps on mount. Idempotent for the same slug across renders.
-export function useTrackModuleVisit(
-  category: string | undefined,
-  moduleSlug: string | undefined
-): void {
-  useEffect(() => {
-    if (!category || !moduleSlug) return;
-    void recordVisit(`${category}/${moduleSlug}`, { source: 'route' });
-  }, [category, moduleSlug]);
-}
+// Note: there is intentionally no per-page visit hook. RouteVisitTracker
+// (mounted once in ClientProviders) records every /<category>/<moduleSlug>
+// navigation, so a page-level tracker would double-count.
