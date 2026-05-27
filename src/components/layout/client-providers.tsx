@@ -6,6 +6,7 @@ import { Sidebar } from './sidebar';
 import { Topbar } from './topbar';
 import { CommandPalette } from './command-palette';
 import { KeyboardCheatsheet } from './keyboard-cheatsheet';
+import { RouteVisitTracker } from './route-visit-tracker';
 import { useUIStore } from '@/stores/ui-store';
 import { cn } from '@/lib/utils';
 
@@ -28,6 +29,7 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
       </div>
       <CommandPalette />
       <KeyboardCheatsheet />
+      <RouteVisitTracker />
       <Toaster richColors position="bottom-right" />
     </TooltipProvider>
   );

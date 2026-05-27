@@ -45,9 +45,21 @@ export interface Preference {
   updatedAt: string;
 }
 
+// Per-module visit counter — powers Recent + Frequent in the command palette
+// and the "Pick up where you left off" row on home. `slug` is the canonical
+// "category/moduleSlug" key. `source` distinguishes a direct nav from a
+// palette-selected nav for future analytics; we sum both for surfacing.
+export interface ModuleVisit {
+  slug: string; // e.g. "specs/prd"
+  visits: number;
+  paletteSelections: number;
+  lastVisitedAt: string;
+}
+
 const db = new Dexie('PMOS_v2') as Dexie & {
   workflows: EntityTable<Workflow, 'id'>;
   preferences: EntityTable<Preference, 'key'>;
+  moduleVisits: EntityTable<ModuleVisit, 'slug'>;
   documents: EntityTable<BaseDocument, 'id'>;
   assumptions: EntityTable<Assumption, 'id'>;
   feedbackItems: EntityTable<FeedbackItem, 'id'>;
@@ -89,10 +101,16 @@ db.version(1).stores({
 });
 
 // v2: add `preferences` key/value store for app-level flags (cold-start
-// wizard answers, onboarding state). No data migration needed — older
-// browsers just see an empty preferences table.
+// wizard answers, onboarding state). Additive — older browsers just see an
+// empty preferences table.
 db.version(2).stores({
   preferences: 'key, updatedAt',
+});
+
+// v3: add `moduleVisits` for the Recent/Frequent surfacing. Additive — no
+// data migration. (Lands after #48's v2 preferences table.)
+db.version(3).stores({
+  moduleVisits: 'slug, visits, lastVisitedAt',
 });
 
 // Lazy-load Sentry only in the browser to keep the server bundle clean.

@@ -136,19 +136,19 @@ export default function Dashboard() {
         </Link>
       </motion.div>
 
-      {/* Recent */}
-      {recentDocs && recentDocs.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-10"
-        >
-          <h2 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
-            Recent Work
-          </h2>
+      {/* Pick up where you left off */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mb-10"
+      >
+        <h2 className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          Pick up where you left off
+        </h2>
+        {recentDocs && recentDocs.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {recentDocs.map((doc) => (
+            {recentDocs.slice(0, 5).map((doc) => (
               <Link
                 key={doc.id}
                 href={`/${doc.category}/${doc.moduleSlug}`}
@@ -161,8 +161,14 @@ export default function Dashboard() {
               </Link>
             ))}
           </div>
-        </motion.div>
-      )}
+        ) : (
+          <div className="surface hairline rounded-lg p-4 text-center">
+            <p className="text-xs text-muted-foreground">
+              No recent activity yet — open any tool below to start.
+            </p>
+          </div>
+        )}
+      </motion.div>
 
       {/* Recommended (cold-start) */}
       {recommended.length > 0 && (
