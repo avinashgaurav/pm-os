@@ -1,7 +1,20 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Download, Upload, Trash2, Database, Sun, Moon, Palette, Sparkles, Check, AlertCircle, ExternalLink } from 'lucide-react';
+import {
+  Download,
+  Upload,
+  Trash2,
+  Database,
+  Sun,
+  Moon,
+  Palette,
+  Sparkles,
+  Check,
+  AlertCircle,
+  ExternalLink,
+  RotateCcw,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,6 +29,7 @@ import {
   type ProviderSummary,
   type AIPreference,
 } from '@/lib/ai';
+import { clearColdStartPreference } from '@/hooks/use-cold-start';
 
 export default function SettingsPage() {
   const [importing, setImporting] = useState(false);
@@ -42,7 +56,7 @@ export default function SettingsPage() {
   };
 
   const selectProvider = (providerId: string) => {
-    const p = providers.find(x => x.id === providerId);
+    const p = providers.find((x) => x.id === providerId);
     if (!p) return;
     const next = { provider: p.id, model: p.defaultModel };
     setAIPreference(next);
@@ -58,7 +72,7 @@ export default function SettingsPage() {
     toast.success(`Model: ${model}`);
   };
 
-  const activeProvider = providers.find(p => p.id === pref?.provider);
+  const activeProvider = providers.find((p) => p.id === pref?.provider);
 
   const handleExportAll = async () => {
     try {
@@ -77,12 +91,15 @@ export default function SettingsPage() {
       };
       downloadJSON(data, 'pm-os-backup-' + new Date().toISOString().slice(0, 10));
       toast.success('All data exported');
-    } catch { toast.error('Export failed'); }
+    } catch {
+      toast.error('Export failed');
+    }
   };
 
   const handleImport = () => {
     const input = document.createElement('input');
-    input.type = 'file'; input.accept = '.json';
+    input.type = 'file';
+    input.accept = '.json';
     input.onchange = async (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (!file) return;
@@ -92,7 +109,9 @@ export default function SettingsPage() {
         if (data.documents) await db.documents.bulkPut(data.documents);
         if (data.decisions) await db.decisions.bulkPut(data.decisions);
         toast.success('Data imported');
-      } catch { toast.error('Import failed'); }
+      } catch {
+        toast.error('Import failed');
+      }
       setImporting(false);
     };
     input.click();
@@ -104,13 +123,23 @@ export default function SettingsPage() {
     window.location.reload();
   };
 
+  const handleResetOnboarding = async () => {
+    await clearColdStartPreference();
+    // The wizard only re-runs for users with no saved documents (the
+    // isFirstVisit gate), so phrase this neutrally rather than promising a
+    // re-prompt that won't happen for existing users.
+    toast.success('Onboarding preferences cleared');
+  };
+
   return (
     <div className="max-w-2xl mx-auto">
       <PageHeader title="Settings" description="Appearance, AI provider, and data management" />
       <div className="space-y-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2"><Palette className="h-4 w-4" /> Appearance</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Palette className="h-4 w-4" /> Appearance
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
@@ -128,9 +157,12 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2"><Sparkles className="h-4 w-4" /> AI Provider</CardTitle>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Sparkles className="h-4 w-4" /> AI Provider
+            </CardTitle>
             <CardDescription>
-              Pick the model that powers generation across all {totalModules} modules. API keys are configured server-side via environment variables.
+              Pick the model that powers generation across all {totalModules} modules. API keys are
+              configured server-side via environment variables.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -139,7 +171,7 @@ export default function SettingsPage() {
             ) : (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {providers.map(p => {
+                  {providers.map((p) => {
                     const isActive = pref?.provider === p.id;
                     return (
                       <button
@@ -155,7 +187,9 @@ export default function SettingsPage() {
                           {isActive ? (
                             <Check className="h-3.5 w-3.5 text-primary" />
                           ) : p.configured ? (
-                            <span className="text-[10px] text-green-600 dark:text-green-400">Available</span>
+                            <span className="text-[10px] text-green-600 dark:text-green-400">
+                              Available
+                            </span>
                           ) : (
                             <AlertCircle className="h-3.5 w-3.5 text-muted-foreground" />
                           )}
@@ -174,7 +208,7 @@ export default function SettingsPage() {
                       {activeProvider.label} model
                     </p>
                     <div className="flex flex-wrap gap-1.5">
-                      {activeProvider.models.map(m => (
+                      {activeProvider.models.map((m) => (
                         <button
                           key={m}
                           onClick={() => selectModel(m)}
@@ -199,11 +233,18 @@ export default function SettingsPage() {
                   </div>
                 )}
 
-                {!providers.some(p => p.configured) && (
+                {!providers.some((p) => p.configured) && (
                   <div className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3">
-                    <p className="text-xs font-medium text-amber-700 dark:text-amber-400">No providers configured</p>
+                    <p className="text-xs font-medium text-amber-700 dark:text-amber-400">
+                      No providers configured
+                    </p>
                     <p className="text-[11px] text-muted-foreground mt-1">
-                      Set at least one of <code className="font-mono">GROQ_API_KEY</code>, <code className="font-mono">OPENAI_API_KEY</code>, <code className="font-mono">ANTHROPIC_API_KEY</code>, <code className="font-mono">GOOGLE_API_KEY</code>, or <code className="font-mono">OLLAMA_URL</code> in your server environment. See <code className="font-mono">.env.example</code>.
+                      Set at least one of <code className="font-mono">GROQ_API_KEY</code>,{' '}
+                      <code className="font-mono">OPENAI_API_KEY</code>,{' '}
+                      <code className="font-mono">ANTHROPIC_API_KEY</code>,{' '}
+                      <code className="font-mono">GOOGLE_API_KEY</code>, or{' '}
+                      <code className="font-mono">OLLAMA_URL</code> in your server environment. See{' '}
+                      <code className="font-mono">.env.example</code>.
                     </p>
                   </div>
                 )}
@@ -214,21 +255,55 @@ export default function SettingsPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-base flex items-center gap-2"><Database className="h-4 w-4" /> Data Management</CardTitle>
-            <CardDescription>Export, import, or reset your data. All data is stored locally in your browser.</CardDescription>
+            <CardTitle className="text-base flex items-center gap-2">
+              <Database className="h-4 w-4" /> Data Management
+            </CardTitle>
+            <CardDescription>
+              Export, import, or reset your data. All data is stored locally in your browser.
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
-            <Button variant="outline" className="w-full justify-start gap-2" onClick={handleExportAll}><Download className="h-4 w-4" /> Export All Data (JSON)</Button>
-            <Button variant="outline" className="w-full justify-start gap-2" onClick={handleImport} disabled={importing}><Upload className="h-4 w-4" /> {importing ? 'Importing...' : 'Import Data (JSON)'}</Button>
-            <Button variant="destructive" className="w-full justify-start gap-2" onClick={handleReset}><Trash2 className="h-4 w-4" /> Reset All Data</Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2"
+              onClick={handleExportAll}
+            >
+              <Download className="h-4 w-4" /> Export All Data (JSON)
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2"
+              onClick={handleImport}
+              disabled={importing}
+            >
+              <Upload className="h-4 w-4" /> {importing ? 'Importing...' : 'Import Data (JSON)'}
+            </Button>
+            <Button
+              variant="outline"
+              className="w-full justify-start gap-2"
+              onClick={handleResetOnboarding}
+            >
+              <RotateCcw className="h-4 w-4" /> Reset Onboarding
+            </Button>
+            <Button
+              variant="destructive"
+              className="w-full justify-start gap-2"
+              onClick={handleReset}
+            >
+              <Trash2 className="h-4 w-4" /> Reset All Data
+            </Button>
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader><CardTitle className="text-base">About PM OS</CardTitle></CardHeader>
+          <CardHeader>
+            <CardTitle className="text-base">About PM OS</CardTitle>
+          </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-1.5">
             <p className="font-medium text-foreground">Product Management Operating System</p>
-            <p>{totalModules} AI-powered tools across {categories.length} disciplines</p>
+            <p>
+              {totalModules} AI-powered tools across {categories.length} disciplines
+            </p>
             <p>Pluggable LLM providers: Groq, OpenAI, Anthropic, Gemini, Ollama</p>
             <p>All data stored locally in your browser (IndexedDB)</p>
             <p>API keys live server-side only — never in the browser bundle</p>
