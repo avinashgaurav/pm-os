@@ -33,8 +33,10 @@ interaction model:
 - **TrackerFlow** — opens directly into a list/board/table with inline
   add. Generation is "AI Analyze" / "AI Prioritize," not "produce a doc."
 
-This single split fixes ~30 of the 82 modules immediately and makes "AI
-Analyze" the consistent primary action for trackers/canvases.
+This single split directly reshapes 25 of the 82 modules — the 14 trackers
+and 11 canvases tagged in `constants.ts` — and makes "AI Analyze" the
+consistent primary action for both archetypes. The 57 document-archetype
+modules keep today's `DocumentFlow` path.
 
 ---
 
@@ -48,8 +50,8 @@ forward, via #50). The middle is a black box:
   exists as "AI Analyze" but bolted on inconsistently).
 - No **revise with feedback** — you re-fill the form and regenerate,
   losing diff visibility.
-- No **versioning** — every save overwrites `_output`. A returning user
-  has lost their prior draft.
+- No **versioning** — every save overwrites the `_output` key inside the
+  `content` map. A returning user has lost their prior draft.
 
 **Recommendation**: per-doc revision history (Dexie rows keyed by docId).
 Standardize three buttons on every doc output:
@@ -102,14 +104,14 @@ schema, not the storage. The Zod work in #14 is the foundation.
 
 Concrete patterns the per-module audit (epic #68 half-B) should hit:
 
-| Pattern                             | Modules affected                                                                                                                                                      | What to do                                                                                    |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| **Tracker-but-rendered-as-doc**     | backlog, risk-register, decisions, hypothesis-board, release-calendar, okr-tracker, team-health, competency, knowledge-base, feedback-wall, assumptions, scoring (12) | Reshape to `TrackerFlow` — list/table view with inline add, AI Analyze as primary action      |
-| **Canvas-but-rendered-as-doc**      | journey-map, story-map, swot, bcg-matrix, ost, metric-tree, vision-board, stakeholder-map, dependencies, landscape, impact-effort (11)                                | Reshape to `CanvasFlow` — open directly into 2-D workspace, AI helps populate quadrants/nodes |
-| **Sequential staged generation**    | prd, tech-spec, board-deck, api-docs                                                                                                                                  | Generate by section with inline review between sections, not one giant blob                   |
-| **Iterative with user input loops** | interviews → synthesis → personas                                                                                                                                     | Encourage the chain via #50 flows + auto-carry-over of data, not just title                   |
-| **Duplicate or thin**               | brief vs one-pager vs prd; agenda vs meeting-templates; daily vs weekly; processes vs cs-playbook                                                                     | Merge or differentiate clearly — they overlap ~60% in prompt + form                           |
-| **Trivially small**                 | changelog, retro, post-mortem (1–2 fields each)                                                                                                                       | Keep but promote to "quick capture" — single textarea + AI-structure, not multi-section form  |
+| Pattern                             | Modules affected                                                                                                                                                                | What to do                                                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **Tracker-but-rendered-as-doc**     | backlog, risk-register, decisions, hypothesis-board, release-calendar, okr-tracker, team-health, competency, knowledge-base, feedback-wall, assumptions, scoring, velocity (13) | Reshape to `TrackerFlow` — list/table view with inline add, AI Analyze as primary action      |
+| **Canvas-but-rendered-as-doc**      | journey-map, story-map, swot, bcg-matrix, ost, metric-tree, vision-board, stakeholder-map, dependencies, landscape, impact-effort (11)                                          | Reshape to `CanvasFlow` — open directly into 2-D workspace, AI helps populate quadrants/nodes |
+| **Sequential staged generation**    | prd, tech-spec, board-deck, api-docs                                                                                                                                            | Generate by section with inline review between sections, not one giant blob                   |
+| **Iterative with user input loops** | interviews → synthesis → personas                                                                                                                                               | Encourage the chain via #50 flows + auto-carry-over of data, not just title                   |
+| **Duplicate or thin**               | brief vs one-pager vs prd; agenda vs meeting-templates; daily vs weekly; processes vs cs-playbook                                                                               | Merge or differentiate clearly — they overlap ~60% in prompt + form                           |
+| **Trivially small**                 | changelog, retro, post-mortem (1–2 fields each)                                                                                                                                 | Keep but promote to "quick capture" — single textarea + AI-structure, not multi-section form  |
 
 Sequence: ~10 PRs, each tackling 1 discipline's reshape decisions,
 behind a `ModuleArchetype` switch.
@@ -124,11 +126,10 @@ project plan it belongs to. The `?from=` prefill from #50 is the only
 existing link.
 
 **Recommendation**: a lightweight **`linkedDocumentIds`** field on every
-saved doc (already on `Decision`). The editor surfaces "Linked from: X"
-
-- "Linked to: Y, Z" on each doc. AI prompts get this context
-  automatically (e.g. "Here is the parent PRD when generating user
-  stories"). This unlocks real workflows.
+saved doc (already on `Decision`). The editor surfaces "Linked from: X" and
+"Linked to: Y, Z" on each doc. AI prompts get this context automatically
+(e.g. "Here is the parent PRD when generating user stories"). This unlocks
+real workflows.
 
 ---
 
@@ -150,14 +151,14 @@ saved doc (already on `Decision`). The editor surfaces "Linked from: X"
 
 ## Recommended sequencing
 
-| Order | Change                                                               | Why first / later                                                                    |
-| ----- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| 1     | `ModuleArchetype` split (DocumentFlow / CanvasFlow / TrackerFlow)    | Biggest leverage. Unblocks 23 module reshapes. Structural — everything else benefits |
-| 2     | Doc lifecycle: Critique / Revise / Branch buttons + revision history | Feels like a different product. High user-perceived value                            |
-| 3     | Lens / workspace switcher in topbar                                  | Reduces overload more than any single other change                                   |
-| 4     | Autosave + content search                                            | Quality-of-life that prevents user-data losses                                       |
-| 5     | `linkedDocumentIds` carry-over                                       | Enables real cross-module workflows                                                  |
-| 6     | Per-discipline reshape PRs (10 PRs)                                  | Gradual rollout of #1 plus prompt/form refinements                                   |
+| Order | Change                                                               | Why first / later                                                                                                |
+| ----- | -------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| 1     | `ModuleArchetype` split (DocumentFlow / CanvasFlow / TrackerFlow)    | Biggest leverage. Unblocks 25 module reshapes (14 trackers + 11 canvases). Structural — everything else benefits |
+| 2     | Doc lifecycle: Critique / Revise / Branch buttons + revision history | Feels like a different product. High user-perceived value                                                        |
+| 3     | Lens / workspace switcher in topbar                                  | Reduces overload more than any single other change                                                               |
+| 4     | Autosave + content search                                            | Quality-of-life that prevents user-data losses                                                                   |
+| 5     | `linkedDocumentIds` carry-over                                       | Enables real cross-module workflows                                                                              |
+| 6     | Per-discipline reshape PRs (10 PRs)                                  | Gradual rollout of #1 plus prompt/form refinements                                                               |
 
 ---
 
