@@ -56,6 +56,10 @@ export default function SettingsPage() {
   const [resetConfirmText, setResetConfirmText] = useState('');
   const [resetting, setResetting] = useState(false);
   const cancelResetRef = useRef<HTMLButtonElement>(null);
+  // Synchronous in-flight guard — useState setters are async, so two rapid
+  // clicks on the destructive button can both clear the word-match check
+  // before `setResetting(true)` lands. The ref blocks the second call.
+  const resetInFlightRef = useRef(false);
   const totalModules = categories.reduce((s, c) => s + c.modules.length, 0);
 
   useEffect(() => {
@@ -144,6 +148,8 @@ export default function SettingsPage() {
 
   const confirmReset = async () => {
     if (resetConfirmText.trim().toLowerCase() !== RESET_CONFIRM_WORD) return;
+    if (resetInFlightRef.current) return;
+    resetInFlightRef.current = true;
     setResetting(true);
     try {
       await db.delete();
@@ -152,6 +158,7 @@ export default function SettingsPage() {
       console.error('[settings] reset failed:', err);
       toast.error('Reset failed');
       setResetting(false);
+      resetInFlightRef.current = false;
     }
   };
 
@@ -351,6 +358,8 @@ export default function SettingsPage() {
           if (!o) setResetConfirmText('');
         }}
       >
+        {/* sm:max-w-md (vs the default sm:max-w-sm) gives the confirm input
+            enough room to render the placeholder without truncation. */}
         <DialogContent className="sm:max-w-md" initialFocus={cancelResetRef}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
@@ -361,25 +370,27 @@ export default function SettingsPage() {
                 This will permanently delete every document, decision, OKR, hypothesis, and visit
                 record stored in this browser. There is no undo and no remote backup.
               </span>
-              <span className="block">
+              <label htmlFor="reset-confirm-input" className="block">
                 Type <code className="font-mono text-foreground">{RESET_CONFIRM_WORD}</code> to
                 confirm.
-              </span>
+              </label>
             </DialogDescription>
           </DialogHeader>
           <Input
-            autoFocus
+            id="reset-confirm-input"
             value={resetConfirmText}
             onChange={(e) => setResetConfirmText(e.currentTarget.value)}
             placeholder={RESET_CONFIRM_WORD}
             disabled={resetting}
-            aria-label="Type delete to confirm reset"
           />
           <DialogFooter>
             <Button
               ref={cancelResetRef}
               variant="outline"
-              onClick={() => setResetOpen(false)}
+              onClick={() => {
+                setResetOpen(false);
+                setResetConfirmText('');
+              }}
               disabled={resetting}
             >
               Cancel

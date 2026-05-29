@@ -78,8 +78,11 @@ Toasts to remove or convert to inline:
 - `Imported N rows across all tables` — the imported data is now visible on
   refresh; replace with an inline summary panel that survives the toast
   timeout (because the user will want to read it).
-- `Stopped — saved partial <output>` — same as above; the partial output is
-  already on screen.
+- `Stopped — saved partial <output>` — replace the toast with a **persistent
+  inline status badge** ("Generation stopped — partial output") near the
+  output pane. Do NOT silently drop the toast: an abort can leave the output
+  truncated mid-sentence and the user needs to recognize it as partial. The
+  status must survive past the toast's auto-dismiss timeout.
 
 ### 3. Error — toast + inline border-red on the action
 
@@ -151,7 +154,10 @@ dialog is not yet built, but new code should use the inline pattern.
    to retry.
 3. **No success toast for an action that already renders its artifact on
    screen.** This is the most common policy violation in the current code.
-4. **No `window.confirm()` in new code.** Use `<Dialog>`.
+4. **No `window.confirm()` in new code.** Use `<Dialog>`. The only exception
+   is the navigation-guard bucket (§5) where existing `window.confirm()` call
+   sites are tolerated until they migrate, but new navigation-guard prompts
+   should still use `<Dialog>`.
 
 ## Inventory snapshot (May 2026)
 
