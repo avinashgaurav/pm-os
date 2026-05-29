@@ -44,9 +44,12 @@ the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 - FOUC on theme reload — inline script applies theme class before hydration
   (#43).
 
-## [0.1.0] — initial work
+## [0.1.0] - 2026-04-01
 
 Project bootstrapped: 82 PM module templates across 10 disciplines, AI
 generation through 5 providers (Groq / OpenAI / Anthropic / Gemini / Ollama),
 local-first storage in IndexedDB via Dexie, Sentry observability, Husky
 pre-commit hooks, gitleaks secret scanning, CI on Node 20 + 22.
+
+[Unreleased]: https://github.com/avinashgaurav/pm-os/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/avinashgaurav/pm-os/releases/tag/v0.1.0

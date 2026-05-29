@@ -49,9 +49,9 @@ when an individual is officially representing the community in public spaces.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the project maintainer by opening a private security advisory on
-GitHub or via direct email. All complaints will be reviewed and investigated
-promptly and fairly.
+reported by opening a private security advisory at
+https://github.com/avinashgaurav/pm-os/security/advisories/new. All complaints
+will be reviewed and investigated promptly and fairly.
 
 ## Attribution
 

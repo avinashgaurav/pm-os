@@ -38,16 +38,15 @@ updates:
           - prettier-*
           - husky
           - lint-staged
-      types:
-        patterns:
-          - '@types/*'
     ignore:
       # Lock major upgrades behind a manual sweep — Next + Dexie majors usually
       # carry breaking changes.
       - dependency-name: next
-        update-types: [version-update:semver-major]
+        update-types:
+          - version-update:semver-major
       - dependency-name: dexie
-        update-types: [version-update:semver-major]
+        update-types:
+          - version-update:semver-major
 
   - package-ecosystem: github-actions
     directory: /
