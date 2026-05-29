@@ -360,7 +360,7 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
     {
       category: 'discovery',
       moduleSlug: 'feedback',
-      label: 'Categorize it',
+      label: 'Categorize the feedback',
       rationale: 'Structure the wall into themes',
     },
     {
@@ -650,7 +650,7 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
     {
       category: 'planning',
       moduleSlug: 'backlog',
-      label: 'Prioritize them',
+      label: 'Prioritize the stories',
       rationale: 'Slice the map into a release backlog',
     },
   ],
@@ -830,7 +830,7 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
     {
       category: 'analytics',
       moduleSlug: 'ab-analysis',
-      label: 'Analyze results',
+      label: 'Analyze the results',
       rationale: 'Read the experiment outcome',
     },
     {
@@ -848,10 +848,10 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
       rationale: 'Tighten definitions the dashboard exposed',
     },
     {
-      category: 'communication',
-      moduleSlug: 'exec-update',
-      label: 'Brief leadership',
-      rationale: 'Share what the dashboard shows',
+      category: 'strategy',
+      moduleSlug: 'decisions',
+      label: 'Log a decision',
+      rationale: 'Convert a dashboard signal into an explicit call',
     },
   ],
   'analytics/okr-tracker': [
@@ -1008,22 +1008,22 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
     {
       category: 'communication',
       moduleSlug: 'exec-update',
-      label: 'Brief leadership',
-      rationale: 'Communicate the decision upward',
+      label: 'Notify stakeholders',
+      rationale: 'Send the doc out to the people it affects',
     },
   ],
   'communication/board-deck': [
-    {
-      category: 'communication',
-      moduleSlug: 'exec-update',
-      label: 'Draft the pre-read',
-      rationale: 'Summarize the deck for async review',
-    },
     {
       category: 'strategy',
       moduleSlug: 'north-star',
       label: 'Anchor the metric',
       rationale: 'Lead with the one number that matters',
+    },
+    {
+      category: 'analytics',
+      moduleSlug: 'okr-tracker',
+      label: 'Pull OKR progress',
+      rationale: 'Source the goal-state slide from the tracker',
     },
   ],
   'communication/agenda': [
@@ -1043,15 +1043,15 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
   'communication/stakeholder-map': [
     {
       category: 'communication',
-      moduleSlug: 'exec-update',
-      label: 'Tailor updates',
-      rationale: 'Communicate per the influence map',
-    },
-    {
-      category: 'communication',
       moduleSlug: 'stakeholder-sim',
       label: 'Rehearse the conversation',
       rationale: 'Pressure-test a tricky stakeholder',
+    },
+    {
+      category: 'communication',
+      moduleSlug: 'agenda',
+      label: 'Build a 1:1 agenda',
+      rationale: 'Tailor the next conversation to the right person',
     },
   ],
 
@@ -1202,10 +1202,10 @@ export const MODULE_FLOWS: Record<string, NextStep[]> = {
   ],
   'growth/hypothesis-board': [
     {
-      category: 'analytics',
-      moduleSlug: 'experiments',
-      label: 'Design an experiment',
-      rationale: 'Test the hypothesis rigorously',
+      category: 'discovery',
+      moduleSlug: 'assumptions',
+      label: 'Surface the assumptions',
+      rationale: 'List what the hypothesis rests on before testing',
     },
     {
       category: 'analytics',
