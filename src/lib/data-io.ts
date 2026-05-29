@@ -19,6 +19,7 @@
 //
 // Adding a Dexie table is a one-line entry in TABLE_REGISTRY below.
 
+import * as Sentry from '@sentry/nextjs';
 import type { z } from 'zod';
 import { db } from './db';
 import {
@@ -43,7 +44,6 @@ import {
   PreferenceSchema,
   ModuleVisitSchema,
 } from './schemas';
-import { safeRows } from './schemas/safe-read';
 import type Dexie from 'dexie';
 
 interface TableRegistryEntry<T> {
@@ -207,58 +207,123 @@ function isEnvelope(x: unknown): x is ExportEnvelope {
   );
 }
 
-// Apply an import payload. Bulk-puts (upsert by primary key) each table's rows
-// after validating with safeRows so corrupt rows are dropped + logged rather
-// than corrupting the DB. Returns a per-table summary.
+// Validate a row with its schema, log on failure, return null. Inline rather
+// than going through safeRows — we batch dropped rows across all tables into a
+// single Sentry event at the end of the import (importAll runs all 20 tables
+// in one shot, so 20× Sentry calls per import would flood the quota).
+function validateRow<T>(
+  schema: z.ZodType<T>,
+  row: unknown,
+  tableName: string,
+  dropped: { table: string; id: unknown; issues: string }[]
+): T | null {
+  const result = schema.safeParse(row);
+  if (result.success) return result.data;
+  const id = typeof row === 'object' && row !== null ? (row as { id?: unknown }).id : undefined;
+  const issues = result.error.issues
+    .slice(0, 2)
+    .map((i) => `${i.path.join('.')}: ${i.message}`)
+    .join('; ');
+  console.warn(`[data-io] Dropped invalid row from ${tableName} (id=${String(id)}): ${issues}`);
+  dropped.push({ table: tableName, id, issues });
+  return null;
+}
+
+// Apply an import payload. Validates each row through its Zod schema, then
+// bulk-puts the survivors inside a single Dexie rw-transaction so a mid-loop
+// failure rolls everything back rather than half-committing the backup.
+// Returns a per-table summary.
 //
-// Tolerates a "legacy" payload — an older export that's a flat
-// `{ documents, decisions, ... }` object without the envelope wrapper.
-// Unknown keys are reported but not imported.
+// Accepts:
+//   - the v1 envelope: { version, exportedAt, pmOs, tables }
+//   - a "legacy" flat payload: a flat `{ documents, decisions, ... }` object
+//     (older exports predate the envelope; tolerated so existing backups still
+//     restore)
+// Future envelope versions (> EXPORT_VERSION) are rejected loudly rather than
+// silently misinterpreted as v1.
 export async function importAll(payload: unknown): Promise<ImportResult> {
+  const empty = { perTable: [], totalImported: 0, totalDropped: 0, unknownTables: [] };
+
   // Accept either the envelope or the legacy flat shape.
   let tables: Record<string, unknown>;
   if (isEnvelope(payload)) {
+    if (payload.version > EXPORT_VERSION) {
+      return {
+        ok: false,
+        error: `Unsupported backup version ${payload.version} (this build understands up to v${EXPORT_VERSION}). Update PM OS before restoring this file.`,
+        ...empty,
+      };
+    }
     tables = payload.tables as Record<string, unknown>;
   } else if (payload && typeof payload === 'object') {
     tables = payload as Record<string, unknown>;
   } else {
-    return {
-      ok: false,
-      error: 'Import payload is not a JSON object',
-      perTable: [],
-      totalImported: 0,
-      totalDropped: 0,
-      unknownTables: [],
-    };
+    return { ok: false, error: 'Import payload is not a JSON object', ...empty };
   }
 
   const knownNames = new Set(TABLE_REGISTRY.map((t) => t.name));
+  // The envelope branch already extracted `tables`, so these sentinels only
+  // matter in the legacy flat-payload branch — keep them filtered out either
+  // way so the report doesn't mis-flag them as "unknown tables."
   const unknownTables = Object.keys(tables).filter(
     (k) => !knownNames.has(k) && k !== 'exportedAt' && k !== 'version' && k !== 'pmOs'
   );
 
-  const perTable: ImportTableResult[] = [];
-  let totalImported = 0;
-  let totalDropped = 0;
-
+  // Pre-validate every table's rows before opening the transaction. Dexie
+  // transactions can't span microtasks freely on all browsers, so we want the
+  // rw-block to be purely write work.
+  const dropped: { table: string; id: unknown; issues: string }[] = [];
+  const batches: { entry: (typeof TABLE_REGISTRY)[number]; rows: unknown[]; found: number }[] = [];
   for (const entry of TABLE_REGISTRY) {
     const raw = tables[entry.name];
-    if (!Array.isArray(raw)) {
-      // No data for this table in the payload — skip without recording.
-      continue;
+    if (!Array.isArray(raw)) continue;
+    const validated: unknown[] = [];
+    for (const row of raw) {
+      const ok = validateRow(entry.schema, row, entry.name, dropped);
+      if (ok !== null) validated.push(ok);
     }
-    const found = raw.length;
-    const validated = safeRows(entry.schema, raw, entry.name);
-    let imported = 0;
-    if (validated.length > 0) {
-      await entry.table().bulkPut(validated);
-      imported = validated.length;
-    }
-    const dropped = found - imported;
-    perTable.push({ name: entry.name, found, imported, dropped });
-    totalImported += imported;
-    totalDropped += dropped;
+    batches.push({ entry, rows: validated, found: raw.length });
   }
+
+  // All-or-nothing write — if any bulkPut throws, Dexie rolls back the whole
+  // transaction and we surface ok:false to the caller.
+  const participating = batches.map((b) => b.entry.table());
+  try {
+    if (batches.length > 0) {
+      await db.transaction('rw', participating, async () => {
+        for (const b of batches) {
+          if (b.rows.length > 0) await b.entry.table().bulkPut(b.rows);
+        }
+      });
+    }
+  } catch (err) {
+    console.error('[data-io] Import transaction failed, rolled back', err);
+    Sentry.captureException(err, { tags: { area: 'data-io', op: 'import' } });
+    return {
+      ok: false,
+      error: err instanceof Error ? err.message : 'Import transaction failed',
+      ...empty,
+    };
+  }
+
+  // Single aggregated Sentry event for the whole import, regardless of how
+  // many tables had dropped rows.
+  if (dropped.length > 0) {
+    Sentry.captureMessage(`Dropped ${dropped.length} invalid row(s) during import`, {
+      level: 'warning',
+      tags: { area: 'data-io', op: 'import' },
+      extra: { sample: dropped.slice(0, 10), total: dropped.length },
+    });
+  }
+
+  const perTable: ImportTableResult[] = batches.map((b) => ({
+    name: b.entry.name,
+    found: b.found,
+    imported: b.rows.length,
+    dropped: b.found - b.rows.length,
+  }));
+  const totalImported = perTable.reduce((s, r) => s + r.imported, 0);
+  const totalDropped = perTable.reduce((s, r) => s + r.dropped, 0);
 
   return { ok: true, perTable, totalImported, totalDropped, unknownTables };
 }

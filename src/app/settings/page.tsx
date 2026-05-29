@@ -109,10 +109,12 @@ export default function SettingsPage() {
         if (result.unknownTables.length > 0) {
           console.warn('[import] unknown table keys in payload:', result.unknownTables);
         }
-      } catch {
-        toast.error('Import failed');
+      } catch (err) {
+        console.error('[import] failed:', err);
+        toast.error(err instanceof SyntaxError ? 'Import failed: not valid JSON' : 'Import failed');
+      } finally {
+        setImporting(false);
       }
-      setImporting(false);
     };
     input.click();
   };

@@ -47,8 +47,9 @@ export interface Preference {
 
 // Per-module visit counter — powers Recent + Frequent in the command palette
 // and the "Pick up where you left off" row on home. `slug` is the canonical
-// "category/moduleSlug" key. `source` distinguishes a direct nav from a
-// palette-selected nav for future analytics; we sum both for surfacing.
+// "category/moduleSlug" key. `visits` is the total; `paletteSelections` is the
+// palette-only subset (the `source` argument to recordVisit decides which
+// counter increments — it is not stored as a column).
 export interface ModuleVisit {
   slug: string; // e.g. "specs/prd"
   visits: number;
