@@ -7,6 +7,7 @@
 import { z } from 'zod';
 import type * as Types from '@/types';
 import type { Usage } from '@/lib/providers/usage';
+import type { Workflow, Preference, ModuleVisit } from '@/lib/db';
 
 // ── Categorical helpers ──────────────────────────────────────────────────────
 export const CategorySlugSchema = z.enum([
@@ -305,6 +306,24 @@ export const WorkflowSchema = z.object({
   updatedAt: z.string(),
 });
 
+// ── App-level key/value preferences (Dexie v2, added in #48) ──────────────
+// `value` is intentionally `unknown` — different keys store different shapes
+// (the cold-start wizard pref vs future onboarding flags). Per-key shape is
+// validated separately at the consumer (e.g. ColdStartPreferenceSchema).
+export const PreferenceSchema = z.object({
+  key: z.string().min(1),
+  value: z.unknown(),
+  updatedAt: z.string(),
+});
+
+// ── Per-module visit counter (Dexie v3, added in #49) ─────────────────────
+export const ModuleVisitSchema = z.object({
+  slug: z.string().min(1),
+  visits: z.number(),
+  paletteSelections: z.number(),
+  lastVisitedAt: z.string(),
+});
+
 // ── AI API responses ────────────────────────────────────────────────────────
 // /api/ai POST success: { output, provider, model, usage }
 export const UsageSchema = z.object({
@@ -387,6 +406,9 @@ const _checkKnowledgeItem: AssertEquals<
 > = true;
 const _checkHypothesis: AssertEquals<z.infer<typeof HypothesisSchema>, Types.Hypothesis> = true;
 const _checkUsage: AssertEquals<z.infer<typeof UsageSchema>, Usage> = true;
+const _checkWorkflow: AssertEquals<z.infer<typeof WorkflowSchema>, Workflow> = true;
+const _checkPreference: AssertEquals<z.infer<typeof PreferenceSchema>, Preference> = true;
+const _checkModuleVisit: AssertEquals<z.infer<typeof ModuleVisitSchema>, ModuleVisit> = true;
 void _checkBaseDocument;
 void _checkAssumption;
 void _checkFeedback;
@@ -405,3 +427,6 @@ void _checkCompetencyScore;
 void _checkKnowledgeItem;
 void _checkHypothesis;
 void _checkUsage;
+void _checkWorkflow;
+void _checkPreference;
+void _checkModuleVisit;

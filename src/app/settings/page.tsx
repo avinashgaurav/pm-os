@@ -21,6 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { PageHeader } from '@/components/shared/page-header';
 import { db } from '@/lib/db';
 import { downloadJSON } from '@/lib/export';
+import { exportAll, importAll } from '@/lib/data-io';
 import { categories } from '@/lib/constants';
 import {
   listProviders,
@@ -76,21 +77,10 @@ export default function SettingsPage() {
 
   const handleExportAll = async () => {
     try {
-      const data = {
-        documents: await db.documents.toArray(),
-        decisions: await db.decisions.toArray(),
-        assumptions: await db.assumptions.toArray(),
-        risks: await db.risks.toArray(),
-        okrs: await db.okrs.toArray(),
-        releases: await db.releases.toArray(),
-        stakeholders: await db.stakeholders.toArray(),
-        changelogEntries: await db.changelogEntries.toArray(),
-        competencyScores: await db.competencyScores.toArray(),
-        hypotheses: await db.hypotheses.toArray(),
-        exportedAt: new Date().toISOString(),
-      };
-      downloadJSON(data, 'pm-os-backup-' + new Date().toISOString().slice(0, 10));
-      toast.success('All data exported');
+      const envelope = await exportAll();
+      downloadJSON(envelope, 'pm-os-backup-' + new Date().toISOString().slice(0, 10));
+      const rows = Object.values(envelope.tables).reduce((n, arr) => n + arr.length, 0);
+      toast.success(`Exported ${rows} rows across ${Object.keys(envelope.tables).length} tables`);
     } catch {
       toast.error('Export failed');
     }
@@ -105,10 +95,20 @@ export default function SettingsPage() {
       if (!file) return;
       setImporting(true);
       try {
-        const data = JSON.parse(await file.text());
-        if (data.documents) await db.documents.bulkPut(data.documents);
-        if (data.decisions) await db.decisions.bulkPut(data.decisions);
-        toast.success('Data imported');
+        const payload = JSON.parse(await file.text());
+        const result = await importAll(payload);
+        if (!result.ok) {
+          toast.error(result.error || 'Import failed');
+        } else if (result.totalDropped > 0) {
+          toast.warning(
+            `Imported ${result.totalImported} rows; ${result.totalDropped} dropped as invalid (see console)`
+          );
+        } else {
+          toast.success(`Imported ${result.totalImported} rows across all tables`);
+        }
+        if (result.unknownTables.length > 0) {
+          console.warn('[import] unknown table keys in payload:', result.unknownTables);
+        }
       } catch {
         toast.error('Import failed');
       }
