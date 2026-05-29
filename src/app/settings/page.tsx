@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Download,
   Upload,
@@ -18,6 +18,15 @@ import {
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/shared/page-header';
 import { db } from '@/lib/db';
 import { downloadJSON } from '@/lib/export';
@@ -32,12 +41,25 @@ import {
 } from '@/lib/ai';
 import { clearColdStartPreference } from '@/hooks/use-cold-start';
 
+// The literal the user must type into the confirm field to wipe all data.
+// Lowercase + short — matches what the policy doc requires (see
+// docs/feedback-policy.md, Destructive intent).
+const RESET_CONFIRM_WORD = 'delete';
+
 export default function SettingsPage() {
   const [importing, setImporting] = useState(false);
   const [isDark, setIsDark] = useState(true);
   const [providers, setProviders] = useState<ProviderSummary[]>([]);
   const [pref, setPref] = useState<AIPreference | null>(null);
   const [loadingProviders, setLoadingProviders] = useState(true);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetConfirmText, setResetConfirmText] = useState('');
+  const [resetting, setResetting] = useState(false);
+  const cancelResetRef = useRef<HTMLButtonElement>(null);
+  // Synchronous in-flight guard — useState setters are async, so two rapid
+  // clicks on the destructive button can both clear the word-match check
+  // before `setResetting(true)` lands. The ref blocks the second call.
+  const resetInFlightRef = useRef(false);
   const totalModules = categories.reduce((s, c) => s + c.modules.length, 0);
 
   useEffect(() => {
@@ -119,10 +141,25 @@ export default function SettingsPage() {
     input.click();
   };
 
-  const handleReset = async () => {
-    if (!confirm('Delete ALL data? This cannot be undone.')) return;
-    await db.delete();
-    window.location.reload();
+  const openResetDialog = () => {
+    setResetConfirmText('');
+    setResetOpen(true);
+  };
+
+  const confirmReset = async () => {
+    if (resetConfirmText.trim().toLowerCase() !== RESET_CONFIRM_WORD) return;
+    if (resetInFlightRef.current) return;
+    resetInFlightRef.current = true;
+    setResetting(true);
+    try {
+      await db.delete();
+      window.location.reload();
+    } catch (err) {
+      console.error('[settings] reset failed:', err);
+      toast.error('Reset failed');
+      setResetting(false);
+      resetInFlightRef.current = false;
+    }
   };
 
   const handleResetOnboarding = async () => {
@@ -290,7 +327,7 @@ export default function SettingsPage() {
             <Button
               variant="destructive"
               className="w-full justify-start gap-2"
-              onClick={handleReset}
+              onClick={openResetDialog}
             >
               <Trash2 className="h-4 w-4" /> Reset All Data
             </Button>
@@ -312,6 +349,62 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
       </div>
+
+      <Dialog
+        open={resetOpen}
+        onOpenChange={(o) => {
+          if (resetting) return;
+          setResetOpen(o);
+          if (!o) setResetConfirmText('');
+        }}
+      >
+        {/* sm:max-w-md (vs the default sm:max-w-sm) gives the confirm input
+            enough room to render the placeholder without truncation. */}
+        <DialogContent className="sm:max-w-md" initialFocus={cancelResetRef}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-destructive">
+              <Trash2 className="h-4 w-4" /> Reset all data?
+            </DialogTitle>
+            <DialogDescription className="space-y-2">
+              <span className="block">
+                This will permanently delete every document, decision, OKR, hypothesis, and visit
+                record stored in this browser. There is no undo and no remote backup.
+              </span>
+              <label htmlFor="reset-confirm-input" className="block">
+                Type <code className="font-mono text-foreground">{RESET_CONFIRM_WORD}</code> to
+                confirm.
+              </label>
+            </DialogDescription>
+          </DialogHeader>
+          <Input
+            id="reset-confirm-input"
+            value={resetConfirmText}
+            onChange={(e) => setResetConfirmText(e.currentTarget.value)}
+            placeholder={RESET_CONFIRM_WORD}
+            disabled={resetting}
+          />
+          <DialogFooter>
+            <Button
+              ref={cancelResetRef}
+              variant="outline"
+              onClick={() => {
+                setResetOpen(false);
+                setResetConfirmText('');
+              }}
+              disabled={resetting}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={confirmReset}
+              disabled={resetting || resetConfirmText.trim().toLowerCase() !== RESET_CONFIRM_WORD}
+            >
+              {resetting ? 'Deleting…' : 'Delete everything'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
