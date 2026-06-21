@@ -80,7 +80,7 @@ jobs:
       # pull-requests: write. Bump deliberately when a new release is reviewed.
       # Currently tracks preactjs/compressed-size-action v2 HEAD (2026-05-24).
       - name: Compare bundle size
-        uses: preactjs/compressed-size-action@66325aad6443cb7cf89c4bfcd414aea2367cda94
+        uses: preactjs/compressed-size-action@f322c295dde06a1cb7ccaef105732dd8a726d1d9
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           install-script: 'npm ci'
