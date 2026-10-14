@@ -23,7 +23,9 @@ the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 - Streaming AI generation via ReadableStream with an abortable Stop button
   (#15).
 - Zod schemas at the AI + Dexie boundaries with drift guards (#14).
-- Prompt regression eval harness with nightly GH Actions run (#16).
+- Prompt regression eval harness with nightly GH Actions run (#16). Note: the
+  nightly job skips when no provider key secret is set; none is set yet, so it
+  has not produced any eval results.
 - Ferrari premium PDF export theme alongside the default minimalist theme
   (#45).
 - xAI bold-display landings + ElevenLabs AI generation moments (#44).
@@ -46,8 +48,8 @@ the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [0.1.0] - 2026-04-01
 
-Project bootstrapped: 82 PM module templates across 10 disciplines, AI
-generation through 5 providers (Groq / OpenAI / Anthropic / Gemini / Ollama),
+Project bootstrapped: 82 PM modules across 10 disciplines (81 with AI),
+AI generation through 5 providers (Groq / OpenAI / Anthropic / Gemini / Ollama),
 local-first storage in IndexedDB via Dexie, Sentry observability, Husky
 pre-commit hooks, gitleaks secret scanning, CI on Node 20 + 22.
 
