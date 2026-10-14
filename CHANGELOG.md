@@ -48,8 +48,8 @@ the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html
 
 ## [0.1.0] - 2026-04-01
 
-Project bootstrapped: 82 PM module templates across 10 disciplines, AI
-generation through 5 providers (Groq / OpenAI / Anthropic / Gemini / Ollama),
+Project bootstrapped: 82 PM modules across 10 disciplines (81 with AI),
+AI generation through 5 providers (Groq / OpenAI / Anthropic / Gemini / Ollama),
 local-first storage in IndexedDB via Dexie, Sentry observability, Husky
 pre-commit hooks, gitleaks secret scanning, CI on Node 20 + 22.
 

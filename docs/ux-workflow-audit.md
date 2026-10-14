@@ -13,28 +13,32 @@ what this doc lays out.
 
 ## 1. The shell still treats every module the same — biggest single problem
 
-Every one of 82 modules renders through `DocumentEditor`: a list of saved
-docs, an input form, a generated output. But `constants.ts` already tags
-modules as `document` / `canvas` / `tracker`. Today the **archetype is
-metadata, not behaviour**. A tracker (Backlog, Risk Register, Hypothesis
-Board) is squeezed into "fill the form → Generate" that doesn't fit how
-PMs use it. A canvas (Journey Map, SWOT, Vision Board, Metric Tree) is
-even more mismatched.
+Of the 82 modules, 57 render through `DocumentEditor`: a list of saved
+docs, an input form, a generated output. The other 25 are custom pages:
+24 trackers and canvases (Backlog, Risk Register, Hypothesis Board, Journey
+Map, SWOT, Vision Board, Metric Tree and the rest) that each wire up their
+own `AIAnalysisButton`, plus one static reference page (Growth > Knowledge
+Base) with no AI. That makes 81 modules with AI. `constants.ts` tags
+modules as `document` / `canvas` / `tracker`, but the **archetype is
+metadata, not behaviour**: it is only shown as a label (command palette,
+category overview), so the 24 custom pages share no common tracker or
+canvas flow.
 
 **Highest-leverage change**: split `DocumentEditor` into three siblings —
 `DocumentFlow`, `CanvasFlow`, `TrackerFlow` — each with its own
 interaction model:
 
 - **DocumentFlow** — close to today: structured form → stream → markdown
-  output → export. The ~50 doc modules use this.
+  output → export. The 57 doc modules use this.
 - **CanvasFlow** — opens directly into a 2-D workspace (already half-built
   per `metric-tree`, `journey-map`, `dependencies`, `vision-board`).
   Generation is "fill this canvas," not "produce a markdown blob."
 - **TrackerFlow** — opens directly into a list/board/table with inline
   add. Generation is "AI Analyze" / "AI Prioritize," not "produce a doc."
 
-This single split directly reshapes 25 of the 82 modules — the 14 trackers
-and 11 canvases tagged in `constants.ts` — and makes "AI Analyze" the
+This single split directly reshapes the 24 tracker and canvas modules that
+carry AI (25 are tagged in `constants.ts`, 14 trackers and 11 canvases, but
+Knowledge Base is static and has no AI action) and makes "AI Analyze" the
 consistent primary action for both archetypes. The 57 document-archetype
 modules keep today's `DocumentFlow` path.
 

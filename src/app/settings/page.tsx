@@ -31,7 +31,7 @@ import { PageHeader } from '@/components/shared/page-header';
 import { db } from '@/lib/db';
 import { downloadJSON } from '@/lib/export';
 import { exportAll, importAll } from '@/lib/data-io';
-import { categories } from '@/lib/constants';
+import { categories, NON_AI_MODULE_SLUGS } from '@/lib/constants';
 import {
   listProviders,
   getAIPreference,
@@ -61,6 +61,10 @@ export default function SettingsPage() {
   // before `setResetting(true)` lands. The ref blocks the second call.
   const resetInFlightRef = useRef(false);
   const totalModules = categories.reduce((s, c) => s + c.modules.length, 0);
+  const aiModules = categories.reduce(
+    (s, c) => s + c.modules.filter((m) => !NON_AI_MODULE_SLUGS.has(m.slug)).length,
+    0
+  );
 
   useEffect(() => {
     setIsDark(document.documentElement.classList.contains('dark'));
@@ -200,8 +204,8 @@ export default function SettingsPage() {
               <Sparkles className="h-4 w-4" /> AI Provider
             </CardTitle>
             <CardDescription>
-              Pick the model that powers generation across all {totalModules} modules. API keys are
-              configured server-side via environment variables.
+              Pick the model that powers generation across all {aiModules} AI-enabled modules. API
+              keys are configured server-side via environment variables.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -341,7 +345,7 @@ export default function SettingsPage() {
           <CardContent className="text-sm text-muted-foreground space-y-1.5">
             <p className="font-medium text-foreground">Product Management Operating System</p>
             <p>
-              {totalModules} AI-powered tools across {categories.length} disciplines
+              {totalModules} PM modules across {categories.length} disciplines, {aiModules} with AI
             </p>
             <p>Pluggable LLM providers: Groq, OpenAI, Anthropic, Gemini, Ollama</p>
             <p>All data stored locally in your browser (IndexedDB)</p>
