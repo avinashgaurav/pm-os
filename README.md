@@ -4,14 +4,12 @@
 
 **The Product Management Operating System**
 
-82 AI-powered tools across 10 disciplines — strategy, discovery, specs, planning, launch, ops, growth, comms, analytics, competitive. Local-first, keyboard-driven.
+82 PM modules across 10 disciplines (strategy, discovery, specs, planning, launch, ops, growth, comms, analytics, competitive), 81 with AI drafting. Local-first, keyboard-driven.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-61dafb)](https://react.dev)
 [![Tailwind](https://img.shields.io/badge/Tailwind-4-38bdf8)](https://tailwindcss.com)
-
-<img src="docs/img/hero.png" alt="pm-os home screen" width="800" />
 
 </div>
 
@@ -19,11 +17,11 @@
 
 ## What it does
 
-pm-os replaces the Notion + Linear + Miro + Google Docs stack PMs duct-tape together.
+pm-os is a single-user, local-first workspace for the documents PMs otherwise scatter across Notion, Linear, Miro and Google Docs. It has no collaboration or sync, so it complements those tools rather than replacing them for a team.
 
-82 PM-specific workflows — each a guided form with a tuned LLM prompt — turn a few bullet points into a polished, ready-to-share artifact: a PRD, an OKR set, a persona, a competitive profile, a release plan, and 77 more.
+There are 82 PM modules. 57 are guided document forms that share one drafting flow: you fill in a few fields and a module-specific LLM prompt turns them into a draft artifact (a PRD, an OKR set, a persona, a release plan, and so on). 24 are custom trackers and canvases (backlog, risk register, story map, OST, and others) with an AI Analyze button. One (the knowledge base) is static reference content with no AI call. 81 module prompts live in `src/lib/ai-prompts.ts`.
 
-Everything lives in your browser (IndexedDB). The only thing that leaves your machine is the LLM call when you click *Generate*. Switch LLM providers — **Groq, OpenAI, Anthropic, Gemini, or local Ollama** — without touching code.
+Everything lives in your browser (IndexedDB). The only thing that leaves your machine is the LLM call when you click _Generate_. Switch LLM providers — **Groq, OpenAI, Anthropic, Gemini, or local Ollama** — without touching code.
 
 ---
 
@@ -122,8 +120,6 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) → **Settings** → pick a provider + model → start generating. Providers without a key are greyed out.
 
-<img src="docs/img/settings-providers.png" alt="Settings: provider picker" width="600" />
-
 ---
 
 ## Architecture
@@ -140,7 +136,7 @@ flowchart LR
 - **State:** Zustand for UI, Dexie/IndexedDB for everything persistent.
 - **AI:** thin client → server-side `/api/ai` route → provider gateway. Keys live in env vars, never in the browser bundle.
 
-Adding a provider is one file (`src/lib/providers/`). Adding a module is one route under `src/app/<category>/<slug>/page.tsx` + a prompt entry in `src/lib/ai-prompts.ts`. Full architecture deep-dive coming in [docs/architecture.md](docs/architecture.md) (tracked in [#29](https://github.com/avinashgaurav/pm-os/issues/29)).
+Adding a provider is one file (`src/lib/providers/`). Adding a module is one route under `src/app/<category>/<slug>/page.tsx` + a prompt entry in `src/lib/ai-prompts.ts`. An architecture deep-dive is tracked in [#29](https://github.com/avinashgaurav/pm-os/issues/29).
 
 ---
 
@@ -155,7 +151,7 @@ Set provider env vars in the host UI. For self-hosting, any Node host that runs 
 
 ## Status
 
-Actively built. The 82 modules work end-to-end today; polish, sync, and richer editing are landing as separate PRs.
+Actively built. All 82 modules run locally once you configure your own provider key; the hosted demo has no key configured, so AI drafting does not work there. Polish, sync, and richer editing are planned as separate PRs.
 
 - **[Open issues](https://github.com/avinashgaurav/pm-os/issues)** — infrastructure backlog (CI, tests, Sentry, Zod, exports…)
 - **[Feature roadmap (#32)](https://github.com/avinashgaurav/pm-os/issues/32)** — 50 product ideas (rich editor, backlinks, AI coach, integrations, multi-workspace…)
@@ -164,9 +160,18 @@ Contributions welcome. Start with issues labeled `priority:low` or `area:docs`.
 
 ---
 
+## Status and limitations
+
+- **Hosted demo needs a key.** The public deploy has no provider key, so Generate and Analyze fail there. Run locally with your own key to try the AI features.
+- **No unit tests yet.** CI runs typecheck, lint, build and secret scanning only.
+- **The AI endpoint has no auth or rate limit by default.** `/api/ai` accepts any request unless `PM_OS_API_TOKEN` is set, and the browser client does not send that token yet. Do not deploy publicly with a provider key until auth and rate limiting are added.
+- **Prompt evals have not run yet.** The eval harness (`evals/`, `npm run eval`) and its nightly GitHub Actions job exist, but the job skips when no provider key secret is set, and none is set, so no snapshots have been produced.
+
+---
+
 ## Privacy
 
-Your data stays in your browser's IndexedDB. The only outbound request is the LLM call when you click *Generate*. Export everything anytime: **Settings → Export All Data**.
+Your data stays in your browser's IndexedDB. The only outbound request is the LLM call when you click _Generate_. Export everything anytime: **Settings → Export All Data**.
 
 ---
 
