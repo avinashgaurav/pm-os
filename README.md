@@ -28,7 +28,7 @@ Everything lives in your browser (IndexedDB). The only thing that leaves your ma
 | Step | Done by | Why |
 |---|---|---|
 | Drafting a PRD, OKR set, persona or other document from your inputs, and analyzing a tracker | The model, on your own provider key | Turning rough notes into a structured first draft is the part a model is good at. 81 of the 82 modules have a prompt. |
-| Forms, trackers, canvases, storage, export and the knowledge base | Code | Your data should behave the same every time and never leave the browser unless you ask for a draft. |
+| Forms, trackers, canvases, storage, export and the knowledge base | Code | Your data should behave the same every time and never leave the browser unless you click Generate or Analyze. |
 | Which provider runs, and where the key lives | Code (server-side `/api/ai` route) | Keys stay in env vars, never in the browser bundle. |
 
 The model writes first drafts for you to edit; nothing checks them for accuracy. See [Status and limitations](#status-and-limitations).
@@ -159,7 +159,7 @@ Set provider env vars in the host UI. For self-hosting, any Node host that runs 
 
 ---
 
-## Status
+## Roadmap
 
 Actively built. All 82 modules run locally once you configure your own provider key; the hosted demo has no key configured, so AI drafting does not work there. Polish, sync, and richer editing are planned as separate PRs.
 
