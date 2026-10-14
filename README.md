@@ -21,7 +21,17 @@ pm-os is a single-user, local-first workspace for the documents PMs otherwise sc
 
 There are 82 PM modules. 57 are guided document forms that share one drafting flow: you fill in a few fields and a module-specific LLM prompt turns them into a draft artifact (a PRD, an OKR set, a persona, a release plan, and so on). 24 are custom trackers and canvases (backlog, risk register, story map, OST, and others) with an AI Analyze button. One (the knowledge base) is static reference content with no AI call. 81 module prompts live in `src/lib/ai-prompts.ts`.
 
-Everything lives in your browser (IndexedDB). The only thing that leaves your machine is the LLM call when you click _Generate_. Switch LLM providers — **Groq, OpenAI, Anthropic, Gemini, or local Ollama** — without touching code.
+Everything lives in your browser (IndexedDB). The only thing that leaves your machine is the LLM call when you click _Generate_ or _Analyze_. Switch LLM providers (**Groq, OpenAI, Anthropic, Gemini, or local Ollama**) without touching code.
+
+### Why AI here, why code there
+
+| Step | Done by | Why |
+|---|---|---|
+| Drafting a PRD, OKR set, persona or other document from your inputs, and analyzing a tracker | The model, on your own provider key | Turning rough notes into a structured first draft is the part a model is good at. 81 of the 82 modules have a prompt. |
+| Forms, trackers, canvases, storage, export and the knowledge base | Code | Your data should behave the same every time and never leave the browser unless you click Generate or Analyze. |
+| Which provider runs, and where the key lives | Code (server-side `/api/ai` route) | Keys stay in env vars, never in the browser bundle. |
+
+The model writes first drafts for you to edit; nothing checks them for accuracy. See [Status and limitations](#status-and-limitations).
 
 ---
 
@@ -89,7 +99,7 @@ mindmap
       Impact-effort
 ```
 
-Each module follows the framework PMs already use (April Dunford for positioning, Teresa Torres for opportunity trees, Cooper for personas, Lenny's PRD template, etc.).
+Many module prompts name the framework PMs already use (April Dunford for positioning, Teresa Torres for opportunity trees, Cooper for personas, Christensen for jobs-to-be-done).
 
 ---
 
@@ -136,7 +146,7 @@ flowchart LR
 - **State:** Zustand for UI, Dexie/IndexedDB for everything persistent.
 - **AI:** thin client → server-side `/api/ai` route → provider gateway. Keys live in env vars, never in the browser bundle.
 
-Adding a provider is one file (`src/lib/providers/`). Adding a module is one route under `src/app/<category>/<slug>/page.tsx` + a prompt entry in `src/lib/ai-prompts.ts`. An architecture deep-dive is tracked in [#29](https://github.com/avinashgaurav/pm-os/issues/29).
+Adding a provider is one file in `src/lib/providers/` plus its id in `src/lib/providers/types.ts` and a registry entry in `src/lib/providers/index.ts`. Adding a module is one route under `src/app/<category>/<slug>/page.tsx` + a prompt entry in `src/lib/ai-prompts.ts`. An architecture deep-dive is tracked in [#29](https://github.com/avinashgaurav/pm-os/issues/29).
 
 ---
 
@@ -149,12 +159,12 @@ Set provider env vars in the host UI. For self-hosting, any Node host that runs 
 
 ---
 
-## Status
+## Roadmap
 
 Actively built. All 82 modules run locally once you configure your own provider key; the hosted demo has no key configured, so AI drafting does not work there. Polish, sync, and richer editing are planned as separate PRs.
 
-- **[Open issues](https://github.com/avinashgaurav/pm-os/issues)** — infrastructure backlog (CI, tests, Sentry, Zod, exports…)
-- **[Feature roadmap (#32)](https://github.com/avinashgaurav/pm-os/issues/32)** — 50 product ideas (rich editor, backlinks, AI coach, integrations, multi-workspace…)
+- **[Open issues](https://github.com/avinashgaurav/pm-os/issues)**: the backlog (unit and E2E tests, UX and workflow audit, performance, accessibility, optional sync).
+- **[Feature roadmap (#32)](https://github.com/avinashgaurav/pm-os/issues/32)**: 50 product ideas (rich editor, backlinks, AI coach, integrations, multi-workspace).
 
 Contributions welcome. Start with issues labeled `priority:low` or `area:docs`.
 
@@ -171,7 +181,7 @@ Contributions welcome. Start with issues labeled `priority:low` or `area:docs`.
 
 ## Privacy
 
-Your data stays in your browser's IndexedDB. The only outbound request is the LLM call when you click _Generate_. Export everything anytime: **Settings → Export All Data**.
+Your data stays in your browser's IndexedDB. The only outbound request is the LLM call when you click _Generate_ or _Analyze_. Export everything anytime: **Settings → Export All Data**.
 
 ---
 
