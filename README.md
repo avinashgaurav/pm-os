@@ -4,7 +4,7 @@ A PM's own working documents (PRDs, OKRs, personas, trackers) end up scattered a
 
 **Live demo: [pm-os-nine.vercel.app](https://pm-os-nine.vercel.app)** (no provider key is configured there, so Generate and Analyze need a local run with your own key)
 
-<!-- TODO: docs/demo.gif, once real screenshots are committed -->
+![pm-os home, a PRD draft, the backlog tracker and provider settings, with fictional data](docs/demo.gif)
 
 > [!NOTE]
 > **Evals: 10 of the 82 modules**, each generated from a fictional input and graded against a fixed rubric plus a model judge for figures.
