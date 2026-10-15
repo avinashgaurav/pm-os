@@ -41,10 +41,10 @@ The model writes first drafts for you to edit; nothing checks them for accuracy.
 | ------------------------------------------------------------------------------------------- | ------- | ---------------------- |
 | Statements of fact with a figure that is neither in the input nor labelled as an assumption | 28      | 2                      |
 | Modules with no such figure                                                                 | 2 / 10  | 8 / 10                 |
-| Outputs too long for the 4,000-token cap (cut off in the app)                               | 7 / 10  | 0 / 10                 |
+| Outputs over the 4,000-token cap (measured via the CLI; would be cut off in the app)        | 7 / 10  | 0 / 10                 |
 | Modules with every required section (manual review)                                         | 10 / 10 | 10 / 10                |
 
-The 2 misses left: OKRs states a 13-week cycle as a norm, and A/B test design sizes arms from an invented input. Prompts were fixed against these same 10 inputs. Generated with `claude-sonnet-4-6` and judged with `claude-opus-5-5` through the Claude Code CLI, not the production API path; an API rerun is planned.
+The 2 misses left: OKRs states a 13-week cycle as a norm, and A/B test design sizes arms from an invented input. Prompts were fixed against these same 10 inputs. Generated with `claude-sonnet-4-6` and judged with `claude-opus-5-5` through the Claude Code CLI, not the production API path; one run per round, no variance estimate. An API rerun is planned.
 
 ---
 

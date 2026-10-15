@@ -134,7 +134,9 @@ export function callClaude({ model, system, messages, schema, label = '' }) {
       // Only an error envelope can mean a usage limit; model output may legitimately mention "rate limit".
       const limitHit =
         (!env || env.is_error) &&
-        /usage limit|rate limit|limit reached|out of extra usage/i.test((env?.result ?? '') + err);
+        /usage limit|session limit|rate limit|limit reached|out of extra usage/i.test(
+          (env?.result ?? '') + err
+        );
       if (limitHit) {
         rec.limit_hit = true;
       }

@@ -1,6 +1,6 @@
 # pm-os module output eval
 
-First-pass rubric eval of the module generator: `buildModulePrompt` in `src/lib/ai.ts` with the per-module prompts in `src/lib/ai-prompts.ts`. Run on 2026-10-15, then rerun twice the same day: after the fix in commit `1fb3ce7` (round 1) and after a second prompt fix (round 2). See "Before and after the fix".
+First-pass rubric eval of the module generator: `buildModulePrompt` in `src/lib/ai.ts` with the per-module prompts in `src/lib/ai-prompts.ts`. Run on 2026-10-15, then rerun twice the same day: after a first prompt fix (round 1) and after a second prompt fix (round 2). See "Before and after the fix".
 
 **Method note.** Measured via the Claude Code CLI with the app's own prompts and schema, not the production API path; an API rerun is planned.
 
@@ -111,12 +111,12 @@ No module failed to produce its named framework once formatting was handled.
 
 ## Before and after the fix
 
-Fix commit `1fb3ce7` (production code, separate from the eval commits), in `src/lib/ai.ts`:
+Round 1 fix (production code), in `src/lib/ai.ts`:
 
 - **Figures rule**, added to the shared format rules of both `buildModulePrompt` and `buildAnalysisPrompt`: use only figures from the PM's input or figures clearly labelled as an assumption, estimate, target or placeholder; never cite outside sources, studies, surveys, analyst reports, market statistics or industry benchmarks the input did not provide; state a missing number as an assumption to validate.
 - **Length budget**, same place: keep the document under about 1,800 words, cover every section briefly rather than dropping one, and always finish with the next steps. `maxTokens` stays at 4,000. Raising it is not safe across the selectable models: gpt-4-turbo allows at most 4,096 output tokens, so a higher cap would make that model fail outright.
 
-Checks after the fix: `npm run typecheck` clean; `npm run lint` back to the upstream baseline of 0 errors and 55 warnings (the eval harness had added 45 errors; fixed in eval commit `a6ece08`); `npm run build` succeeds. pm-os has no unit test suite.
+Checks after the fix: `npm run typecheck` clean; `npm run lint` back to the upstream baseline of 0 errors and 55 warnings (the eval harness had added 45 errors; it is now kept out of the app lint run); `npm run build` succeeds. pm-os has no unit test suite.
 
 **Rubric version.** Unchanged from the first run's final grading: `evals/rubric/fixtures.json` sha256 `8620d49e...b69efe` (recorded in both result files' summaries from this rerun on), plus the two formatting fixes already applied to the first run (bold stripped; user stories may wrap). Nothing was loosened for the rerun. Same 10 inputs, same generation model (`claude-sonnet-4-6`), same judge (`claude-opus-5-5`). Results: `evals/rubric/results/2026-10-15-claude-cli.json` (before), `evals/rubric/results/2026-10-15-claude-cli-after-fix.json` (round 1) and `evals/rubric/results/2026-10-15-claude-cli-round-2.json` (round 2). The round 2 summary records the same rubric sha256.
 
@@ -153,7 +153,7 @@ Root causes of the three round 1 misses, each traced to the prompt:
 
 Fix (production prompts, same commit as these results):
 
-- `src/lib/ai.ts`, `LENGTH_RULE`: lists the required sections (executive summary, every section the framework asks for, a final "## Next Steps"), says to shorten other sections when running long and never drop a required one, and says Next Steps is always last and separate from any top actions the framework asks for. The about 1,800-word budget stays; `maxTokens` stays at 4,000.
+- `src/lib/ai.ts`, the length and closing-section rules: list the required sections (executive summary, every section the framework asks for, a final "## Next Steps"), say to shorten other sections when running long and never drop a required one, and say Next Steps is always last and separate from any top actions the framework asks for. The about 1,800-word budget stays; `maxTokens` stays at 4,000.
 - `src/lib/ai.ts`, `FIGURES_RULE`: the rule applies to user needs, requirements, the summary and next steps; a time limit, threshold or goal the model introduces is a target, labelled and consistent across the document; a repeated figure that rests on an assumption must say so in that sentence.
 - `src/lib/ai-prompts.ts`, market sizing: top-down now starts from "figures the PM provided or explicitly stated assumptions" instead of "industry reports".
 
@@ -171,7 +171,26 @@ Rubric false negatives in round 2 (the regexes were not changed; adjusted by han
 
 One quality note outside the rubric: the JTBD summary ends with a meta sentence ("figures are drawn exclusively from the PM's inputs, with any additions clearly labelled"), which echoes the prompt rule into the deliverable. One case in ten; not fixed.
 
-Also noticed on the first two runs: 4 of 10 outputs put an author line with the CLI's logged-in account name or email, which the CLI injects as context. That is a CLI-path artifact, not production behaviour; the strings are replaced with placeholders in both result files. In round 2 one output (PRD) did the same and is redacted the same way. The first committed result file (commit `28f03ca`) still holds them in git history until that commit is rewritten.
+Also noticed on the first two runs: 4 of 10 outputs put an author line with the CLI's logged-in account name or email, which the CLI injects as context. That is a CLI-path artifact, not production behaviour; the strings are replaced with placeholders in both result files. In round 2 one output (PRD) did the same and is redacted the same way.
+
+### Review follow-up and spot-check
+
+After code review, the shared rules were scoped so they fit every module, not only the 10 graded ones:
+
+- **Analysis path.** `buildAnalysisPrompt` has its own numbered structure (observations, gaps, recommendations, next actions) and works from the PM's own data. It keeps the figures rule, which now also allows figures "computed directly from" the input, and a plain length budget. It no longer gets the forced executive summary or `## Next Steps`.
+- **Modules with their own structure.** A per-module opt-out list in `src/lib/ai.ts` covers modules whose prompt defines its own opening and ending, or whose output is user-facing: one-pager, API docs, daily and weekly plans, release notes, meeting notes, agenda, announcement, changelog and meeting templates. They get "follow the structure above, do not add an executive summary or next steps it does not ask for", plus the same length budget. The other modules, including all 10 graded ones, get the same prompt text as round 2 apart from the "computed directly from it" wording.
+
+Spot-check of 5 modules outside the rubric set (`evals/rubric/harness/spot-check.ts`, results in `evals/rubric/results/2026-10-15-spot-check.json`). Each was generated once with the same CLI path and model, from fictional Pawpath inputs. This is n=1 per module and not graded by the rubric or the judge; it checks length and structure only.
+
+| Module                         | Visible tokens | Ends with Next Steps | Structure                                                                                                  |
+| ------------------------------ | -------------- | -------------------- | ---------------------------------------------------------------------------------------------------------- |
+| API docs (opt-out)             | 3,238          | No                   | Overview, base URL, auth, endpoints, errors, rate limits, code examples, then a gaps table and a changelog |
+| Release notes (opt-out)        | 1,422          | No                   | New, Improved, Fixed, Breaking Changes, then a gaps list for the PM and a feedback line                    |
+| Meeting notes (opt-out)        | 901            | No                   | Attendees, agenda items, decisions, action items, parking lot, follow-up date: the module's own order      |
+| Technical design (not opt-out) | 3,036          | Yes                  | Overview through rollout plan and monitoring, then Next Steps; a design doc for the team, so the tail fits |
+| Assumption tracker analysis    | 2,441          | No                   | The analysis prompt's numbered 1 to 4 sections, then a short verdict                                       |
+
+All 5 are under the 4,000-token cap, and none has a Next Steps tail where it does not belong. One structural issue remains: API docs and release notes still end with an "Expert Analysis / Identified Gaps" section. That comes from the shared user prompt ("Add your expert analysis, identify gaps ..."), which every module gets; it is useful to the PM but would need removing before the document is published. It is not fixed in this round. Separately, the release notes invent a support email address, which the figures rule does not cover. The technical design put the CLI account name in an author line, redacted as in the other result files.
 
 ## Latency and usage (first run)
 
@@ -187,19 +206,7 @@ Also noticed on the first two runs: 4 of 10 outputs put an author line with the 
 
 ## Reading the result
 
-The first run found structure and framework adherence good enough to publish but the invented-metric rate and length not. It recommended two fixes; both are now applied (see above), with the length handled by a prompt budget rather than a higher cap:
-
-1. **Prompt fix (required).** Add to the shared format rules in `buildModulePrompt`:
-
-   > "Use only figures from the PM's input or figures you clearly label as an assumption, estimate or target. Never cite outside sources, benchmarks or market statistics unless the PM provided them; if a number is needed and missing, write it as an assumption to validate."
-
-   Market sizing also needs its own line: "Show TAM/SAM/SOM as calculations from stated assumptions; do not quote market reports."
-
-2. **Length fix (required).** Either:
-   - raise `maxTokens` for document modules, or
-   - add "Keep the document under about 2,500 words" to the format rules.
-
-   Then confirm on the API path that next steps survive.
+The first run found structure and framework adherence good enough to publish, but not the invented-metric rate or the length. Its two recommended fixes (a figures rule, and a length limit instead of a higher cap) are applied as described above, so the original recommendations are not repeated here.
 
 Both fixes are applied, a second prompt round followed, and this eval has been rerun after each. Before quoting numbers: run the planned API rerun, where `maxTokens: 4000` and temperature actually apply, and watch whether the length budget costs the closing next steps more than once in ten.
 
@@ -212,5 +219,7 @@ bun --no-install evals/rubric/harness/run.ts          # 20 CLI calls; writes eva
 EVAL_TAG=after-fix bun --no-install evals/rubric/harness/run.ts   # same, written with an -after-fix suffix (round 2 used EVAL_TAG=round-2)
 bun --no-install evals/rubric/harness/rescore.ts evals/rubric/results/<date>-claude-cli.json   # re-grade, no model
 EVAL_ONLY=strategy/okrs bun --no-install evals/rubric/harness/run.ts                          # one module
-rm -rf node_modules
+bun --no-install evals/rubric/harness/spot-check.ts   # ungraded n=1 spot-check of 5 other modules
 ```
+
+`setup-shims.sh` only writes the stub when no real `@sentry/nextjs` is installed and only adds zod when it is missing, so it is safe to run on a full `npm ci` install. To go back to a normal dev setup after using the shims, run `npm ci`.

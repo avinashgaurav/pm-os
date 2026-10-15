@@ -46,7 +46,34 @@
     "modulesWithNoUnsourcedFacts": 8,
     "modulesOverProdMaxTokens": [],
     "errors": [],
-    "redaction": "The CLI adds the logged-in account email to every call. Some generated documents put that name or email in an author line; those strings were replaced with placeholders after scoring. No score depends on them."
+    "redaction": "The CLI adds the logged-in account email to every call. Some generated documents put that name or email in an author line; those strings were replaced with placeholders after scoring. No score depends on them.",
+    "manualReview": {
+      "rubricFalseNegatives": [
+        {
+          "module": "discovery/jtbd",
+          "check": "executive summary",
+          "why": "the summary is a full paragraph but sits under an H2 subtitle (\"## Jobs-to-be-Done Analysis ...\"), which the H1-to-first-H2 rule misses"
+        },
+        {
+          "module": "discovery/jtbd",
+          "check": "job statements in 'When ..., I want to ..., so I can ...' form (3+)",
+          "why": "all 10 statements follow When / I want / so I can, but only 2 use \"I want to\"; the rest read \"I want [a thing]\""
+        }
+      ],
+      "realMisses": [],
+      "adjustedAfterManualReview": {
+        "requiredSectionsAllPresent": 10,
+        "frameworkFollowed": 10
+      },
+      "unsourcedFactsReviewed": [
+        "strategy/okrs: \"too short for a standard 13-week OKR cycle\" states an industry norm as fact; the 11 weeks it is compared with is computed from the date",
+        "analytics/ab-design: \"~545 clinics per arm (after applying a design effect of ~3.9)\" is derived from an unstated intra-cluster correlation with no assumption label (borderline: a calculation on an invented input)"
+      ],
+      "lengthCheck": "visible output 2,123 to 2,852 tokens, 1,182 to 1,623 words; all under the 4,000-token cap; every module's last section is Next Steps",
+      "qualityNotes": [
+        "discovery/jtbd: the summary ends with a meta sentence echoing the figures rule into the deliverable"
+      ]
+    }
   },
   "results": [
     {
