@@ -269,6 +269,47 @@ function aiErrorFromResponse(
   return err;
 }
 
+// Rubric eval (EVALS.md): outputs invented sourced-looking figures and ran past the 4,000-token cap, which gpt-4-turbo (4,096) stops us raising.
+const FIGURES_RULE = `- Use only figures (numbers, percentages, prices, dates, counts) that appear in the PM's input or are computed directly from it, or figures you clearly label as an assumption, estimate, target or placeholder (for example "Assumption: ...", "Target: ...", "TBD")
+- Never cite outside sources, studies, surveys, analyst reports, market statistics or industry benchmarks unless the PM's input provided them. If a number is needed and missing, state it as an assumption to validate
+- This applies everywhere, including user needs, requirements, the executive summary and next steps. A time limit, threshold or goal you introduce is a target: label it, and keep it consistent with the same target elsewhere in the document
+- When you repeat a figure that rests on an assumption (for example in the executive summary), say so in that sentence; never present it as a settled or data-backed result`;
+
+const WORD_BUDGET = 'Keep the whole document under about 1,800 words so it fits in one response.';
+
+/** Modules whose prompt defines its own opening and ending, or whose output is user-facing, so no executive summary or Next Steps is added. */
+const OWN_STRUCTURE_MODULES = new Set([
+  'specs/one-pager',
+  'specs/api-docs',
+  'planning/daily',
+  'planning/weekly',
+  'communication/release-notes',
+  'communication/meeting-notes',
+  'communication/agenda',
+  'launch/announcement',
+  'launch/changelog',
+  'operations/meeting-templates',
+]);
+
+function formatRules(moduleId: string): string {
+  if (OWN_STRUCTURE_MODULES.has(moduleId)) {
+    return `- Use markdown: # for title, ## for sections, ### for subsections, - for bullets, **bold** for emphasis
+- Follow the structure the instructions above define, including how the document opens and ends. Do not add an executive summary or a next steps section they do not ask for
+- Be specific and actionable: no filler or generic advice
+- Write as a ready-to-share professional deliverable
+${FIGURES_RULE}
+- ${WORD_BUDGET} If you are running long, shorten sections; never drop one the instructions above ask for`;
+  }
+  return `- Use markdown: # for title, ## for sections, ### for subsections, - for bullets, **bold** for emphasis
+- Start with a one-paragraph executive summary
+- Be specific and actionable — no filler or generic advice
+- End with prioritized next steps
+- Write as a ready-to-share professional deliverable
+${FIGURES_RULE}
+- ${WORD_BUDGET} Required sections: the executive summary, every section the framework above asks for, and a final "## Next Steps" section. If you are running long, shorten other sections; never drop a required one
+- The last section is always "## Next Steps": a short prioritised list of what the PM should do next. It is separate from any priorities or top actions the framework asks for, which go before it`;
+}
+
 export function buildModulePrompt(
   category: string,
   moduleSlug: string,
@@ -281,11 +322,7 @@ export function buildModulePrompt(
   const system = `${modulePrompt.system}
 
 Format rules:
-- Use markdown: # for title, ## for sections, ### for subsections, - for bullets, **bold** for emphasis
-- Start with a one-paragraph executive summary
-- Be specific and actionable — no filler or generic advice
-- End with prioritized next steps
-- Write as a ready-to-share professional deliverable`;
+${formatRules(`${category}/${moduleSlug}`)}`;
 
   const filledSections = sections.filter((s) => s.value.trim());
   const sectionText = filledSections.map((s) => `### ${s.label}\n${s.value}`).join('\n\n');
@@ -310,7 +347,9 @@ export function buildAnalysisPrompt(
 
   const system = `${modulePrompt.system}
 
-You are reviewing existing data and providing expert analysis. Be specific, actionable, and reference the methodology. Use markdown formatting.`;
+You are reviewing existing data and providing expert analysis. Be specific, actionable, and reference the methodology. Use markdown formatting.
+${FIGURES_RULE}
+- Keep the analysis under about 1,800 words so it fits in one response`;
 
   const user = `Analyze the following data and provide expert recommendations using the ${modulePrompt.methodology} framework:
 
