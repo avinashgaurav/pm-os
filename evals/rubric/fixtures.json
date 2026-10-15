@@ -1,0 +1,523 @@
+{
+  "note": "Ten fictional module inputs about a made-up product (Pawpath, appointment software for independent vet clinics, by the made-up Fernway Labs). No real companies, people or brands. Rubric expectations (required sections, framework markers) were written before any model run. Regexes are case-insensitive and are matched against the markdown output (headings, bold labels or table headers all count).",
+  "common": {
+    "required": [
+      {
+        "label": "H1 title",
+        "re": "^# \\S"
+      },
+      {
+        "label": "executive summary",
+        "exec_summary": true,
+        "note": "Heading such as Executive Summary / Summary / TL;DR, OR (as the prompt literally asks for \"a one-paragraph executive summary\") a prose paragraph of 300+ characters between the H1 and the first ## heading. Widened after the one-module smoke run, which had the paragraph but no heading."
+      },
+      {
+        "label": "prioritised next steps",
+        "re": "next steps"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "key": "specs/prd",
+      "title": "Pawpath Online Rebooking",
+      "sections": [
+        {
+          "label": "Problem Statement",
+          "value": "Clinics using Pawpath lose follow-up visits: 31% of patients due for a recheck never rebook. Front-desk staff spend about 6 hours a week on reminder calls. Rebooking today needs a phone call."
+        },
+        {
+          "label": "Target Users",
+          "value": "Pet owners with a recheck due, and front-desk staff at independent clinics with 2 to 8 vets. 74% of owners open Pawpath reminders on a phone."
+        },
+        {
+          "label": "Goals & Success Metrics",
+          "value": "Raise recheck rebooking from 69% to 80% within two quarters. Cut reminder-call time from 6 to 2 hours a week per clinic."
+        },
+        {
+          "label": "Scope & Constraints",
+          "value": "In scope: one-tap rebooking from SMS and email reminders. Out of scope: payments. Must reuse the existing Pawpath calendar service. 10 weeks to beta with 12 pilot clinics."
+        }
+      ],
+      "required": [
+        {
+          "label": "problem statement",
+          "re": "problem"
+        },
+        {
+          "label": "target users / personas",
+          "re": "target users|personas?"
+        },
+        {
+          "label": "goals & success metrics",
+          "re": "success metrics|goals"
+        },
+        {
+          "label": "functional requirements",
+          "re": "functional requirements"
+        },
+        {
+          "label": "non-functional requirements",
+          "re": "non-functional"
+        },
+        {
+          "label": "user stories",
+          "re": "user stor"
+        },
+        {
+          "label": "acceptance criteria",
+          "re": "acceptance criteria"
+        },
+        {
+          "label": "scope in/out",
+          "re": "out of scope|in scope|scope"
+        },
+        {
+          "label": "technical considerations",
+          "re": "technical"
+        },
+        {
+          "label": "risks & mitigations",
+          "re": "risk"
+        },
+        {
+          "label": "timeline / milestones",
+          "re": "timeline|milestone"
+        }
+      ],
+      "framework": [
+        {
+          "label": "user stories in 'As a ... I want ... so' form",
+          "re": "as an? [^\\n]{2,80}?,?\\s*I want[\\s\\S]{2,200}?so (that|I)",
+          "note": "Allows the story to wrap across lines (widened after the run; the first version required one line)."
+        }
+      ]
+    },
+    {
+      "key": "strategy/okrs",
+      "title": "Pawpath H2 Clinic Growth",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Fernway Labs sells Pawpath to independent vet clinics. 410 paying clinics today, $1.9M ARR. Monthly logo churn is 2.1%. Most churn happens in the first 90 days."
+        },
+        {
+          "label": "Goals & Objectives",
+          "value": "Grow paying clinics. Cut early churn. Make onboarding self-serve so sales can focus on multi-site groups."
+        },
+        {
+          "label": "Constraints & Considerations",
+          "value": "Team: 9 engineers, 2 designers, 3 onboarding specialists. No paid acquisition budget increase in H2."
+        }
+      ],
+      "required": [
+        {
+          "label": "objectives",
+          "re": "objective"
+        },
+        {
+          "label": "key results",
+          "re": "key results?|\\bKR\\s?\\d"
+        }
+      ],
+      "framework": [
+        {
+          "label": "at least 2 objectives",
+          "count_re": "^#+ .*objective|^\\*\\*objective|objective \\d",
+          "min": 2
+        },
+        {
+          "label": "at least 6 key results",
+          "count_re": "\\bKR\\s?\\d",
+          "min": 6
+        },
+        {
+          "label": "KRs measurable (80% contain a number)",
+          "kr_measurable": true
+        },
+        {
+          "label": "outcomes vs outputs or sandbagging addressed",
+          "re": "outcome|sandbag|output"
+        }
+      ]
+    },
+    {
+      "key": "discovery/jtbd",
+      "title": "Why clinics switch to Pawpath",
+      "sections": [
+        {
+          "label": "Key Inputs",
+          "value": "Eight interviews with clinic managers who switched to Pawpath in the last year. Common quotes: 'Our phones never stopped ringing', 'Double bookings embarrassed us in front of clients', 'I wanted my evenings back'. Six of eight had used a paper diary plus a shared spreadsheet before."
+        },
+        {
+          "label": "Context & Background",
+          "value": "Pawpath is appointment software for independent vet clinics. The team wants to sharpen messaging and the onboarding flow."
+        }
+      ],
+      "required": [
+        {
+          "label": "functional jobs",
+          "re": "functional"
+        },
+        {
+          "label": "emotional jobs",
+          "re": "emotional"
+        },
+        {
+          "label": "social jobs",
+          "re": "social"
+        },
+        {
+          "label": "hiring criteria",
+          "re": "hiring criteria|hire"
+        },
+        {
+          "label": "competing solutions",
+          "re": "competing|alternatives?"
+        },
+        {
+          "label": "switching triggers",
+          "re": "switching|trigger"
+        }
+      ],
+      "framework": [
+        {
+          "label": "job statements in 'When ..., I want to ..., so I can ...' form (3+)",
+          "count_re": "when [^\\n]{3,200}?I want to [^\\n]{3,200}?so (I|we|that)",
+          "min": 3
+        }
+      ]
+    },
+    {
+      "key": "strategy/risk-register",
+      "title": "Pawpath SMS Reminders Launch Risks",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Pawpath is moving SMS reminders to a new messaging vendor in 6 weeks. 410 clinics send about 180,000 reminders a month. The old vendor contract ends on 30 November."
+        },
+        {
+          "label": "Key Inputs",
+          "value": "The new vendor has not been load-tested above 20,000 messages an hour. Clinics in two regions need sender-ID registration that takes 3 to 4 weeks. Support tickets about missed reminders doubled last month."
+        },
+        {
+          "label": "Constraints & Considerations",
+          "value": "Cannot extend the old contract. One engineer owns messaging."
+        }
+      ],
+      "required": [
+        {
+          "label": "severity",
+          "re": "severity|impact"
+        },
+        {
+          "label": "likelihood",
+          "re": "likelihood|probability|occurrence"
+        },
+        {
+          "label": "risk score",
+          "re": "score|rpn|rating"
+        },
+        {
+          "label": "mitigation",
+          "re": "mitigation"
+        },
+        {
+          "label": "owners",
+          "re": "owner"
+        },
+        {
+          "label": "missing risks / clusters",
+          "re": "missing|cluster|correlat"
+        }
+      ],
+      "framework": [
+        {
+          "label": "severity x likelihood scoring shown",
+          "re": "(severity|impact)[^\\n]{0,40}(x|\u00d7|\\*)[^\\n]{0,40}(likelihood|probability|occurrence)|rpn|risk score"
+        }
+      ]
+    },
+    {
+      "key": "strategy/north-star",
+      "title": "Pawpath North Star",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Pawpath earns a flat monthly fee per clinic. Clinics that confirm at least 80% of appointments through Pawpath reminders renew at a much higher rate than those that do not. Today 52% of booked appointments are confirmed through Pawpath."
+        },
+        {
+          "label": "Goals & Objectives",
+          "value": "Pick one metric that reflects value delivered to clinics and pet owners, and the levers the team can move."
+        }
+      ],
+      "required": [
+        {
+          "label": "north star metric",
+          "re": "north star"
+        },
+        {
+          "label": "input metrics",
+          "re": "input metric"
+        },
+        {
+          "label": "counter metrics",
+          "re": "counter[- ]metric|guardrail"
+        },
+        {
+          "label": "targets",
+          "re": "target"
+        },
+        {
+          "label": "initiatives mapped",
+          "re": "initiative"
+        }
+      ],
+      "framework": [
+        {
+          "label": "single north star named",
+          "re": "north star metric"
+        }
+      ]
+    },
+    {
+      "key": "strategy/positioning",
+      "title": "Positioning Pawpath",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Pawpath is appointment and reminder software for independent vet clinics with 2 to 8 vets. Clinics today use paper diaries, generic booking tools built for salons, or the scheduling module inside large practice-management suites."
+        },
+        {
+          "label": "Key Inputs",
+          "value": "Unique attributes: species-aware visit lengths, recheck reminders tied to the treatment given, and a setup that takes one afternoon. Customers say the reminders are the reason they stay."
+        }
+      ],
+      "required": [
+        {
+          "label": "competitive alternatives",
+          "re": "competitive alternatives?|alternatives"
+        },
+        {
+          "label": "unique attributes",
+          "re": "unique attributes?"
+        },
+        {
+          "label": "value",
+          "re": "value"
+        },
+        {
+          "label": "target customers",
+          "re": "target customers?|best-fit|ideal customer"
+        },
+        {
+          "label": "market category",
+          "re": "market category|category"
+        },
+        {
+          "label": "positioning statement",
+          "re": "positioning statement"
+        }
+      ],
+      "framework": [
+        {
+          "label": "five Dunford steps all present",
+          "all_re": ["alternative", "unique attribute", "value", "customer", "categor"]
+        }
+      ]
+    },
+    {
+      "key": "analytics/ab-design",
+      "title": "Reminder send-time test",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Pawpath sends recheck reminders 3 days before the due date. Rebooking rate from reminders is 69%. Hypothesis from support: reminders sent 7 days before give owners more time to plan."
+        },
+        {
+          "label": "Key Inputs",
+          "value": "About 24,000 recheck reminders are sent per month across 410 clinics. Clinics vary a lot in size."
+        }
+      ],
+      "required": [
+        {
+          "label": "hypothesis",
+          "re": "hypothesis"
+        },
+        {
+          "label": "primary metric",
+          "re": "primary metric"
+        },
+        {
+          "label": "guardrail metrics",
+          "re": "guardrail"
+        },
+        {
+          "label": "minimum detectable effect",
+          "re": "minimum detectable effect|\\bMDE\\b"
+        },
+        {
+          "label": "sample size",
+          "re": "sample size"
+        },
+        {
+          "label": "duration",
+          "re": "duration"
+        },
+        {
+          "label": "randomization unit",
+          "re": "randomi[sz]ation unit|unit of randomi[sz]ation|randomi[sz]e"
+        },
+        {
+          "label": "analysis plan",
+          "re": "analysis plan"
+        },
+        {
+          "label": "pitfalls",
+          "re": "novelty|simpson|pitfall"
+        }
+      ],
+      "framework": [
+        {
+          "label": "hypothesis in If/then/because form",
+          "re": "if [^\\n]{3,200}?then [^\\n]{3,200}?because"
+        }
+      ]
+    },
+    {
+      "key": "specs/user-stories",
+      "title": "Pawpath Waitlist",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "When a slot is cancelled, clinics phone owners on a paper waitlist. Pawpath wants an automatic waitlist that offers freed slots by SMS."
+        },
+        {
+          "label": "Key Inputs",
+          "value": "Users: pet owners, front-desk staff, clinic managers. A freed slot should be offered to the first matching owner and held for 15 minutes."
+        }
+      ],
+      "required": [
+        {
+          "label": "epics",
+          "re": "epic"
+        },
+        {
+          "label": "acceptance criteria",
+          "re": "acceptance criteria|given"
+        },
+        {
+          "label": "INVEST check",
+          "re": "invest"
+        }
+      ],
+      "framework": [
+        {
+          "label": "3+ stories in 'As a ..., I want ..., so that ...' form",
+          "count_re": "as an? [^\\n]{2,80}?,?\\s*I want[\\s\\S]{2,200}?so that",
+          "min": 3,
+          "note": "Allows the story to wrap across lines (widened after the run; the first version required one line)."
+        },
+        {
+          "label": "3+ Given/When/Then criteria",
+          "count_re": "given[^\\n]{2,200}",
+          "min": 3,
+          "also_re": "then"
+        }
+      ]
+    },
+    {
+      "key": "strategy/swot",
+      "title": "Pawpath SWOT",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Pawpath: 410 independent vet clinics, $1.9M ARR, strong reminder feature, small team of 14. No integrations with lab systems yet. Two large practice-management suites are bundling basic scheduling for free."
+        },
+        {
+          "label": "Goals & Objectives",
+          "value": "Decide where to invest in H2."
+        }
+      ],
+      "required": [
+        {
+          "label": "strengths",
+          "re": "strengths"
+        },
+        {
+          "label": "weaknesses",
+          "re": "weaknesses"
+        },
+        {
+          "label": "opportunities",
+          "re": "opportunities"
+        },
+        {
+          "label": "threats",
+          "re": "threats"
+        }
+      ],
+      "framework": [
+        {
+          "label": "SO/WO/ST/WT strategies",
+          "all_re": [
+            "\\bSO\\b|S-O|strengths?[- /\u00d7x]+opportunit",
+            "\\bWO\\b|W-O|weakness(es)?[- /\u00d7x]+opportunit",
+            "\\bST\\b|S-T|strengths?[- /\u00d7x]+threat",
+            "\\bWT\\b|W-T|weakness(es)?[- /\u00d7x]+threat"
+          ]
+        },
+        {
+          "label": "top 3 strategic actions",
+          "re": "top 3|top three|three strategic|3 strategic"
+        }
+      ]
+    },
+    {
+      "key": "competitive/market-sizing",
+      "title": "Pawpath market size",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Pawpath sells to independent vet clinics with 2 to 8 vets in one country. Price is $390 per clinic per month. Fernway's own CRM lists about 6,200 such clinics in its home country, of which an estimated 70% do not use a dedicated scheduling tool."
+        },
+        {
+          "label": "Goals & Objectives",
+          "value": "Size the opportunity for the board. Be explicit about assumptions."
+        }
+      ],
+      "required": [
+        {
+          "label": "TAM",
+          "re": "\\bTAM\\b"
+        },
+        {
+          "label": "SAM",
+          "re": "\\bSAM\\b"
+        },
+        {
+          "label": "SOM",
+          "re": "\\bSOM\\b"
+        },
+        {
+          "label": "assumptions",
+          "re": "assumption"
+        },
+        {
+          "label": "growth drivers",
+          "re": "growth driver|drivers"
+        },
+        {
+          "label": "market timing",
+          "re": "timing|why now"
+        }
+      ],
+      "framework": [
+        {
+          "label": "top-down and bottom-up both used",
+          "all_re": ["top-down|top down", "bottom-up|bottom up"]
+        }
+      ]
+    }
+  ]
+}

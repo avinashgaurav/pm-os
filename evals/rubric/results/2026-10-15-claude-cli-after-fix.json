@@ -1,0 +1,1563 @@
+{
+  "method": "Claude Code CLI (claude -p) with the app's own buildModulePrompt output; not the production API path",
+  "summary": {
+    "started": "2026-10-15T07:27:58.641Z",
+    "rubricSha256": "8620d49e061b6d83ed0adb5de893b4c89c1e8f8b34d4cf443e899d2497b69efe",
+    "wallMs": 358524,
+    "generationModel": "claude-sonnet-4-6",
+    "judgeModel": "claude-opus-5-5",
+    "modelsAnswered": ["claude-sonnet-4-6", "claude-opus-5-5"],
+    "cliCalls": 20,
+    "cliErrors": 0,
+    "generationLatencyMs": {
+      "n": 10,
+      "p50": 81241,
+      "p90": 160168,
+      "max": 160168
+    },
+    "judgeLatencyMs": {
+      "n": 10,
+      "p50": 9682,
+      "p90": 19275,
+      "max": 19275
+    },
+    "usageTotals": {
+      "input": 30697,
+      "output": 53659
+    },
+    "modules": 10,
+    "generated": 10,
+    "requiredSectionsAllPresent": 9,
+    "requiredSectionChecks": {
+      "passed": 87,
+      "total": 88
+    },
+    "frameworkFollowed": 9,
+    "frameworkChecks": {
+      "passed": 14,
+      "total": 15
+    },
+    "sentencesWithNewFigures": 90,
+    "judgeVerdicts": {
+      "LABELLED": 74,
+      "UNSOURCED_FACT": 2,
+      "INPUT": 14
+    },
+    "modulesWithNoUnsourcedFacts": 8,
+    "modulesOverProdMaxTokens": [],
+    "errors": [],
+    "redaction": "The CLI adds the logged-in account email to every call. Some generated documents put that name or email in an author line; those strings were replaced with placeholders after scoring. No score depends on them.",
+    "fixCommit": "1fb3ce7",
+    "manualReview": {
+      "rubricFalseNegatives": [
+        {
+          "module": "strategy/okrs",
+          "check": "at least 2 objectives",
+          "why": "three objectives are headed \"OKR 1/2/3: ...\" with Key Results under each; the regex wants the word \"objective\""
+        }
+      ],
+      "realMisses": [
+        {
+          "module": "strategy/swot",
+          "check": "prioritised next steps",
+          "why": "the document ends after \"Top 3 Prioritized Strategic Actions\" with no next-steps section"
+        }
+      ],
+      "adjustedAfterManualReview": {
+        "requiredSectionsAllPresent": 9,
+        "frameworkFollowed": 10
+      },
+      "unsourcedFactsReviewed": [
+        "specs/prd: \"Book a time in under 60 seconds\" stated as a user need with no label (borderline: a design goal, not a statistic)",
+        "competitive/market-sizing: summary presents the ~$3.0M 3-year capture as a realistic result \"anchored entirely in CRM data\" when it rests on an assumed 15% SOM rate"
+      ],
+      "lengthCheck": "visible output 2,179 to 2,865 tokens, 1,336 to 1,756 words; all under the 4,000-token cap"
+    }
+  },
+  "results": [
+    {
+      "key": "specs/prd",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 66410,
+      "outputTokensVisible": 2865,
+      "chars": 10943,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "problem statement",
+          "ok": true
+        },
+        {
+          "label": "target users / personas",
+          "ok": true
+        },
+        {
+          "label": "goals & success metrics",
+          "ok": true
+        },
+        {
+          "label": "functional requirements",
+          "ok": true
+        },
+        {
+          "label": "non-functional requirements",
+          "ok": true
+        },
+        {
+          "label": "user stories",
+          "ok": true
+        },
+        {
+          "label": "acceptance criteria",
+          "ok": true
+        },
+        {
+          "label": "scope in/out",
+          "ok": true
+        },
+        {
+          "label": "technical considerations",
+          "ok": true
+        },
+        {
+          "label": "risks & mitigations",
+          "ok": true
+        },
+        {
+          "label": "timeline / milestones",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "user stories in 'As a ... I want ... so' form",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 13,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The '5 days out' timing is part of an illustrative user scenario under a 'Context:' heading. It describes an example, not a claimed fact about the product.",
+          "sentence": "- **Context:** Dog had a skin condition recheck scheduled; receives an SMS reminder 5 days out"
+        },
+        {
+          "n": 2,
+          "verdict": "UNSOURCED_FACT",
+          "reason": "'Under 60 seconds' is stated as a user need with no target or assumption label, and the input gives no basis for it. It also conflicts with the <90 seconds target in sentence 4.",
+          "sentence": "- **Need:** Book a time in under 60 seconds without a phone call"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "The \u226540% figure is explicitly marked 'Target', and the baseline is marked 'Assumption: establish in beta'.",
+          "sentence": "| Mobile conversion | % of SMS/email link opens that complete booking | Assumption: establish in beta | Target: \u2265 40% | Beta (10 weeks) |"
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "The <90 seconds figure is explicitly marked 'Target' in the metrics table.",
+          "sentence": "| Booking completion speed | Median time from reminder open to confirmed booking | Assumption: establish in beta | Target: < 90 seconds | Beta (10 weeks) |"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "The 5 slots and 14 days are product requirement parameters, so they read as design specification, not as claims of fact.",
+          "sentence": "- Show at minimum 5 available slots across the next 14 days, grouped by day"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "The 7-day availability threshold is a design rule within the requirements.",
+          "sentence": "- Allow owner to select a different vet if preferred vet has no availability within 7 days"
+        },
+        {
+          "n": 7,
+          "verdict": "LABELLED",
+          "reason": "The 48-hour window is a display threshold set as part of the requirements.",
+          "sentence": "- Front-desk view in Pawpath must show a \"Self-Rebooked\" status on patient records updated within the last 48 hours"
+        },
+        {
+          "n": 8,
+          "verdict": "LABELLED",
+          "reason": "The 14-day window is a fallback rule within the requirements.",
+          "sentence": "- If zero slots are available in the next 14 days, show a \"Request a time\" form (name + phone + preferred window) that generates a staff task in Pawpath"
+        },
+        {
+          "n": 9,
+          "verdict": "LABELLED",
+          "reason": "99.5% is explicitly marked 'Target', and the clinic hours are marked 'Assumption'.",
+          "sentence": "| **Availability** | Target: 99.5% uptime during clinic hours (Assumption: 7am\u20138pm local time) |"
+        },
+        {
+          "n": 10,
+          "verdict": "LABELLED",
+          "reason": "The 30 seconds is an acceptance-criterion threshold under an 'AC:' label.",
+          "sentence": "- **AC:** Given I select a slot and confirm, I receive a confirmation text within 30 seconds"
+        },
+        {
+          "n": 11,
+          "verdict": "LABELLED",
+          "reason": "The 14-day window is an acceptance-criterion condition under an 'AC:' label.",
+          "sentence": "- **AC:** If no slots exist in 14 days, I see a \"Request a callback\" form, not a dead end"
+        },
+        {
+          "n": 12,
+          "verdict": "LABELLED",
+          "reason": "The 5-minute hold is explicitly marked 'Assumption'.",
+          "sentence": "- **Double-booking prevention:** Implement optimistic locking or slot reservation (hold for Assumption: 5 minutes) to prevent race conditions when two owners view the same slot"
+        },
+        {
+          "n": 13,
+          "verdict": "LABELLED",
+          "reason": "Week 1 and 5 days are plan parameters in a next-steps action item.",
+          "sentence": "1. **[Week 1 \u2014 Blocker]** Run a calendar API spike to confirm real-time slot read/write capability; document any gaps within 5 days"
+        }
+      ],
+      "unsourcedFacts": 1,
+      "output": "# Pawpath Online Rebooking \u2014 Product Requirements Document\n\n**Author:** [account name from CLI context] | **Date:** October 15, 2026 | **Status:** Draft v1.0 | **Review by:** TBD\n\n---\n\nPawpath's reminder workflow breaks down at the finish line: 31% of patients due for a recheck never rebook, costing clinics revenue and compromising patient outcomes, while front-desk staff burn roughly 6 hours per week on manual reminder calls. This PRD defines a one-tap online rebooking flow\u2014triggered from SMS and email reminders and wired into the existing Pawpath calendar service\u2014that eliminates the phone-call requirement. Success is defined as raising recheck rebooking from 69% to 80% within two quarters and reducing per-clinic reminder-call overhead from 6 hours to 2 hours per week, with beta delivery in 10 weeks across 12 pilot clinics.\n\n---\n\n## Problem Statement\n\n### Observed Friction\n- **31%** of patients due for a recheck never schedule the follow-up visit\n- Rebooking currently requires a phone call \u2014 a synchronous, high-friction step that many pet owners defer or skip\n- Front-desk staff spend **~6 hours per week per clinic** on outbound reminder calls, diverting them from in-clinic patient care\n\n### Why It Matters\n- Missed rechecks represent direct revenue loss for independent clinics (Assumption: average recheck revenue per visit TBD \u2014 pilot clinics should surface this figure)\n- Patient health outcomes worsen when follow-up care is skipped (e.g., post-surgery checks, medication adjustments)\n- Staff time spent on calls is an operational cost that scales poorly as clinic appointment volume grows\n\n### PM Gap Identified\nNo data was provided on **why** owners don't rebook (scheduling inconvenience vs. cost vs. forgetting). Recommendation: add a 3-question exit survey to the rebooking flow during beta to capture abandonment reasons for future iteration.\n\n---\n\n## Target Users & Personas\n\n### Persona 1 \u2014 Maya, the Busy Pet Owner\n- **Context:** Dog had a skin condition recheck scheduled; receives an SMS reminder 5 days out\n- **Device:** Smartphone (74% of Pawpath reminder opens are on mobile)\n- **Pain point:** Calling the clinic during work hours is inconvenient; she delays and forgets\n- **Need:** Book a time in under 60 seconds without a phone call\n\n### Persona 2 \u2014 Jordan, Front-Desk Coordinator\n- **Context:** Works at a 4-vet independent clinic; manages scheduling alongside check-ins and checkout\n- **Pain point:** Spends ~6 hours/week calling patients who often don't answer, requiring 2\u20133 callback attempts\n- **Need:** Fewer inbound scheduling calls and clear visibility into which patients have self-rebooked vs. still need outreach\n\n---\n\n## Goals & Success Metrics\n\n| Goal | Metric | Baseline | Target | Window |\n|---|---|---|---|---|\n| Increase recheck rebooking | % of due-for-recheck patients who book | 69% | **80%** | 2 quarters post-launch |\n| Reduce staff call time | Reminder-call hours per clinic/week | 6 hrs | **2 hrs** | 2 quarters post-launch |\n| Mobile conversion | % of SMS/email link opens that complete booking | Assumption: establish in beta | Target: \u2265 40% | Beta (10 weeks) |\n| Booking completion speed | Median time from reminder open to confirmed booking | Assumption: establish in beta | Target: < 90 seconds | Beta (10 weeks) |\n\n---\n\n## Detailed Requirements\n\n### Functional Requirements\n\n#### FR-1: One-Tap Rebooking Link\n- Reminder SMS and email must contain a unique, tokenized deep-link per patient per recheck\n- Link must pre-populate: patient name, pet name, appointment type (recheck), and attending vet\n- Owner confirms or changes the pre-filled slot \u2014 no login required for the core flow\n\n#### FR-2: Slot Selection UI\n- Display available slots from the existing Pawpath calendar service (real-time)\n- Mobile-first layout; must be fully functional on a 375 px viewport\n- Show at minimum 5 available slots across the next 14 days, grouped by day\n- Allow owner to select a different vet if preferred vet has no availability within 7 days\n\n#### FR-3: Booking Confirmation\n- On slot selection, send an instant confirmation SMS + email with appointment details and a one-tap cancellation link\n- Write the confirmed appointment back to the Pawpath calendar service via existing API\n- Display a clinic-specific confirmation message (configurable by clinic admin)\n\n#### FR-4: Staff Dashboard Signal\n- Front-desk view in Pawpath must show a \"Self-Rebooked\" status on patient records updated within the last 48 hours\n- Aggregate weekly report: total reminders sent, self-rebook rate, still-pending count \u2014 auto-emailed to clinic admin every Monday\n\n#### FR-5: Fallback & Escalation\n- If zero slots are available in the next 14 days, show a \"Request a time\" form (name + phone + preferred window) that generates a staff task in Pawpath\n- If token is expired (Assumption: 7-day token TTL \u2014 validate with eng), redirect to clinic phone number\n\n### Non-Functional Requirements\n\n| Category | Requirement |\n|---|---|\n| **Performance** | Booking link must load in < 2 seconds on a 4G connection |\n| **Availability** | Target: 99.5% uptime during clinic hours (Assumption: 7am\u20138pm local time) |\n| **Security** | Tokens must be single-use or time-limited; no PHI exposed in URL parameters |\n| **Accessibility** | WCAG 2.1 AA compliance on the booking UI |\n| **Scalability** | Must support all 12 pilot clinics concurrently in beta without degradation |\n| **Calendar Integrity** | Zero double-bookings; all writes must go through the existing Pawpath calendar service with idempotency keys |\n\n---\n\n## User Stories & Acceptance Criteria\n\n**US-1 \u2014 Pet Owner: Rebook from SMS**\n> *As a pet owner, I want to tap a link in my reminder text and book a recheck slot without calling the clinic.*\n- **AC:** Given I tap the SMS link, I see pre-filled pet and appointment info within 2 seconds\n- **AC:** Given I select a slot and confirm, I receive a confirmation text within 30 seconds\n- **AC:** The appointment appears in the clinic's Pawpath calendar immediately\n\n**US-2 \u2014 Pet Owner: No Available Slots**\n> *As a pet owner, I want an alternative if no slots are shown.*\n- **AC:** If no slots exist in 14 days, I see a \"Request a callback\" form, not a dead end\n\n**US-3 \u2014 Front-Desk Staff: Reduced Call Queue**\n> *As a front-desk coordinator, I want to know which patients have already self-rebooked so I only call those who haven't.*\n- **AC:** Patient list in Pawpath shows \"Self-Rebooked\" badge with timestamp\n- **AC:** I can filter the recheck list by \"Pending\" vs. \"Rebooked\" status\n\n**US-4 \u2014 Clinic Admin: Weekly Performance Visibility**\n> *As a clinic admin, I want a weekly summary of rebooking rates.*\n- **AC:** Monday morning email shows: reminders sent, self-booked count, self-book rate %, still-pending count\n\n---\n\n## Scope\n\n### In Scope\n- One-tap rebooking via SMS and email reminder links\n- Real-time slot display using existing Pawpath calendar service\n- Booking confirmation (SMS + email)\n- Staff dashboard status signal (\"Self-Rebooked\")\n- Weekly admin email report\n- Fallback \"request a callback\" form\n\n### Out of Scope\n- **Payments** (explicitly excluded)\n- New calendar service or scheduling engine (must reuse existing)\n- Multi-pet household booking in a single flow (Assumption: defer to v2)\n- In-app rebooking (native Pawpath app, if one exists) \u2014 beta targets SMS/email only\n- New appointment types beyond rechecks\n\n---\n\n## Technical Considerations\n\n- **Token architecture:** Unique per-reminder tokens must encode patient ID, appointment type, and clinic ID without exposing raw database IDs in the URL\n- **Calendar API:** Confirm whether the existing Pawpath calendar service supports real-time slot reads and idempotent writes \u2014 this is the highest-risk dependency; spike recommended in Week 1\n- **Reminder pipeline:** Determine where tokens are injected into existing SMS/email sends \u2014 requires coordination with the team owning reminder delivery\n- **Double-booking prevention:** Implement optimistic locking or slot reservation (hold for Assumption: 5 minutes) to prevent race conditions when two owners view the same slot\n- **Analytics instrumentation:** Add events for: link open, slot viewed, slot selected, booking confirmed, booking abandoned \u2014 essential for measuring the mobile conversion target\n\n---\n\n## Risks & Mitigations\n\n| Risk | Likelihood | Impact | Mitigation |\n|---|---|---|---|\n| Calendar API can't support required read/write patterns | Medium | High | Week 1 spike; if blocked, negotiate API extension or thin adapter layer |\n| Token security flaw exposes patient data | Low | High | Security review before beta; single-use or short-TTL tokens; penetration test on staging |\n| Pilot clinics have inconsistent calendar hygiene (stale slots) | High | Medium | Onboarding checklist for pilot clinics; real-time slot refresh, not cached |\n| Low SMS link click-through reduces measurable impact | Medium | Medium | A/B test reminder copy in beta; add owner name personalization |\n| 10-week timeline is compressed | Medium | High | Scope freeze after kick-off; daily async status update; cut weekly report to v1.1 if needed |\n\n**PM Gap Identified:** No data on current reminder delivery channel mix (SMS vs. email open rates beyond the 74% mobile stat). Recommend pulling delivery analytics before finalizing reminder copy and link placement strategy.\n\n---\n\n## Timeline & Milestones\n\n| Week | Milestone |\n|---|---|\n| **1** | Calendar API spike complete; token architecture agreed; pilot clinic onboarding starts |\n| **2\u20133** | Core booking UI built (mobile-first); slot read integration |\n| **4** | Write-back to calendar + confirmation SMS/email |\n| **5** | Staff dashboard \"Self-Rebooked\" signal; fallback form |\n| **6** | End-to-end QA; security review of token system |\n| **7** | Staging with 2 internal test clinics; analytics events validated |\n| **8** | Beta launch with 12 pilot clinics |\n| **9\u201310** | Beta monitoring; weekly report feature; bug fixes |\n| **Q2 end** | Measure 80% rebooking target; go/no-go for general availability |\n\n---\n\n## Prioritized Next Steps\n\n1. **[Week 1 \u2014 Blocker]** Run a calendar API spike to confirm real-time slot read/write capability; document any gaps within 5 days\n2. **[Week 1 \u2014 Blocker]** Agree on token security architecture with engineering; define TTL and PHI handling rules\n3. **[Week 1 \u2014 High]** Lock pilot clinic list (12 clinics confirmed) and schedule onboarding calls to audit calendar hygiene\n4. **[Week 1 \u2014 High]** Instrument existing reminder delivery pipeline with open/click analytics to establish mobile conversion baseline\n5. **[Week 2 \u2014 Medium]** Add a 3-question abandonment micro-survey to the booking flow to capture \"why didn't you rebook?\" signal for v2\n6. **[Before beta \u2014 Medium]** Validate average recheck revenue per visit with pilot clinics to quantify the revenue impact of the 11-point rebooking lift\n7. **[Ongoing]** Freeze scope at kick-off; any additions go to a v1.1 backlog to protect the 10-week deadline"
+    },
+    {
+      "key": "strategy/okrs",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 145991,
+      "outputTokensVisible": 2449,
+      "chars": 8221,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "objectives",
+          "ok": true
+        },
+        {
+          "label": "key results",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "at least 2 objectives",
+          "ok": false
+        },
+        {
+          "label": "at least 6 key results",
+          "ok": true
+        },
+        {
+          "label": "KRs measurable (80% contain a number)",
+          "ok": true
+        },
+        {
+          "label": "outcomes vs outputs or sandbagging addressed",
+          "ok": true
+        }
+      ],
+      "frameworkPass": false,
+      "newMetricSentences": 17,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "INPUT",
+          "reason": "8.6/month is computed from 2.1% \u00d7 410; 11 weeks is derived from the current date to the end of H2.",
+          "sentence": "Fernway Labs enters the final 11 weeks of H2 with 410 paying clinics, $1.9M ARR, and a 2.1% monthly logo churn rate that quietly removes an Estimate of ~8\u20139 clinics every month (Estimate: 2.1% \u00d7 410 = 8.6 clinics/month)."
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "1.2% is explicitly a Target; 2.1% is from the input.",
+          "sentence": "- **KR 1.1** Reduce monthly logo churn from **2.1% to Target: 1.2%** by December 31, 2026, measured by end-of-month active paying clinic count."
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "85% is labelled Target, and the baseline is flagged as an Assumption.",
+          "sentence": "- **KR 1.2** Increase 90-day cohort retention (clinics still active 90 days post-activation) to **Target: 85%** \u2014 *Assumption: baseline not currently tracked; must be instrumented by Oct 22 or this KR is unmeasurable for H2.*"
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "100% and top 3 are labelled Target within a KR.",
+          "sentence": "- **KR 1.4** Complete structured exit interviews with **Target: 100%** of clinics that churn in Q4 2026, surfacing the top 3 actionable churn drivers by Dec 15, 2026."
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "65% is a Target; near 0% is an Assumption.",
+          "sentence": "- **KR 2.1** Achieve **Target: 65%** of new clinics completing full onboarding (account configured + first user trained + first appointment logged) without any live specialist touchpoint, by Dec 31, 2026 \u2014 *Assumption: current self-serve completion rate is near 0%; validate immediately.*"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "\u22641.5 hours is a Target; the baseline is TBD.",
+          "sentence": "- **KR 2.2** Reduce average specialist time-per-new-clinic from **Assumption: [baseline TBD \u2014 measure by Oct 22]** to **Target: \u2264 1.5 hours** by Dec 31, 2026."
+        },
+        {
+          "n": 7,
+          "verdict": "LABELLED",
+          "reason": "\u226560% is labelled Target.",
+          "sentence": "- **KR 2.3** Redirect **Target: \u2265 60%** of total onboarding specialist hours toward multi-site group deal support by Dec 31, 2026, tracked via weekly capacity logs."
+        },
+        {
+          "n": 8,
+          "verdict": "LABELLED",
+          "reason": "Refers back to the 65% target and the plan timeline in a coach flag.",
+          "sentence": "> **\u26a0\ufe0f Coach Flag \u2014 KR 2.1:** 65% self-serve in ~11 weeks is aggressive if no self-serve infrastructure exists today."
+        },
+        {
+          "n": 9,
+          "verdict": "LABELLED",
+          "reason": "$2.1M is a Target; $4,634 is a labelled Estimate computed from $1.9M \u00f7 410.",
+          "sentence": "- **KR 3.2** Grow ARR from **$1.9M to Target: $2.1M** by December 31, 2026 \u2014 *Assumption: blended ACV of new single-site clinics holds near the current Estimate of ~$4,634/year ($1.9M \u00f7 410); multi-site groups at higher ACV could accelerate this.*"
+        },
+        {
+          "n": 10,
+          "verdict": "LABELLED",
+          "reason": "3 accounts and $60K are Targets; $20K ACV is an Assumption.",
+          "sentence": "- **KR 3.3** Close **Target: 3 multi-site group accounts** (2+ locations each) by December 31, 2026, contributing **Target: \u2265 $60,000 in new ARR** \u2014 *Assumption: ~$20K ACV per group account; validate with sales before locking.*"
+        },
+        {
+          "n": 11,
+          "verdict": "LABELLED",
+          "reason": "~24 clinics is explicitly an Estimate based on the input churn rate.",
+          "sentence": "> **\u26a0\ufe0f Coach Flag \u2014 KR 3.1 (sandbagging risk):** At 2.1% monthly churn, Fernway will lose an Estimate of ~24 clinics over 11 weeks."
+        },
+        {
+          "n": 12,
+          "verdict": "LABELLED",
+          "reason": "Plan arithmetic based on the 450-clinic target plus the estimated churn; a planning parameter, not a stated fact.",
+          "sentence": "To net 40 clinics and reach 450, approximately 64 new activations are needed \u2014 roughly 23/month."
+        },
+        {
+          "n": 13,
+          "verdict": "LABELLED",
+          "reason": "11 weeks is the plan timeline in a risk table.",
+          "sentence": "| **Engineering capacity not scoped** | Self-serve wizard may not ship in 11 weeks | Require scoping before locking OKR 2 |"
+        },
+        {
+          "n": 14,
+          "verdict": "LABELLED",
+          "reason": "NRR >100% is an objective/goal linked to OKR 1.",
+          "sentence": "| Achieve net revenue retention **> 100%** | OKR 1 (churn reduction is the primary driver) |"
+        },
+        {
+          "n": 15,
+          "verdict": "LABELLED",
+          "reason": "65% target is referenced as a target.",
+          "sentence": "1. **Engineering scoping session** \u2014 scope self-serve onboarding wizard MVP; confirm a realistic ship date before KR 2.1's 65% target is locked."
+        },
+        {
+          "n": 16,
+          "verdict": "LABELLED",
+          "reason": "$20K is explicitly an ACV assumption to validate.",
+          "sentence": "5. **Sales alignment on multi-site pipeline** \u2014 validate the Target: $20K ACV assumption; build a target account list."
+        },
+        {
+          "n": 17,
+          "verdict": "LABELLED",
+          "reason": "11 weeks is the plan timeline; this is about revising targets.",
+          "sentence": "6. **Revise any KR targets** that scoping reveals are unreachable in 11 weeks \u2014 move them to H1 2027 rather than carry unachievable commitments."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Pawpath H2 Clinic Growth\n\n*OKR Set | Fernway Labs \u2014 Pawpath | Owner: [account name from CLI context] | Sprint: Oct 15 \u2013 Dec 31, 2026*\n\n---\n\nFernway Labs enters the final 11 weeks of H2 with 410 paying clinics, $1.9M ARR, and a 2.1% monthly logo churn rate that quietly removes an Estimate of ~8\u20139 clinics every month (Estimate: 2.1% \u00d7 410 = 8.6 clinics/month). The three OKRs below attack the highest-leverage problems in sequence: stop the bleeding in the first 90 days, mechanize onboarding to free capacity for higher-ACV deals, and convert that operational discipline into net-new clinic growth \u2014 all without a paid acquisition budget increase. Because these OKRs are being set mid-H2, targets are scoped as a focused Q4 sprint; confirm with leadership whether they replace or complement any July commitments already in flight.\n\n---\n\n## OKR 1: Turn the First 90 Days from a Danger Zone into a Loyalty-Building Experience\n\n**Why it matters:** Early churn is the single biggest constraint on ARR growth. Every clinic lost before Day 90 erases acquisition cost and caps the ceiling of the business.\n\n### Key Results\n\n- **KR 1.1** Reduce monthly logo churn from **2.1% to Target: 1.2%** by December 31, 2026, measured by end-of-month active paying clinic count.\n- **KR 1.2** Increase 90-day cohort retention (clinics still active 90 days post-activation) to **Target: 85%** \u2014 *Assumption: baseline not currently tracked; must be instrumented by Oct 22 or this KR is unmeasurable for H2.*\n- **KR 1.3** Achieve a median time-to-first-core-action (clinic logs its first appointment in Pawpath) of **Target: \u2264 5 business days** \u2014 *Assumption: not currently measured; requires analytics instrumentation.*\n- **KR 1.4** Complete structured exit interviews with **Target: 100%** of clinics that churn in Q4 2026, surfacing the top 3 actionable churn drivers by Dec 15, 2026.\n\n> **\u26a0\ufe0f Coach Flag \u2014 KR 1.2 & 1.3:** Both KRs require instrumentation that may not exist. If baselines are not established by Oct 22, these become unscoreable. Prioritize metric plumbing before any roadmap build work begins.\n\n---\n\n## OKR 2: Build a Self-Serve Onboarding Engine That Scales Without Adding Headcount\n\n**Why it matters:** Three onboarding specialists handling every single-clinic activation is a bottleneck with two compounding costs \u2014 high cost-per-clinic-onboarded and zero capacity for higher-ACV multi-site group accounts.\n\n### Key Results\n\n- **KR 2.1** Achieve **Target: 65%** of new clinics completing full onboarding (account configured + first user trained + first appointment logged) without any live specialist touchpoint, by Dec 31, 2026 \u2014 *Assumption: current self-serve completion rate is near 0%; validate immediately.*\n- **KR 2.2** Reduce average specialist time-per-new-clinic from **Assumption: [baseline TBD \u2014 measure by Oct 22]** to **Target: \u2264 1.5 hours** by Dec 31, 2026.\n- **KR 2.3** Redirect **Target: \u2265 60%** of total onboarding specialist hours toward multi-site group deal support by Dec 31, 2026, tracked via weekly capacity logs.\n\n> **\u26a0\ufe0f Coach Flag \u2014 KR 2.1:** 65% self-serve in ~11 weeks is aggressive if no self-serve infrastructure exists today. Engineering must scope a guided setup wizard as the MVP by Oct 18 \u2014 if the realistic ship date falls in December, this target may need to shift to H1 2027. Better to right-size than to silently sandbagg.\n\n> **\u26a0\ufe0f Coach Flag \u2014 KR 2.3:** \"Hours redirected\" is a leading indicator, not a business outcome. It is included here to make the capacity shift visible, but it must be paired with KR 3.3 below to confirm the redirect is generating revenue \u2014 otherwise it is an output masquerading as a result.\n\n---\n\n## OKR 3: Grow Paying Clinics and ARR Through Retention Gains and Sales Efficiency\n\n**Why it matters:** Without a paid acquisition budget increase, growth must come from two sources: retaining more of what is won and converting freed capacity into higher-ACV multi-site group deals. This OKR captures the business outcome of OKRs 1 and 2 materializing.\n\n### Key Results\n\n- **KR 3.1** Grow paying clinics from **410 to Target: 450** by December 31, 2026.\n- **KR 3.2** Grow ARR from **$1.9M to Target: $2.1M** by December 31, 2026 \u2014 *Assumption: blended ACV of new single-site clinics holds near the current Estimate of ~$4,634/year ($1.9M \u00f7 410); multi-site groups at higher ACV could accelerate this.*\n- **KR 3.3** Close **Target: 3 multi-site group accounts** (2+ locations each) by December 31, 2026, contributing **Target: \u2265 $60,000 in new ARR** \u2014 *Assumption: ~$20K ACV per group account; validate with sales before locking.*\n\n> **\u26a0\ufe0f Coach Flag \u2014 KR 3.1 (sandbagging risk):** At 2.1% monthly churn, Fernway will lose an Estimate of ~24 clinics over 11 weeks. To net 40 clinics and reach 450, approximately 64 new activations are needed \u2014 roughly 23/month. If the current new-clinic run rate is below that, this target is unreachable. If it is above that, it may be sandbagged. **Pull the current monthly new-clinic activation number before signing off on this KR** \u2014 it is the single most important unknown in this entire OKR set.\n\n---\n\n## Expert Analysis\n\n### Causal Chain Is Correct\nThe sequencing \u2014 fix churn \u2192 mechanize onboarding \u2192 accelerate growth \u2014 is exactly right under Doerr's \"less is more\" principle. Pouring acquisition dollars into a 2.1% monthly churn bucket is a treadmill. These three OKRs have a clear causal dependency and should be communicated to the team as a chain, not three parallel initiatives.\n\n### Critical Gaps\n\n| Gap | Risk | Action |\n|---|---|---|\n| **No churn reason data** | KR 1 work is guesswork without it | Start exit interviews this week \u2014 contacts go cold fast |\n| **Current new-clinic acquisition rate unknown** | KR 3.1 target cannot be validated | Pull from CRM immediately |\n| **Multi-site group pipeline unquantified** | KR 3.3 targets are pure assumptions | Sales alignment meeting by Oct 22 |\n| **Engineering capacity not scoped** | Self-serve wizard may not ship in 11 weeks | Require scoping before locking OKR 2 |\n| **No defined \"multi-site group\" ICP** | Sales could pursue wrong accounts with freed time | Define \u2265 2 locations + Target: TBD ACV threshold as qualification criteria |\n\n---\n\n## Company-Level OKR Alignment\n\nThese OKRs should roll up to the following **presumed company-level objectives** \u2014 confirm with leadership:\n\n| Presumed Company OKR | Pawpath OKR That Feeds It |\n|---|---|\n| Grow company ARR to **[company target \u2014 TBD]** | OKR 3 (KR 3.1, 3.2, 3.3) |\n| Achieve net revenue retention **> 100%** | OKR 1 (churn reduction is the primary driver) |\n| Move upmarket toward multi-site and group accounts | OKR 2 unlocks OKR 3's group KRs |\n| Reduce cost-to-serve per customer | OKR 2 (self-serve reduces specialist cost per clinic) |\n\n> **Recommendation:** If no company-level OKRs exist, this set effectively *is* the company-level plan. In that case, add a fourth objective owning the multi-site commercial motion explicitly \u2014 the current plan assumes group revenue materializes organically from freed capacity, which is too passive a bet to leave unowned.\n\n---\n\n## Prioritized Next Steps\n\n**By Oct 18 (this week)**\n1. **Engineering scoping session** \u2014 scope self-serve onboarding wizard MVP; confirm a realistic ship date before KR 2.1's 65% target is locked.\n2. **Pull current monthly new-clinic activation rate from CRM** \u2014 required to validate or revise KR 3.1.\n\n**By Oct 22 (end of week 2)**\n3. **Instrument 90-day cohort retention and time-to-first-core-action** \u2014 without these, KRs 1.2 and 1.3 are unscoreable.\n4. **Begin exit interviews with all recently churned clinics** \u2014 contacts go cold; start immediately.\n5. **Sales alignment on multi-site pipeline** \u2014 validate the Target: $20K ACV assumption; build a target account list.\n\n**By Oct 29 (week 3)**\n6. **Revise any KR targets** that scoping reveals are unreachable in 11 weeks \u2014 move them to H1 2027 rather than carry unachievable commitments.\n7. **Publish a shared OKR dashboard** with weekly check-in cadence across product, engineering, and onboarding. Doerr's CFR rhythm (Conversations, Feedback, Recognition) is what makes OKRs live beyond this document.\n\n---\n\n*Prepared by [account name from CLI context] | Fernway Labs \u2014 Pawpath | October 15, 2026*"
+    },
+    {
+      "key": "discovery/jtbd",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 58079,
+      "outputTokensVisible": 2324,
+      "chars": 9718,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "functional jobs",
+          "ok": true
+        },
+        {
+          "label": "emotional jobs",
+          "ok": true
+        },
+        {
+          "label": "social jobs",
+          "ok": true
+        },
+        {
+          "label": "hiring criteria",
+          "ok": true
+        },
+        {
+          "label": "competing solutions",
+          "ok": true
+        },
+        {
+          "label": "switching triggers",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "job statements in 'When ..., I want to ..., so I can ...' form (3+)",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 5,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "'Under 2 minutes' is the desired outcome in a user job story ('I want to... so I can'), so it reads as an aspiration, not a measured fact. This is a borderline call because there is no explicit label word such as 'target'.",
+          "sentence": "- **When** a client calls to reschedule, **I want to** see all vet availability in one view instantly, **so I can** resolve the call in under 2 minutes without cross-referencing a paper diary."
+        },
+        {
+          "n": 2,
+          "verdict": "INPUT",
+          "reason": "'6 of 8' restates the input: six of the eight interviewed clinics had used a paper diary plus a shared spreadsheet.",
+          "sentence": "### Primary Incumbent (6 of 8 clinics)"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "'90 days' is the time frame of an open research question, and the sentence says no outcome data exists.",
+          "sentence": "3. **What does \"success\" look like at 90 days?** No post-switch outcome data was collected."
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "The sentence explicitly calls '6 weeks' a target timeline.",
+          "sentence": "Target completion within 6 weeks to feed the next messaging iteration."
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "The sentence explicitly calls '30 days' and 'at least one' self-booking an assumption to validate.",
+          "sentence": "Assumption to validate: a measurable proxy for \"job completed\" could be zero double bookings in the first 30 days + at least one self-booking received outside clinic hours."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Why Clinics Switch to Pawpath\n### Jobs-to-be-Done Analysis \u2014 Independent Vet Clinics\n*Prepared for: Pawpath Product Team | Date: 15 October 2026*\n\n---\n\nAcross 8 interviews with clinic managers who switched to Pawpath within the last year, a consistent pattern emerges: independent vet clinics are not primarily buying scheduling software \u2014 they are hiring a solution to **reclaim professional dignity and personal time**. The dominant \"competitor\" is not another SaaS product; it is a patchwork of a paper diary plus a shared spreadsheet, used by 6 of the 8 managers interviewed. Three trigger events repeatedly cause the switch: unrelenting phone volume, a visible double-booking failure in front of a client, and the creep of admin work into evenings. Pawpath's messaging and onboarding must speak to these moments of crisis, not to feature lists.\n\n---\n\n## Functional Jobs\n\nThese are the operational tasks clinic managers are trying to accomplish.\n\n### Core Functional Jobs\n\n- **When** the reception desk is overwhelmed with incoming calls, **I want to** let clients self-book online at any hour, **so I can** reduce inbound call volume and keep the desk focused on in-clinic care.\n\n- **When** two staff members update the same appointment slot from different locations, **I want to** have a single, real-time source of truth for availability, **so I can** eliminate double bookings before they reach the client.\n\n- **When** I leave the clinic at the end of the day, **I want to** know the schedule is locked and confirmed, **so I can** stop monitoring a shared spreadsheet from home.\n\n- **When** a client calls to reschedule, **I want to** see all vet availability in one view instantly, **so I can** resolve the call in under 2 minutes without cross-referencing a paper diary.\n\n- **When** a new receptionist joins, **I want to** hand them a system they can learn quickly, **so I can** avoid retraining on paper-based workarounds.\n\n---\n\n## Emotional Jobs\n\nThese capture how clinic managers want to *feel* \u2014 and stop feeling \u2014 as a result of the switch.\n\n### Relief from Chronic Stress\n\n- **When** the phone rings for the tenth time in an hour, **I want to** feel confident the booking process is under control, **so I can** stop bracing for the next scheduling crisis.\n\n- **When** a double booking has embarrassed me in front of a client, **I want to** feel that my clinic runs professionally, **so I can** rebuild trust with that client and protect the clinic's reputation.\n\n### Ownership of Personal Time\n\n- **When** it is 8 p.m. and I am checking a spreadsheet, **I want to** feel that my working day is genuinely over, **so I can** be present at home without the clinic following me.\n\n- **When** I hand off to a locum or part-time vet, **I want to** feel in control of the schedule I cannot physically monitor, **so I can** trust the day will run as planned.\n\n### Professional Identity\n\n- **When** a long-standing client remarks on how smooth the booking process is, **I want to** feel that the clinic reflects the standard of care I aim for, **so I can** feel proud of what I have built.\n\n---\n\n## Social Jobs\n\nThese are the impressions clinic managers want to create \u2014 or avoid \u2014 with clients, staff, and peers.\n\n- **When** a client arrives and there is a scheduling conflict, **I want to** appear organised and in control, **so I can** signal that my clinic is as capable as any larger practice.\n\n- **When** my staff complain about booking chaos, **I want to** be seen as a manager who solves problems decisively, **so I can** maintain authority and team morale.\n\n- **When** a fellow independent clinic owner asks how I manage appointments, **I want to** be the person who has figured it out, **so I can** position myself as a competent operator, not someone still using a paper diary.\n\n---\n\n## Hiring Criteria\n\nWhat managers use \u2014 consciously or not \u2014 to evaluate whether a solution deserves the job.\n\n| Criterion | Signal from Interviews |\n|---|---|\n| **Eliminates double bookings** | \"Double bookings embarrassed us\" \u2014 zero tolerance; a single recurrence disqualifies a tool |\n| **Reduces inbound call volume** | \"Phones never stopped ringing\" \u2014 measurable relief expected within weeks of going live |\n| **Works outside clinic hours** | \"I wanted my evenings back\" \u2014 24/7 self-booking is a threshold requirement, not a differentiator |\n| **Adoptable by all staff** | Paper + spreadsheet used by 6 of 8 \u2014 staff must abandon entrenched habits; friction must be near zero |\n| **Trustworthy as a single source** | Dual-system failure (diary + spreadsheet) was the pain source; consolidation into one system is the hire |\n\n---\n\n## Competing Solutions\n\nWhat the job was given to *before* Pawpath.\n\n### Primary Incumbent (6 of 8 clinics)\n**Paper diary + shared spreadsheet** \u2014 the dominant prior solution. Not chosen for its quality; inherited by default. Its failure modes (concurrent edits, no mobile access, no client self-service) are the direct cause of switching.\n\n### Secondary Competitors\n*(No additional products named in interviews \u2014 see Gaps section)*\n\n- **Assumption to validate:** Some clinics may have trialled a competing scheduling SaaS before or alongside the paper/spreadsheet system. This is unconfirmed from the 8 interviews.\n- **Assumption to validate:** Phone-based manual booking (receptionist as the only booking channel) may function as a competing \"solution\" even inside clinics that had no software at all.\n\n---\n\n## Switching Triggers\n\nThe specific moments that converted passive dissatisfaction into active search and purchase.\n\n### Trigger 1 \u2014 The Embarrassment Event\n> *\"Double bookings embarrassed us in front of clients.\"*\n\nA public failure with a real client present. This is a **social identity threat**, not just an operational inconvenience. It creates urgency because the manager's competence is visible to others. Onboarding messaging should acknowledge this moment explicitly.\n\n### Trigger 2 \u2014 Demand Overload\n> *\"Our phones never stopped ringing.\"*\n\nVolume crossed a threshold where the reception desk could no longer handle calls while also providing in-clinic service. This is a **capacity constraint**, not a preference. It forces action because the status quo is actively harming the client experience.\n\n### Trigger 3 \u2014 Work-Life Boundary Collapse\n> *\"I wanted my evenings back.\"*\n\nThe shared spreadsheet followed managers home. The trigger here is **personal cost accumulation** \u2014 the realisation that the workaround had consumed time that was not meant to be work time. This is the most emotionally loaded trigger and the most potent for retention messaging post-switch.\n\n---\n\n## Identified Gaps in Current Research\n\nThe 8 interviews are a strong start, but the following are **unknown and should be validated**:\n\n1. **What other software was considered before Pawpath?** No competing SaaS products were named. Without this, Pawpath cannot benchmark its conversion advantages or anticipate objections.\n2. **Who else has a vote in the purchase?** Clinic owners vs. practice managers vs. head vets \u2014 the decision-maker and the job-sufferer may not be the same person.\n3. **What does \"success\" look like at 90 days?** No post-switch outcome data was collected. Retention and expansion depend on whether the hired job was actually completed.\n4. **What almost prevented the switch?** Price, IT concerns, data migration, staff resistance \u2014 none of these friction points were captured and they are critical for onboarding flow design.\n5. **Are there clinics who evaluated Pawpath and did not switch?** Understanding the lost deals surfaces unmet hiring criteria or disqualifying weaknesses.\n\n---\n\n## Prioritized Next Steps\n\nOrdered by impact on the stated goals: sharper messaging and improved onboarding flow.\n\n**1. Rewrite the hero message around the three switching triggers** *(High impact / Low effort)*\nReplace feature-led copy with trigger-led copy. Lead with the embarrassment and overload moments. Example: *\"No more double bookings. No more evenings at the spreadsheet.\"* Both phrases map directly to confirmed triggers.\n\n**2. Build the onboarding flow around the paper+spreadsheet migrant** *(High impact / Medium effort)*\n6 of 8 switchers came from paper + shared spreadsheet. The onboarding must treat this as the default prior state: import existing appointments, retire the spreadsheet on day one, and celebrate the first successful self-booking as a milestone. Do not assume any prior software familiarity.\n\n**3. Conduct 4\u20136 additional interviews focused on gaps** *(High impact / Medium effort)*\nPrioritise: (a) clinics that evaluated but did not purchase, (b) clinics with a multi-person decision process, and (c) clinics that churned. Target completion within 6 weeks to feed the next messaging iteration.\n\n**4. Add a \"moments of doubt\" question to the onboarding survey** *(Medium impact / Low effort)*\nAsk every new clinic: *\"What almost stopped you from switching?\"* This surfaces friction data at scale with zero additional research cost and directly informs objection handling in sales and onboarding copy.\n\n**5. Define and instrument a \"job done\" metric** *(Medium impact / Medium effort)*\nAssumption to validate: a measurable proxy for \"job completed\" could be zero double bookings in the first 30 days + at least one self-booking received outside clinic hours. Instrument both events and use them as the activation milestone in onboarding communications. Without a job-done metric, feature adoption data will mislead retention decisions.\n\n---\n\n*Analysis based on 8 clinic manager interviews provided by the Pawpath product team. All figures cited reflect interview data as reported. Figures labelled \"Assumption\" are hypotheses to be validated.*"
+    },
+    {
+      "key": "strategy/risk-register",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 81241,
+      "outputTokensVisible": 2800,
+      "chars": 9622,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "severity",
+          "ok": true
+        },
+        {
+          "label": "likelihood",
+          "ok": true
+        },
+        {
+          "label": "risk score",
+          "ok": true
+        },
+        {
+          "label": "mitigation",
+          "ok": true
+        },
+        {
+          "label": "owners",
+          "ok": true
+        },
+        {
+          "label": "missing risks / clusters",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "severity x likelihood scoring shown",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 4,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 2-week PTO blackout is presented as a proposed policy, which is a plan parameter. It is tied to the 30 November contract end date from the input.",
+          "sentence": "- **Policy:** Engineer takes no PTO during the final 2 weeks (2026-11-16\u201330)."
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "The >5% alert threshold is explicitly marked 'Assumption'.",
+          "sentence": "- **Monitoring:** Real-time delivery-rate dashboard from day 1; alert threshold set at Assumption: >5% failure rate per hour."
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "The 10% sample-test figure is explicitly marked 'Assumption'.",
+          "sentence": "Sample-test Assumption: 10% of clinics manually post-migration."
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "The 50 clinics/day figure is given as an example ('e.g.') of a proposed cohort rollout.",
+          "sentence": "- **Action:** Migration in cohorts (e.g., 50 clinics/day) rather than a single big-bang cutover, allowing controlled validation."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Pawpath SMS Reminders Launch Risks\n\n**Risk Register | FMEA Framework | Date: 2026-10-15 | Owner: TBD**\n\nPawpath faces a hard-deadline migration of SMS reminders to a new vendor by 30 November \u2014 a 6-week window with compounding risk factors: an untested vendor throughput ceiling, two regions requiring 3\u20134 weeks of sender-ID registration, a single engineer holding all messaging knowledge, and a support environment already under stress (missed-reminder tickets doubled last month). Any one of these conditions would warrant close monitoring; together, they create correlated failure paths that could leave some or all of 410 clinics unable to send reminders on day one of the new contract.\n\n---\n\n## Risk Register Summary\n\nScoring scale \u2014 **Severity (S) 1\u20135 \u00b7 Likelihood (L) 1\u20135 \u00b7 Score = S \u00d7 L**\n\n| ID | Risk Title | S | L | Score | Priority |\n|----|-----------|---|---|-------|----------|\n| **R-01** | Sender-ID registration misses cutover deadline for 2 regions | 5 | 4 | **20** | \ud83d\udd34 Critical |\n| **R-02** | Single messaging engineer unavailable during cutover | 5 | 3 | **15** | \ud83d\udd34 Critical |\n| **R-03** | Vendor throughput failure under peak load | 4 | 3 | **12** | \ud83d\udfe0 High |\n| **R-04** | No rollback path after 30 Nov contract end | 5 | 2 | **10** | \ud83d\udfe0 High |\n| **R-05** | Pre-existing reminder failures mask post-migration defects | 3 | 4 | **12** | \ud83d\udfe0 High |\n| **R-06** | Clinic configuration / phone-number data migration errors | 4 | 3 | **12** | \ud83d\udfe0 High |\n| **R-07** | New vendor API integration defects in production | 4 | 3 | **12** | \ud83d\udfe0 High |\n| **R-08** | Opt-in / consent data lost or corrupted during migration | 4 | 2 | **8** | \ud83d\udfe1 Medium |\n| **R-09** | Regulatory non-compliance with new sender IDs (TCPA/other) | 4 | 2 | **8** | \ud83d\udfe1 Medium |\n| **R-10** | Clinics unaware of sender-ID changes; patients block messages | 3 | 3 | **9** | \ud83d\udfe1 Medium |\n\n---\n\n## FMEA Deep-Dive: Critical & High Risks\n\n### R-01 \u2014 Sender-ID Registration Delay (Score: 20)\n\n| FMEA Dimension | Detail |\n|---|---|\n| **Failure Mode** | 3\u20134 week registration process not initiated immediately; bureaucratic delays push approval past 30 Nov |\n| **Effect** | Clinics in 2 regions send zero reminders from day 1; patient no-shows increase |\n| **Detection (D)** | 2 \u2014 registration status is easy to track if monitored daily |\n| **RPN (S\u00d7L\u00d7D)** | 5 \u00d7 4 \u00d7 2 = **40** |\n\n**Mitigation:**\n- **Owner:** Engineering Lead + Vendor Account Manager\n- **Action:** Submit sender-ID registration applications for both regions **by 2026-10-19** (Day 4). Treat this as the single most urgent action in the project.\n- **Contingency:** Negotiate with new vendor to use a shared short-code or toll-free number as a temporary fallback for those 2 regions while dedicated sender IDs are processed.\n- **Monitoring:** Daily status check with vendor; escalation path defined if no approval by Week 4 (2026-11-12).\n\n---\n\n### R-02 \u2014 Single Engineer as Single Point of Failure (Score: 15)\n\n| FMEA Dimension | Detail |\n|---|---|\n| **Failure Mode** | The one messaging engineer is sick, on leave, or leaves the company during the 6-week window |\n| **Effect** | Migration halts; no one can troubleshoot outages, configure the new API, or execute rollback procedures |\n| **Detection (D)** | 4 \u2014 absence is obvious but damage is immediate with no backup |\n| **RPN (S\u00d7L\u00d7D)** | 5 \u00d7 3 \u00d7 4 = **60** |\n\n**Mitigation:**\n- **Owner:** Engineering Manager\n- **Action by 2026-10-22:** Conduct 2 knowledge-transfer sessions. Document all messaging system architecture, API credentials, and runbooks in a shared wiki.\n- **Action by 2026-10-29:** Cross-train at least one additional engineer to handle the new vendor's API and deployment pipeline.\n- **Policy:** Engineer takes no PTO during the final 2 weeks (2026-11-16\u201330). Confirm vendor provides 24/7 emergency support with a named contact.\n\n---\n\n### R-03 \u2014 Vendor Throughput Failure Under Peak Load (Score: 12)\n\n| FMEA Dimension | Detail |\n|---|---|\n| **Failure Mode** | Vendor has not been tested above 20,000 messages/hour; batch sends or morning peaks cause message queuing, delays, or drops |\n| **Effect** | Reminders arrive late or not at all; patient appointment adherence drops; clinic trust erodes |\n| **Detection (D)** | 3 \u2014 delivery latency alerts can catch this quickly if monitoring exists |\n| **RPN (S\u00d7L\u00d7D)** | 4 \u00d7 3 \u00d7 3 = **36** |\n\n**Mitigation:**\n- **Owner:** Engineer + Vendor Solutions Architect\n- **Action by 2026-10-29:** Run a load test simulating Assumption: peak morning batch (estimated TBD \u2014 PM to confirm worst-case hourly volume from current vendor logs). Require vendor written SLA on throughput before cutover.\n- **Action:** Implement send-time smoothing: spread clinic reminders across a wider window rather than batch-firing at a fixed time.\n- **Monitoring:** Real-time delivery-rate dashboard from day 1; alert threshold set at Assumption: >5% failure rate per hour.\n\n---\n\n### R-04 \u2014 No Rollback Path After 30 Nov (Score: 10)\n\n| FMEA Dimension | Detail |\n|---|---|\n| **Failure Mode** | New vendor fails critically post-cutover; old contract is terminated |\n| **Effect** | Total SMS outage for 410 clinics with no fast recovery path |\n| **Detection (D)** | 1 \u2014 outage is immediately visible |\n| **RPN** | 5 \u00d7 2 \u00d7 1 = **10** |\n\n**Mitigation:**\n- **Owner:** PM + Procurement\n- **Action by 2026-10-22:** Evaluate a secondary emergency SMS vendor (e.g., configure a backup account with a different provider) as a cold standby requiring Assumption: <4 hours to activate. Pre-negotiate terms now.\n- **Action:** Negotiate a 2-week grace period with the old vendor for emergency re-activation at a premium \u2014 even if unlikely to succeed, attempt it.\n\n---\n\n### R-05 \u2014 Pre-Existing Failures Masking Post-Migration Issues (Score: 12)\n\n**Failure Mode:** Support tickets about missed reminders already doubled last month. Post-migration, it will be unclear whether failures stem from the new vendor or pre-existing bugs.\n\n**Mitigation:**\n- **Owner:** Support Lead + Engineer\n- **Action by 2026-10-22:** Investigate and document the root cause of current missed reminders. Establish a clear pre-migration failure-rate baseline (count and category).\n- **Action:** Tag all new-vendor-routed messages in logs from cutover day so failures can be attributed correctly.\n\n---\n\n### R-06 \u2014 Clinic Configuration / Data Migration Errors (Score: 12)\n\n**Failure Mode:** With 410 clinics, mapping errors (wrong phone numbers, wrong sender IDs, misconfigured templates) silently affect subsets of clinics.\n\n**Mitigation:**\n- **Owner:** Engineer + QA\n- **Action by 2026-11-09:** Automated validation script confirms all 410 clinic records are correctly mapped in the new vendor's system. Sample-test Assumption: 10% of clinics manually post-migration.\n- **Action:** Migration in cohorts (e.g., 50 clinics/day) rather than a single big-bang cutover, allowing controlled validation.\n\n---\n\n## Risk Clusters and Correlations\n\n- **Timeline Compression Cluster (R-01 + R-02 + R-04):** All three risks become catastrophic simultaneously if sender-ID registration is delayed AND the engineer is unavailable AND the old contract has lapsed. These risks are strongly correlated and should be treated as a single compound scenario.\n- **Quality-Signal Noise Cluster (R-05 + R-06 + R-07):** Existing support noise, data migration errors, and API bugs will be impossible to distinguish in production without deliberate logging and baselining done *before* cutover.\n- **Regulatory Cluster (R-09 + R-01):** Sender-ID delays in some regions may also create regulatory exposure if messages are sent from an unregistered ID \u2014 the same root cause has two independent consequences.\n\n---\n\n## Identified Gaps (Risks Not in PM's Input)\n\n- **Timezone handling:** With 410 clinics, reminder scheduling across time zones may behave differently on the new platform. Not mentioned \u2014 needs explicit testing.\n- **Message format / character encoding:** Vendor differences in Unicode handling or message splitting (160-char SMS limit) can silently truncate clinic messages.\n- **Opt-in/consent data portability (R-08):** No mention of how patient consent records will be validated or transferred. This is a legal liability (TCPA and potentially HIPAA-adjacent).\n- **Clinic communication plan (R-10):** Clinics and patients seeing a new sender ID may treat it as spam. A pre-launch communication to all 410 clinics is not mentioned.\n- **Vendor financial/operational stability:** New vendor's ability to sustain operations at scale is unverified \u2014 no due-diligence findings were provided.\n\n---\n\n## Prioritized Next Steps\n\n| # | Action | Owner | Deadline |\n|---|--------|-------|----------|\n| 1 | **Submit sender-ID registration for both regions immediately** | Engineer + Vendor AM | **2026-10-19** |\n| 2 | **Investigate root cause of doubled support tickets; set failure-rate baseline** | Support Lead + Engineer | **2026-10-22** |\n| 3 | **Begin knowledge-transfer; document all messaging runbooks** | Engineering Manager | **2026-10-22** |\n| 4 | **Identify and pre-contract a backup/emergency SMS vendor** | PM + Procurement | **2026-10-22** |\n| 5 | **Confirm worst-case hourly send volume from old vendor logs; run load test** | Engineer + Vendor | **2026-10-29** |\n| 6 | **Build automated 410-clinic config validation script** | Engineer | **2026-11-09** |\n| 7 | **Execute phased cohort migration (not big-bang cutover)** | Engineer | **2026-11-16 start** |\n| 8 | **Confirm delivery-rate alerting live from day 1 of new vendor** | Engineer | **2026-11-30** |\n\n> **Standing weekly risk review recommended every Thursday starting 2026-10-16 until 2026-12-07.**"
+    },
+    {
+      "key": "strategy/north-star",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 95016,
+      "outputTokensVisible": 2664,
+      "chars": 11252,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "north star metric",
+          "ok": true
+        },
+        {
+          "label": "input metrics",
+          "ok": true
+        },
+        {
+          "label": "counter metrics",
+          "ok": true
+        },
+        {
+          "label": "targets",
+          "ok": true
+        },
+        {
+          "label": "initiatives mapped",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "single north star named",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 12,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 60% figure is a hypothetical example (\"If a clinic only enters 60%...\") used to show a mathematical cap. It is not stated as a fact.",
+          "sentence": "If a clinic only enters 60% of appointments into Pawpath, the confirmation rate can never exceed 60% for that clinic \u2014 regardless of how well reminders perform."
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "95%+ is explicitly marked \"Target\".",
+          "sentence": "A Target: 95%+ delivery rate should be the floor; anything below this silently suppresses the NSM."
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "The 80% comes from the input. The 60-day window is a proposed metric-definition parameter, and the next sentence flags it as an assumption.",
+          "sentence": "**Definition:** % of newly onboarded clinics that reach \u226580% appointment confirmation rate within their first 60 days."
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "The 60-day window is explicitly marked \"Assumption\" and needs validating.",
+          "sentence": "This metric identifies whether onboarding sets clinics up for success or leaves them to figure it out independently \u2014 and it is a leading indicator of future NSM health. **Assumption:** 60 days is a reasonable activation window; validate against actual time-to-first-confirmation data."
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "52% is the baseline from the input. 70% is marked \"Target\" and 75% \"Stretch\".",
+          "sentence": "| **Appointment Confirmation Rate (NSM)** | **52%** | **Target: 70%** | Stretch: 75%."
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "50% is marked \"Target\" and 30 days is a plan timeline. The 80% threshold comes from the input.",
+          "sentence": "| Clinics at \u226580% confirmation rate | TBD \u2014 measure immediately | **Target: 50% of active clinics** | Baseline unknown; establish within 30 days |"
+        },
+        {
+          "n": 7,
+          "verdict": "LABELLED",
+          "reason": "90%+ is marked \"Target\" and the below-85% figure is marked \"Assumption\".",
+          "sentence": "| Clinic Appointment Ingestion Rate | TBD | **Target: 90%+** | Assumption: currently below 85% for many clinics |"
+        },
+        {
+          "n": 8,
+          "verdict": "LABELLED",
+          "reason": "95%+ is marked \"Target\".",
+          "sentence": "| Reminder Delivery Rate | TBD | **Target: 95%+** | Assumption: currently unmeasured |"
+        },
+        {
+          "n": 9,
+          "verdict": "LABELLED",
+          "reason": "65%+ is marked \"Target\".",
+          "sentence": "| Pet Owner Response Rate | TBD | **Target: 65%+** | Assumption: currently unmeasured |"
+        },
+        {
+          "n": 10,
+          "verdict": "LABELLED",
+          "reason": "70% is marked \"Target\" and the below-50% figure is marked \"Assumption\".",
+          "sentence": "| New Clinic 60-Day Activation Rate | TBD | **Target: 70% of new clinics** | Assumption: currently below 50% |"
+        },
+        {
+          "n": 11,
+          "verdict": "LABELLED",
+          "reason": "The 2-hour window is marked as an example (\"e.g.\") and an \"Assumption\".",
+          "sentence": "- **Channel fallback logic:** Automatically retry a failed SMS reminder via email within a defined window (e.g., Assumption: 2 hours before the reminder deadline)."
+        },
+        {
+          "n": 12,
+          "verdict": "LABELLED",
+          "reason": "72, 48 and 24 hours are proposed A/B test settings, not stated as facts.",
+          "sentence": "- **Reminder timing optimization:** A/B test sending reminders at 72 hours, 48 hours, and 24 hours before appointments to find peak response windows."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Pawpath North Star\n\nPawpath's retention data reveals a clear activation threshold: clinics that confirm at least 80% of their appointments through Pawpath reminders renew at a materially higher rate than those that do not, yet today only 52% of booked appointments are confirmed via the platform. This document defines the single metric that best captures the value Pawpath delivers to clinics and pet owners, identifies the operational levers the team can move, and translates them into a prioritized growth roadmap. Closing the gap between 52% and 80% is not just a product goal \u2014 it is the most direct path to protecting and compounding recurring revenue.\n\n---\n\n## North Star Metric\n\n### **Appointment Confirmation Rate via Pawpath**\n*The percentage of all booked appointments across active clinics that receive a confirmed response through a Pawpath-delivered reminder.*\n\n**Current baseline:** 52%\n**Why this metric, not another:**\n\n- **It reflects value to both sides of the marketplace.** A confirmed appointment means the clinic has near-certainty a chair is filled and can plan staffing accordingly; the pet owner has acknowledged the visit and is less likely to miss care for their animal.\n- **It is the proven retention signal.** Pawpath's own data links the \u226580% threshold to significantly higher renewal rates \u2014 this metric is therefore simultaneously a product health signal and a leading revenue indicator.\n- **The team can move it.** Every lever below (reminder delivery, clinic ingestion, response behavior) is within the product and go-to-market team's control.\n- **It is unambiguous.** \"Confirmed via Pawpath\" has a binary outcome per appointment, making measurement, accountability, and debugging straightforward.\n\n**What it is not:** Total appointments booked, total revenue, or a satisfaction score. Those are either lagging outcomes or too indirect to drive daily decision-making.\n\n---\n\n## Input Metrics\n\nThese are the 5 levers whose collective improvement moves the North Star.\n\n### 1. Clinic Appointment Ingestion Rate\n**Definition:** % of a clinic's total booked appointments that are entered into Pawpath (manually, via integration, or via import).\n\n**Why it matters:** This is the ceiling of the North Star. If a clinic only enters 60% of appointments into Pawpath, the confirmation rate can never exceed 60% for that clinic \u2014 regardless of how well reminders perform. This is likely a silent depressor of the current 52% baseline.\n\n**Assumption to validate:** A portion of the gap between 52% and 80% may be explained entirely by incomplete appointment ingestion rather than reminder performance.\n\n### 2. Reminder Delivery Rate\n**Definition:** % of sent reminders that are successfully delivered (not bounced, blocked, or undelivered) across all active channels (SMS, email, app push).\n\n**Why it matters:** Undelivered reminders produce zero confirmations. Deliverability issues \u2014 stale phone numbers, spam filters, carrier blocks \u2014 are invisible unless actively tracked. A Target: 95%+ delivery rate should be the floor; anything below this silently suppresses the NSM.\n\n### 3. Pet Owner Response Rate\n**Definition:** % of successfully delivered reminders that receive a confirmation (or cancellation) reply within the reminder window.\n\n**Why it matters:** This is the core engagement metric \u2014 it measures whether Pawpath's reminder experience is compelling enough to prompt action. Low response rates indicate issues with timing, channel preference, message copy, or confirmation UX friction.\n\n### 4. Multi-Channel Reachability per Pet Owner Contact\n**Definition:** % of pet owner contact records with at least two valid, active channels (e.g., SMS + email, or email + app).\n\n**Why it matters:** Single-channel contacts represent a single point of failure. If that channel fails (number changed, email bounced), the reminder never lands. Building redundancy into contact profiles is a structural improvement to delivery and response rates.\n\n### 5. New Clinic Activation Rate (60-Day)\n**Definition:** % of newly onboarded clinics that reach \u226580% appointment confirmation rate within their first 60 days.\n\n**Why it matters:** Clinics that hit the activation threshold early are more likely to sustain it and renew. This metric identifies whether onboarding sets clinics up for success or leaves them to figure it out independently \u2014 and it is a leading indicator of future NSM health. **Assumption:** 60 days is a reasonable activation window; validate against actual time-to-first-confirmation data.\n\n---\n\n## Counter Metrics\n\nThese metrics ensure the team does not optimize the North Star at the expense of product health or customer experience.\n\n- **Pet Owner Opt-Out Rate** \u2014 Aggressive reminder cadences or poorly timed messages may inflate short-term response rates while eroding the reachable contact base. If opt-outs rise as response rate rises, the strategy is unsustainable.\n- **False Confirmation Rate** \u2014 % of \"confirmed\" appointments that still result in a no-show. If this rises, the NSM becomes a vanity metric disconnected from actual clinic value. Track confirmed-but-no-showed as a separate signal.\n- **Clinic Support Ticket Volume (Reminder-Related)** \u2014 A rising NSM alongside rising support tickets may signal that the confirmation workflow is becoming burdensome for clinic staff.\n- **Clinic Churn Rate** \u2014 The ultimate lagging counter metric. If NSM improves but churn does not fall within two quarters, revisit whether the 80% threshold is the correct activation signal or whether other factors (pricing, competition, clinic size) are confounding the renewal data.\n\n---\n\n## Targets\n\n| Metric | Current | Target (12-month) | Notes |\n|---|---|---|---|\n| **Appointment Confirmation Rate (NSM)** | **52%** | **Target: 70%** | Stretch: 75%. Assumption: achievable without major platform rebuild |\n| Clinics at \u226580% confirmation rate | TBD \u2014 measure immediately | **Target: 50% of active clinics** | Baseline unknown; establish within 30 days |\n| Clinic Appointment Ingestion Rate | TBD | **Target: 90%+** | Assumption: currently below 85% for many clinics |\n| Reminder Delivery Rate | TBD | **Target: 95%+** | Assumption: currently unmeasured |\n| Pet Owner Response Rate | TBD | **Target: 65%+** | Assumption: currently unmeasured |\n| New Clinic 60-Day Activation Rate | TBD | **Target: 70% of new clinics** | Assumption: currently below 50% |\n\n---\n\n## Initiatives Mapped to Input Metrics\n\n### Ingestion Rate\n- **EHR/PMS integrations:** Build or deepen integrations with the top 3 practice management systems used by current clinics \u2014 this automates appointment sync and eliminates manual entry as a bottleneck. **Assumption:** identify top PMS platforms from clinic survey; currently unknown.\n- **Bulk import and sync audit:** Surface a \"missing appointments\" alert in the clinic dashboard when Pawpath detects fewer appointments than expected based on historical patterns.\n\n### Reminder Delivery Rate\n- **Contact hygiene workflow:** Prompt clinics (or pet owners) to validate/update contact details at check-in or via a periodic verification reminder.\n- **Channel fallback logic:** Automatically retry a failed SMS reminder via email within a defined window (e.g., Assumption: 2 hours before the reminder deadline).\n\n### Pet Owner Response Rate\n- **Reminder timing optimization:** A/B test sending reminders at 72 hours, 48 hours, and 24 hours before appointments to find peak response windows.\n- **One-tap confirmation UX:** Reduce confirmation to a single tap from the reminder message \u2014 no login, no form. Measure response rate before and after.\n- **Message copy refresh:** Test plain-language, pet-personalized copy (using pet name, appointment type) against generic templates.\n\n### Multi-Channel Reachability\n- **Dual-channel enrollment nudge:** During new patient registration flow (clinic-side), surface a prompt requiring at least two contact methods before the record is marked complete.\n- **Pawpath pet owner app:** **Expert recommendation (gap identified):** If a native app does not exist, a lightweight pet owner app with push notifications would add a zero-cost, high-reliability third channel. This is a medium-term initiative.\n\n### New Clinic Activation Rate\n- **Structured onboarding playbook:** Create a 4-week activation program with milestone check-ins at day 7, 14, and 30. The program ends only when the clinic crosses 80% confirmation rate for one full week.\n- **In-app activation dashboard:** Give clinics real-time visibility into their own confirmation rate vs. the 80% threshold, with guided recommendations to close the gap.\n\n---\n\n## Identified Gaps & Expert Analysis\n\nThe PM's input is directionally strong but leaves several unknowns that must be resolved before the team commits to targets:\n\n1. **Root cause of the 52% baseline is unknown.** The NSM could be suppressed by ingestion gaps, delivery failures, or low response rates \u2014 or all three. A diagnostic breakdown (ingestion \u00d7 delivery \u00d7 response) should be run immediately. This changes which input metric to prioritize first.\n2. **The renewal rate differential is unquantified.** Knowing that clinics at \u226580% renew at a \"much higher rate\" is compelling, but the team should quantify the delta (e.g., Assumption: 30\u201340 percentage points higher renewal \u2014 validate against internal cohort data). This number is the business case for every initiative above.\n3. **Clinic segmentation is missing.** Small single-vet practices and large multi-location clinics likely have very different ingestion and activation patterns. Segmented NSM targets may be needed.\n4. **Pet owner channel preferences are unknown.** Building multi-channel reachability without knowing whether pet owners prefer SMS vs. email vs. app is guesswork. A short survey or response-rate analysis by channel should precede channel investment decisions.\n\n---\n\n## Prioritized Next Steps\n\n1. **[Week 1\u20132] Diagnose the 52% baseline.** Decompose current confirmation rate into: appointments ingested \u00f7 booked \u00d7 delivered reminders \u00f7 ingested \u00d7 confirmations \u00f7 delivered. This single analysis tells you where the biggest lever is.\n2. **[Week 2\u20134] Establish missing baselines.** Instrument and begin tracking Ingestion Rate, Delivery Rate, Response Rate, and False Confirmation Rate. You cannot manage what you do not measure.\n3. **[Month 1\u20132] Quantify the renewal rate gap.** Pull a cohort analysis comparing renewal rates for clinics above and below 80% confirmation rate. Attach a dollar figure to closing the gap \u2014 this becomes the internal business case for resourcing initiatives.\n4. **[Month 2\u20133] Ship one-tap confirmation UX.** Lowest-friction, highest-impact improvement to Response Rate. No integration dependency; ships fast.\n5. **[Month 2\u20134] Build or deepen top PMS integration.** Highest-leverage structural fix if ingestion rate is identified in Step 1 as the primary constraint.\n6. **[Month 3\u20136] Launch structured onboarding playbook.** Redirect CSM effort toward the 60-day activation milestone for all new clinics; measure activation rate monthly.\n7. **[Ongoing] Review NSM and counter metrics monthly** in a shared dashboard visible to Product, CS, and Leadership. Flag any clinic cohort where NSM rises but false confirmation rate also rises."
+    },
+    {
+      "key": "strategy/positioning",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 73163,
+      "outputTokensVisible": 2179,
+      "chars": 9586,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "competitive alternatives",
+          "ok": true
+        },
+        {
+          "label": "unique attributes",
+          "ok": true
+        },
+        {
+          "label": "value",
+          "ok": true
+        },
+        {
+          "label": "target customers",
+          "ok": true
+        },
+        {
+          "label": "market category",
+          "ok": true
+        },
+        {
+          "label": "positioning statement",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "five Dunford steps all present",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 1,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 20\u201330% figure is explicitly marked 'Assumption: placeholder \u2014 validate with clinic interviews'.",
+          "sentence": "Many clinics buy it and only use 20\u201330% of it (Assumption: placeholder \u2014 validate with clinic interviews)."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Positioning Pawpath\n\nPawpath sits in a genuinely defensible position: it is the only appointment tool built around how veterinary medicine actually works \u2014 species-specific time requirements and treatment-driven follow-up \u2014 while remaining light enough for a small independent clinic to adopt in a single afternoon. The three alternatives clinics currently rely on (paper diaries, salon-derived booking tools, and the scheduling module inside a large practice-management suite) each fail on at least two of those three dimensions. The strongest signal in the input is that **customers say reminders are the reason they stay** \u2014 meaning retention is already anchored to the most differentiated feature, which is exactly where positioning should point.\n\n---\n\n## Step 1 \u2014 Competitive Alternatives\n\nWhat independent vet clinics (2\u20138 vets) actually do today instead of using Pawpath:\n\n- **Paper diaries** \u2014 zero software cost, fully flexible, but no automated follow-up, no utilization visibility, and error-prone when a locum or receptionist covers.\n- **Generic salon booking tools** \u2014 cloud-based, familiar UI, but built around \"service + duration\" logic for humans. They have no concept of species, no treatment context, and reminders are time-based rather than clinically driven.\n- **Scheduling module inside a large practice-management suite** \u2014 vet-aware in principle, but the scheduling piece is bundled with billing, dispensing, and records. For a 2\u20138 vet independent clinic, the suite is over-specified, expensive, and typically takes weeks to implement. Many clinics buy it and only use 20\u201330% of it (Assumption: placeholder \u2014 validate with clinic interviews).\n\n**Expert note:** The large-suite alternative is the most important to neutralize in messaging. Clinics that have been burned by a failed suite implementation are primed for Pawpath's \"one afternoon\" setup story.\n\n---\n\n## Step 2 \u2014 Unique Attributes\n\nFeatures Pawpath has that the alternatives do not, or cannot easily replicate:\n\n- **Species-aware visit lengths** \u2014 appointment slots are configured by species (and implicitly by visit type), not by a flat duration the clinic guesses at. A feline dental and a canine vaccination do not get the same 20-minute block.\n- **Recheck reminders tied to the treatment given** \u2014 the trigger for a reminder is clinical (what was done), not calendrical (how many days since the last visit). A post-surgical recheck fires differently than a routine vaccine reminder.\n- **One-afternoon setup** \u2014 not a selling point about simplicity for its own sake, but a direct counter to the \"implementation risk\" that makes small clinics avoid software entirely or stay stuck on paper.\n\n---\n\n## Step 3 \u2014 Value Enabled\n\nWhat those attributes actually deliver for the clinic owner and their staff:\n\n| Attribute | Operational value | Business value |\n|---|---|---|\n| Species-aware visit lengths | Accurate daily schedule; fewer overruns and gaps | Higher chair utilization without adding staff |\n| Treatment-tied reminders | Pets come back at the clinically right time | Increased return visits; stronger patient compliance record |\n| One-afternoon setup | No disruption to a running clinic | Near-zero adoption risk; immediate ROI start date |\n\n**The reminders insight is critical.** When customers say reminders are why they stay, they are describing a switching cost \u2014 not just a feature preference. Reminders that are tied to treatment are sticky because they embed Pawpath into the clinical workflow, not just the front-desk workflow. This is the core of the retention moat.\n\n---\n\n## Step 4 \u2014 Target Customers Who Care Most\n\nNot all independent vet clinics are equal buyers. The highest-value initial segment shares these characteristics:\n\n- **Practice size:** 2\u20138 vets (as specified). Large enough to have scheduling complexity; small enough that a full suite is overkill.\n- **Current situation:** On paper diaries or a salon tool they know is wrong for them. Clinics already on a large suite and happy are a harder conversion.\n- **Trigger event:** A missed recheck, a complaint about no follow-up, a no-show pattern that the owner is losing sleep over, or a new practice manager hired to \"sort out the admin.\"\n- **Decision maker:** The practice owner or senior vet, who feels the clinical consequence of poor follow-up, not just the scheduling friction.\n- **Emotional posture:** Frustrated that their software \"doesn't understand how a vet clinic works.\" This exact phrase, or something close to it, is the psychographic signal to listen for.\n\n**Secondary segment to watch:** Multi-site groups of 2\u20133 independent clinics that have outgrown paper but are not ready for a full practice-management platform. (Assumption: requires validation \u2014 Pawpath's current feature set may or may not support multi-site.)\n\n---\n\n## Step 5 \u2014 Market Category\n\n**Recommended category: Veterinary Appointment Software**\n\n**Why not \"practice management software\"?** That category immediately invites comparison to large suites. Pawpath loses on features in that fight even if it wins on fit.\n\n**Why not \"booking software\" or \"scheduling software\"?** Too broad. It puts Pawpath next to salon tools and Calendly in the prospect's mental shortlist, which dilutes the vet-specific differentiation.\n\n**\"Veterinary appointment software\"** does three things:\n1. Filters the audience (only vet clinics read past the first word).\n2. Sets a scope expectation (appointments, not the whole clinical record) \u2014 which is honest and reduces over-promise risk.\n3. Creates a category where Pawpath can be the default reference point rather than a challenger to an established giant.\n\n---\n\n## Positioning Statement\n\n> **For independent vet clinics with 2\u20138 vets** that are losing patients between visits and wasting chair time on appointment slots that don't match how animals are actually treated, **Pawpath** is **veterinary appointment software** that schedules by species and reminds clients based on what their pet received \u2014 not just the date. Unlike paper diaries, salon booking tools, or the scheduling add-on buried inside a large practice suite, Pawpath is built exclusively around how a small vet practice works and is live the same afternoon you start.\n\n---\n\n## Gaps & Expert Analysis\n\nThe following are unresolved questions that will sharpen or break this positioning as Pawpath grows. Each should be treated as a research or validation task.\n\n### Gap 1 \u2014 No quantified retention or reminder impact\nCustomers say reminders are why they stay, but there is no metric attached. **Action:** Interview 5\u201310 retained customers and ask: \"Before Pawpath, what percentage of recommended rechecks were actually booked?\" Compare to their estimate now. Even directional numbers transform the sales story from anecdote to evidence.\n\n### Gap 2 \u2014 No pricing signal\nPositioning affects price anchoring. If Pawpath is priced against salon tools, it looks expensive. If anchored against the scheduling module cost inside a large suite, it looks like a bargain with faster setup. **Action:** Define the pricing anchor explicitly in sales collateral \u2014 this is a positioning decision, not just a pricing decision.\n\n### Gap 3 \u2014 Integration posture is undefined\nMany clinics on large suites still use the suite for records and billing. Does Pawpath replace the scheduling module only, or does it sit alongside? If it can coexist, the \"already have a suite\" clinic becomes an addressable segment. If not, that segment is off-limits and messaging should actively exclude it to avoid wasted sales cycles. (Assumption: this is undefined \u2014 confirm with engineering.)\n\n### Gap 4 \u2014 \"One afternoon\" claim needs a proof mechanism\nThis is a powerful differentiator but a claim that skeptical buyers will challenge. **Action:** Document the setup steps, create a short video of a real clinic going live, and add a setup-time guarantee or SLA to the trial experience.\n\n### Gap 5 \u2014 The \"reminders\" retention insight is not yet in the positioning\nCurrently the attributes lead with scheduling; reminders are listed second. But if reminders are the retention driver, they should lead the narrative. Consider reordering: lead with \"never lose a patient between visits,\" then support it with the scheduling accuracy story.\n\n---\n\n## Prioritized Next Steps\n\n1. **Validate the retention claim (highest priority)** \u2014 Interview 5\u201310 current customers specifically about recheck rates and reminder impact. This turns the positioning's strongest claim from qualitative to defensible.\n\n2. **Reorder the narrative** \u2014 Update website, sales deck, and one-pagers to lead with treatment-tied reminders (\"never lose a patient between visits\"), then land scheduling accuracy as the supporting story.\n\n3. **Define the pricing anchor** \u2014 Decide whether Pawpath is positioned against salon-tool pricing or suite-module pricing. Build that anchor into the first page of every sales conversation.\n\n4. **Clarify the integration posture** \u2014 Determine and document whether Pawpath coexists with an existing suite or replaces it. This gates whether the \"already on a suite\" segment is in or out of the ICP.\n\n5. **Proof the \"one afternoon\" claim** \u2014 Create a setup walkthrough (video or step-by-step guide) that makes this claim viscerally credible before a buyer has to trust it on faith.\n\n6. **Test the market category label** \u2014 Run the phrase \"veterinary appointment software\" past 3\u20135 target clinic owners. Ask: \"If you were searching for a tool like this, what would you type?\" Adjust the category name to match actual search language while preserving the vet-specific filter."
+    },
+    {
+      "key": "analytics/ab-design",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 160168,
+      "outputTokensVisible": 2592,
+      "chars": 9881,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "hypothesis",
+          "ok": true
+        },
+        {
+          "label": "primary metric",
+          "ok": true
+        },
+        {
+          "label": "guardrail metrics",
+          "ok": true
+        },
+        {
+          "label": "minimum detectable effect",
+          "ok": true
+        },
+        {
+          "label": "sample size",
+          "ok": true
+        },
+        {
+          "label": "duration",
+          "ok": true
+        },
+        {
+          "label": "randomization unit",
+          "ok": true
+        },
+        {
+          "label": "analysis plan",
+          "ok": true
+        },
+        {
+          "label": "pitfalls",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "hypothesis in If/then/because form",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 11,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "INPUT",
+          "reason": "205 = 410 clinics / 2, computed from input.",
+          "sentence": "Use a 50/50 split: **205 clinics per arm.**"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "Explicitly labelled 'Assumption \u2014 MDE' and flagged for PM validation; 71% and 2.9% derive from that assumption plus the input 69%.",
+          "sentence": "- **Assumption \u2014 MDE:** +2 percentage points (69% \u2192 71%), representing ~2.9% relative improvement. **PM must validate this threshold** \u2014 accepting a 3pp MDE shortens duration by ~1 month."
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "Alpha and power are experiment design parameters, not claims about the product.",
+          "sentence": "- Two-sided test, \u03b1 = 0.05, power = 80%"
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "Sample size estimate (\u2248) computed from the stated MDE, alpha and power assumptions.",
+          "sentence": "**n \u2248 8,250 reminders per arm**"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "Design-effect adjustment based on the stated ICC assumption of 0.05 (see sentence 10); this is a plan calculation.",
+          "sentence": "- Adjusted n per arm = 8,250 \u00d7 3.88 \u2248 **32,000 reminders**"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "Duration calculation from the plan's sample size and the input volume of 24,000 per month; the 3-month figure is a planning choice.",
+          "sentence": "- 64,000 total reminders needed \u00f7 24,000/month = 2.67 months \u2192 round up to **3 months** for buffer and to capture complete monthly scheduling cycles"
+        },
+        {
+          "n": 7,
+          "verdict": "LABELLED",
+          "reason": "Conditional plan scenario; 12,000 = 24,000 / 2 from the input, and the 4-week minimum is a plan parameter.",
+          "sentence": "**If individual-level randomization is approved:** 8,250 per arm \u00f7 12,000/month per arm = 0.69 months \u2192 minimum **4-week** run to capture full weekly cycles"
+        },
+        {
+          "n": 8,
+          "verdict": "LABELLED",
+          "reason": "The 95% CI is an analysis-plan parameter.",
+          "sentence": "- Report odds ratio + 95% CI; convert to percentage-point difference for stakeholder communication"
+        },
+        {
+          "n": 9,
+          "verdict": "LABELLED",
+          "reason": "The 2-week monitoring window is a proposed mitigation step.",
+          "sentence": "**Mitigation:** Monitor for abnormal appointment-scheduling patterns in the first 2 weeks post-launch."
+        },
+        {
+          "n": 10,
+          "verdict": "LABELLED",
+          "reason": "0.05 is explicitly called an assumption; the 6-month lookback is a proposed data pull.",
+          "sentence": "3. **What is the historical clinic-level ICC?** Pull clinic-level rebooking rates from the past 6 months to empirically replace the 0.05 assumption."
+        },
+        {
+          "n": 11,
+          "verdict": "LABELLED",
+          "reason": "The 4 weeks and 3 months are the plan's scenario durations calculated in earlier sentences.",
+          "sentence": "These two inputs determine whether the experiment is 4 weeks or 3 months."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Reminder Send-Time A/B Test Design\n\n**Pawpath | Prepared by: [account email from CLI context] | Date: 2026-10-15**\n\nThis document designs a rigorous experiment to determine whether shifting recheck reminder send-time from 3 days to 7 days before the appointment due date meaningfully improves rebooking rates above the current baseline of 69%. The test will run for **3 calendar months** using **clinic-level randomization** across all 410 clinics, with a pre-registered primary metric, guardrail metrics, and a single interim analysis. Two critical gaps \u2014 the minimum detectable effect the business accepts and the empirical intra-cluster correlation \u2014 must be resolved before launch, as they drive the entire duration calculation.\n\n---\n\n## Hypothesis\n\n**If** recheck reminders are sent 7 days before the appointment due date instead of 3 days, **then** the rebooking rate will increase above the current 69% **because** pet owners require a sufficient planning horizon to coordinate veterinary visits into household schedules, and a 3-day window is too short for a meaningful share of owners to act.\n\n---\n\n## Experiment Design\n\n### Control (A)\nSingle recheck reminder sent **3 days before** the appointment due date \u2014 current production behavior.\n\n### Treatment (B)\nSingle recheck reminder sent **7 days before** the appointment due date.\n\n**Scope boundary:** This test isolates send-day offset only. It does **not** test a dual-reminder strategy (7-day + 3-day follow-up), which is a natural follow-up experiment if Treatment wins.\n\n---\n\n## Randomization Unit\n\n**Recommendation: Clinic-level (cluster) randomization**\n\n- Clinics vary significantly in size, creating confounding risk under individual-level randomization\n- Clinic staff experience a consistent reminder cadence within their clinic, preventing workflow contamination (e.g., staff adapting scheduling behavior when they see mixed lead times)\n- Avoids SUTVA violations for multi-pet households whose pets would otherwise land in both arms\n\n**Stratification:** Pre-stratify the 410 clinics into size tiers (small / medium / large \u2014 **Assumption:** define tiers using Pawpath's internal clinic segmentation) before random assignment, ensuring balance across arms. Use a 50/50 split: **205 clinics per arm.**\n\n**Alternative considered:** Individual reminder-level randomization achieves required sample size ~4\u00d7 faster (see Duration) but risks within-clinic contamination. Escalate to engineering and operations for a feasibility ruling if 3-month duration is unacceptable.\n\n---\n\n## Metrics\n\n### Primary Metric\n**Rebooking rate** \u2014 proportion of reminders resulting in a confirmed recheck booking before the appointment due date.\n\n*Baseline: 69% (PM input)*\n\n> \u26a0\ufe0f **Gap \u2014 measurement window:** The 7-day arm has 4 extra days of potential conversion time vs. the 3-day arm if rebooking is simply measured from send-date to due-date. **Resolution required before launch:** Either (a) measure rebooking within a fixed 3-day window post-reminder for both arms, or (b) use \"appointment kept\" as the long-run outcome. Pre-register the chosen definition.\n\n### Guardrail Metrics\n\n| Metric | Direction to Flag |\n|---|---|\n| Cancellation rate post-rebook | Increase in Treatment \u2014 earlier bookings may be more tentative |\n| No-show rate | Increase in Treatment \u2014 longer gap increases forgetting |\n| Reminder opt-out / unsubscribe rate | Increase in Treatment \u2014 7-day reminder may feel premature |\n| Clinic appointment capacity utilization | Asymmetric clustering in either arm |\n| Support contacts re: reminder confusion | Spike in either arm |\n\n---\n\n## Sample Size & Power\n\n### Inputs\n- **Baseline rate (p\u2081):** 69%\n- **Assumption \u2014 MDE:** +2 percentage points (69% \u2192 71%), representing ~2.9% relative improvement. **PM must validate this threshold** \u2014 accepting a 3pp MDE shortens duration by ~1 month.\n- Two-sided test, \u03b1 = 0.05, power = 80%\n- **Assumption \u2014 ICC:** 0.05 (moderate clinic-level homogeneity in rebooking behavior). **Validate against historical clinic-level data before launch** \u2014 this is the single most impactful assumption.\n\n### Calculation\n\n**Step 1 \u2014 Raw per-arm sample size (no clustering):**\n\nUsing two-proportion z-test with p\u2081 = 0.69, p\u2082 = 0.71:\n**n \u2248 8,250 reminders per arm**\n\n**Step 2 \u2014 Cluster Design Effect:**\n- Average reminders per clinic per month: 24,000 \u00f7 410 \u2248 **58.5**\n- Design Effect (DEFF) = 1 + (58.5 \u2212 1) \u00d7 0.05 = **3.88**\n- Adjusted n per arm = 8,250 \u00d7 3.88 \u2248 **32,000 reminders**\n\n**Total reminders required: ~64,000**\n\n---\n\n## Expected Duration\n\n**Recommended run: 3 full calendar months**\n\n- 64,000 total reminders needed \u00f7 24,000/month = 2.67 months \u2192 round up to **3 months** for buffer and to capture complete monthly scheduling cycles\n- Start on the **first of a calendar month**; end exactly 3 months later for clean cohort definition\n- Avoid spanning a major holiday boundary; adjust start date accordingly\n\n**If individual-level randomization is approved:** 8,250 per arm \u00f7 12,000/month per arm = 0.69 months \u2192 minimum **4-week** run to capture full weekly cycles\n\n---\n\n## Analysis Plan\n\n### Pre-Registration\nLock the full analysis plan \u2014 hypothesis, metrics, subgroups, decision rules \u2014 in the experiment management system **before any data is collected.** No modifications after unblinding.\n\n### Primary Analysis\n**Mixed-effects logistic regression** with clinic as a random effect.\n- Covariates: clinic size stratum, calendar month, clinic tenure on Pawpath\n- Outcome: binary rebooking flag per reminder\n- Report odds ratio + 95% CI; convert to percentage-point difference for stakeholder communication\n\n### Pre-Specified Subgroup Analyses\n1. **Clinic size (small / medium / large)** \u2014 highest priority given stated size variation; check for heterogeneous treatment effect\n2. **Day of week reminder is sent** \u2014 Monday\u2013Wednesday vs. Thursday\u2013Sunday may show differential response\n3. **Pet owner tenure** \u2014 new vs. returning Pawpath users (if available)\n4. **Recheck type** \u2014 first recheck vs. follow-up (if available)\n\n### Interim Analysis\nOne pre-specified interim at **Week 6** (halfway), using **O'Brien-Fleming alpha-spending** to allow early stopping only for extreme effects. No other data peeks. Communicate this policy to all stakeholders before launch.\n\n### Decision Rules\n\n| Outcome | Decision |\n|---|---|\n| Treatment significantly better (p < 0.05, CI above 0pp) | Roll out 7-day reminder to all clinics |\n| No significant difference | Maintain 3-day send; test dual-reminder strategy next |\n| Treatment significantly worse | Do not rollout; conduct qualitative owner research |\n| Any guardrail breached | Hold decision; investigate before acting on primary metric |\n\n---\n\n## Potential Pitfalls\n\n### \ud83d\udea8 Simpson's Paradox \u2014 High Risk\nLarge clinics generate a disproportionate share of the 24,000 monthly reminders. If randomization doesn't balance clinic sizes across arms, aggregate rebooking rates can mislead directionally.\n**Mitigation:** Pre-stratified randomization by clinic size tier; clinic size as regression covariate.\n\n### \u26a0\ufe0f Measurement Window Asymmetry \u2014 High Risk\nThe 7-day arm has 4 more days of potential conversion time if rebooking is measured from send-date to due-date. This would artificially inflate Treatment's rate.\n**Mitigation:** Pre-register a consistent measurement window definition before launch (see Metrics gap above).\n\n### \u26a0\ufe0f Novelty Effect \u2014 Low Risk (but Monitor)\nPet owners are unaware of the test, so novelty is minimal. However, **clinic staff** may behave differently when they notice a timing change.\n**Mitigation:** Monitor for abnormal appointment-scheduling patterns in the first 2 weeks post-launch.\n\n### \u26a0\ufe0f Seasonality Carry-Over\nReminders sent in month 1 may generate appointments in month 2. Cohort definition must be based on **reminder send-date**, not appointment date.\n\n### \u26a0\ufe0f Dual-Reminder Confound\nA \"7 days only\" win does not rule out that the optimal strategy is \"7 days + 3 days.\" Plan a follow-up test explicitly.\n\n---\n\n## Open Questions & Gaps\n\n1. **What MDE does leadership accept?** The +2pp assumption is the largest lever on experiment duration. Confirm before any engineering scoping.\n2. **How is rebooking currently instrumented?** Confirm the measurement event, window, and attribution logic before building test tracking.\n3. **What is the historical clinic-level ICC?** Pull clinic-level rebooking rates from the past 6 months to empirically replace the 0.05 assumption. One week of analytics work could save or add a month of test duration.\n4. **What time of day are reminders currently sent?** Send time-of-day may interact with the send-day offset and should be held constant across arms.\n5. **Do clinics already customize reminder timing?** If yes, control-arm behavior may be inconsistent and must be normalized before test launch.\n\n---\n\n## Prioritized Next Steps\n\n1. **[PM + Analytics \u2014 This week]** Pull historical clinic-level rebooking rates to empirically estimate ICC; confirm the +2pp MDE with leadership. These two inputs determine whether the experiment is 4 weeks or 3 months.\n2. **[PM \u2014 This week]** Define and document the rebooking measurement window; get sign-off from Analytics and Product before any instrumentation work begins.\n3. **[Engineering + Analytics \u2014 Weeks 2\u20133]** Pre-register the full analysis plan; build stratified randomization logic using clinic size tiers.\n4. **[PM + Operations \u2014 Before launch]** Brief clinic operations teams; establish guardrail metric dashboards with automated alerts for cancellation rate, no-show rate, and opt-outs.\n5. **[Analytics \u2014 Week 6]** Execute the pre-specified interim analysis under O'Brien-Fleming boundaries. No other data reviews until the scheduled interim.\n6. **[PM \u2014 Post-test]** If 7-day send wins, immediately design the follow-up dual-reminder (7-day + 3-day) experiment to test whether an additional nudge compound the gain."
+    },
+    {
+      "key": "specs/user-stories",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 64446,
+      "outputTokensVisible": 2767,
+      "chars": 10374,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "epics",
+          "ok": true
+        },
+        {
+          "label": "acceptance criteria",
+          "ok": true
+        },
+        {
+          "label": "INVEST check",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "3+ stories in 'As a ..., I want ..., so that ...' form",
+          "ok": true
+        },
+        {
+          "label": "3+ Given/When/Then criteria",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 2,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The '60 seconds' figure is not in the input. It sits in a Given/When/Then acceptance criterion, so it reads as a proposed performance threshold the system must meet, not as a fact about the product or market. This is a judgement call because the sentence has no explicit label word.",
+          "sentence": "Then an SMS is sent to the first matching owner within 60 seconds of cancellation"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "The 10\u201330 minute range is explicitly marked 'Assumption'. The default of 15 comes from the input's 15-minute hold.",
+          "sentence": "Then I can set hold duration (Assumption: 10\u201330 minutes, default 15)"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Pawpath Waitlist \u2014 User Stories\n\n**Prepared by:** [account name from CLI context] | **Date:** 2026-10-15 | **Framework:** INVEST + Gherkin\n\n---\n\nPawpath's current paper waitlist forces front-desk staff to make manual phone calls whenever an appointment slot is freed \u2014 a slow, error-prone process that leaves slots unfilled and owners frustrated. This document defines a complete set of user stories for an **automated SMS-based waitlist** that instantly offers freed slots to the first eligible pet owner, holds the slot for **15 minutes**, and cascades to the next owner on no-response. Stories are grouped by epic, prioritized by delivery risk, and supplemented with expert gap analysis and actionable recommendations.\n\n---\n\n## Epic 1: Waitlist Registration\n\n*Pet owners self-enrol; staff can also enrol on their behalf.*\n\n---\n\n### Story 1.1 \u2014 Owner Self-Enrolment on Waitlist\n\n**As a** pet owner, **I want** to add myself to the waitlist for a specific clinic, service, and preferred time window, **so that** I am automatically notified if a matching slot becomes available without having to call the clinic.\n\n**Acceptance Criteria:**\n\n```gherkin\nGiven I am a registered Pawpath user with at least one pet profile\nWhen I navigate to a clinic's booking page and all slots are full\nThen I see a \"Join Waitlist\" option for that clinic and service type\n\nGiven I tap \"Join Waitlist\"\nWhen I select my preferred time window (e.g., weekday mornings) and submit\nThen I receive an SMS confirmation: \"You're #[position] on the waitlist for [Clinic] \u2014 [Service]\"\nAnd my entry is stored with a UTC timestamp for FIFO ordering\n\nGiven I attempt to join the same clinic/service waitlist twice\nWhen I submit the second request\nThen I see an error: \"You're already on this waitlist at position #[N]\"\nAnd no duplicate entry is created\n```\n\n---\n\n### Story 1.2 \u2014 Staff Enrolment on Owner's Behalf\n\n**As a** front-desk staff member, **I want** to add a pet owner to the waitlist from the clinic dashboard, **so that** owners who call in can be enrolled without needing the mobile app.\n\n**Acceptance Criteria:**\n\n```gherkin\nGiven I am logged in as front-desk staff\nWhen I search for an owner by name or phone number and select \"Add to Waitlist\"\nThen I can choose the service type, preferred time window, and pet\nAnd the owner receives an SMS: \"You've been added to the waitlist at [Clinic] by staff\"\n\nGiven the owner's phone number has not opted in to SMS\nWhen I attempt to add them\nThen the system displays a warning: \"SMS consent required \u2014 obtain verbal consent and check the consent box to proceed\"\nAnd enrolment is blocked until the box is checked\n```\n\n---\n\n## Epic 2: Slot Offer & Confirmation\n\n*Core value delivery \u2014 the automated cascade.*\n\n---\n\n### Story 2.1 \u2014 Automatic SMS Offer on Slot Release\n\n**As a** pet owner on the waitlist, **I want** to receive an SMS the moment a matching slot is freed, **so that** I can claim the appointment before anyone else.\n\n**Acceptance Criteria:**\n\n```gherkin\nGiven an appointment is cancelled at [Clinic] for [Service] on [Date/Time]\nWhen the system identifies that at least one waitlisted owner's preferred window matches\nThen an SMS is sent to the first matching owner within 60 seconds of cancellation\nAnd the SMS reads: \"A slot opened at [Clinic] on [Date] at [Time] for [Service]. Reply YES to book or NO to skip. Offer expires in 15 minutes.\"\nAnd the slot status is set to \"on-hold\"\n\nGiven no waitlisted owner matches the freed slot's service type or time window\nWhen the system checks the waitlist\nThen the slot is released back to public booking immediately\nAnd front-desk staff receive an in-app alert: \"Slot freed \u2014 no waitlist match found\"\n```\n\n---\n\n### Story 2.2 \u2014 Owner Accepts the Slot Offer\n\n**As a** pet owner, **I want** to confirm a slot by replying YES to an SMS, **so that** my appointment is booked instantly without opening the app.\n\n**Acceptance Criteria:**\n\n```gherkin\nGiven I received a slot offer SMS and the 15-minute hold is active\nWhen I reply \"YES\" (case-insensitive)\nThen my appointment is confirmed and I receive: \"Booked! [Clinic], [Date], [Time], [Service] for [Pet Name]. Reply CANCEL to cancel.\"\nAnd I am removed from the waitlist\nAnd the slot status changes from \"on-hold\" to \"confirmed\"\n\nGiven I reply \"YES\" after the 15-minute hold has expired\nWhen the system processes my reply\nThen I receive: \"Sorry, this offer has expired. You've been moved back to position #[N] on the waitlist.\"\nAnd the slot has already been offered to the next owner\n```\n\n---\n\n### Story 2.3 \u2014 Cascade on No-Response or Rejection\n\n**As a** clinic manager, **I want** the system to automatically offer the slot to the next eligible owner if the first owner does not respond or declines, **so that** slots are never wasted.\n\n**Acceptance Criteria:**\n\n```gherkin\nGiven an SMS offer was sent to owner #1 and 15 minutes elapse with no YES reply\nWhen the hold timer expires\nThen the slot is offered to owner #2 with a fresh 15-minute hold\nAnd owner #1 receives: \"Your offer expired. You remain on the waitlist.\"\n\nGiven owner #1 replies \"NO\"\nWhen the system receives the reply\nThen the slot is immediately offered to owner #2 (no wait for the 15-minute timer)\nAnd owner #1 is removed from the waitlist for that service\n\nGiven all waitlisted owners have been offered the slot and none accepted\nWhen the cascade is exhausted\nThen the slot is released to public booking\nAnd front-desk staff receive an alert: \"Slot unclaimed after full cascade \u2014 now public\"\n```\n\n---\n\n## Epic 3: Waitlist Self-Management (Owner)\n\n---\n\n### Story 3.1 \u2014 Owner Views and Leaves Waitlist\n\n**As a** pet owner, **I want** to view my waitlist position and remove myself at any time, **so that** I am not offered slots I no longer need.\n\n**Acceptance Criteria:**\n\n```gherkin\nGiven I am on the Pawpath app waitlist screen\nWhen I view my active waitlist entries\nThen I see clinic name, service, my current position, and date enrolled\n\nGiven I tap \"Leave Waitlist\" for a specific entry\nWhen I confirm the action\nThen I am removed immediately\nAnd I receive an SMS: \"You've left the waitlist for [Clinic] \u2014 [Service].\"\nAnd my position is not offered to me; the queue compresses\n```\n\n---\n\n## Epic 4: Staff & Manager Tools\n\n---\n\n### Story 4.1 \u2014 Front-Desk Views Live Waitlist\n\n**As a** front-desk staff member, **I want** to see the live waitlist for each service with owner names, positions, and offer status, **so that** I can answer owner questions and manually intervene if needed.\n\n**Acceptance Criteria:**\n\n```gherkin\nGiven I am on the clinic dashboard\nWhen I open the Waitlist panel for a service\nThen I see a ranked list: position, owner name, pet name, preferred window, enrolment timestamp\nAnd I can see if a slot offer is currently active (with countdown timer)\n\nGiven a slot offer is active and I need to override it\nWhen I click \"Cancel Offer & Release Slot\"\nThen the hold is released, the public slot opens, and the owner receives: \"The held slot has been released by the clinic.\"\n```\n\n---\n\n### Story 4.2 \u2014 Manager Configures Waitlist Settings\n\n**As a** clinic manager, **I want** to configure the hold duration and SMS quiet hours, **so that** the system respects our clinic's operating policies.\n\n> **Assumption:** Hold duration defaults to **15 minutes** per PM input, but managers may need to adjust (e.g., 10\u201330 min range). Quiet hours and range limits are **TBD \u2014 validate with PM.**\n\n**Acceptance Criteria:**\n\n```gherkin\nGiven I am logged in as clinic manager\nWhen I open Waitlist Settings\nThen I can set hold duration (Assumption: 10\u201330 minutes, default 15)\nAnd I can set SMS quiet hours (e.g., no SMS before 08:00 or after 20:00 local time)\nAnd I can set a maximum waitlist size per service (Assumption: TBD)\n\nGiven quiet hours are active and a slot is freed\nWhen the system attempts to send an SMS offer\nThen the offer SMS is queued until quiet hours end\nAnd the slot is held in \"pending offer\" status until the SMS is sent\n```\n\n---\n\n## Expert Gap Analysis\n\nThe PM's brief is clear on the trigger and hold mechanic but leaves several **high-risk gaps** unaddressed:\n\n| # | Gap | Risk | Recommendation |\n|---|-----|------|----------------|\n| 1 | **Matching criteria undefined** | High \u2014 cascade logic cannot be built | Define matching: service type + preferred day/time window minimum. Confirm if species, vet preference, or location radius apply. |\n| 2 | **SMS opt-in / consent (TCPA/GDPR)** | High \u2014 legal/compliance blocker | Require explicit SMS consent at registration; log consent timestamp and method. |\n| 3 | **Quiet hours not specified** | Medium \u2014 owners receive 2 AM texts | Confirm default quiet hours with PM; add manager config (Story 4.2). |\n| 4 | **Multi-pet households** | Medium \u2014 wrong pet gets the slot | Offer must specify which pet; owner must confirm correct pet at acceptance. |\n| 5 | **Payment / deposit at booking** | Medium \u2014 no-show risk on claimed slots | Clarify: is a card token captured when owner replies YES? |\n| 6 | **Cascade depth limit** | Medium \u2014 infinite loop risk | Set a max cascade count (Assumption: all active waitlist entries for that service); after exhaustion, release publicly. |\n| 7 | **Notification channel fallback** | Low \u2014 SMS delivery failure** | Define fallback: if SMS fails (invalid number), skip to next owner and flag for staff review. |\n| 8 | **Analytics / reporting** | Low \u2014 invisible to managers | Add a basic dashboard: slots filled via waitlist vs. public, average cascade depth, offer acceptance rate. **Target: establish baseline in first quarter post-launch.** |\n\n---\n\n## Prioritized Next Steps\n\n1. **[Week 1 \u2014 Blocker]** Align with legal on SMS consent requirements (TCPA/GDPR) before any development begins; this gates all of Epic 2.\n2. **[Week 1 \u2014 Blocker]** Define matching algorithm with PM: confirm the fields that make an owner \"eligible\" for a slot offer.\n3. **[Week 2]** Wireframe the owner self-enrolment flow (Story 1.1) and the SMS conversation script (Stories 2.1\u20132.3) for stakeholder sign-off.\n4. **[Week 2]** Confirm hold duration configurability range and quiet-hours defaults with clinic manager stakeholders.\n5. **[Week 3]** Add analytics/reporting epic to the backlog before launch; define the acceptance-rate **target** with the PM so success is measurable.\n6. **[Sprint 1]** Deliver Epics 1 and 2 (registration + slot offer cascade) as the MVP; Epics 3 and 4 follow in Sprint 2."
+    },
+    {
+      "key": "strategy/swot",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 75768,
+      "outputTokensVisible": 2298,
+      "chars": 10278,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": false
+        },
+        {
+          "label": "strengths",
+          "ok": true
+        },
+        {
+          "label": "weaknesses",
+          "ok": true
+        },
+        {
+          "label": "opportunities",
+          "ok": true
+        },
+        {
+          "label": "threats",
+          "ok": true
+        }
+      ],
+      "requiredPass": false,
+      "framework": [
+        {
+          "label": "SO/WO/ST/WT strategies",
+          "ok": true
+        },
+        {
+          "label": "top 3 strategic actions",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 5,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "8% churn is explicitly labelled as an assumption/target to validate.",
+          "sentence": "- **Unknown churn rate:** Without visibility into net revenue retention, the $1.9M ARR figure cannot be assessed for trajectory \u2014 this is a critical data gap for H2 planning (Assumption to validate: churn is under Target: 8% annually, otherwise the base is eroding)"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "12\u201318 months is explicitly labelled as an assumption.",
+          "sentence": "- **Commoditization of reminders:** If scheduling is being bundled today, reminders are a logical next bundle addition \u2014 Pawpath's strongest feature could be devalued within Assumption: 12\u201318 months if large suites invest in it"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "10% discount is labelled as an assumption/target.",
+          "sentence": "- **Convert month-to-month clinics to annual contracts in Q4:** Offer a modest discount (Assumption: Target: 10% off) for annual commitment before competitive pressure intensifies."
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "20% annual-contract share is labelled as a target success metric.",
+          "sentence": "**Success metric:** Target: 20% of existing clinics on annual contracts by end of H2; Target: measurable ARPU increase vs."
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "80% usage is labelled as a target success metric.",
+          "sentence": "**Success metric:** Target: ROI calculator deployed to all CS touchpoints; Target: used in at least 80% of renewal conversations in H2"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Pawpath SWOT\n\n**Strategic Action Mapping | H2 Investment Decision | October 2026**\n\n---\n\n## Executive Summary\n\nPawpath has established genuine product-market fit with 410 independent vet clinics and $1.9M ARR, anchored by a reminder feature that drives measurable clinic workflow value. The company's core risk in H2 is strategic: two large practice-management suites are bundling free scheduling, threatening Pawpath's perceived differentiation precisely when independent clinics are most price-sensitive. The analysis below argues that Pawpath's defensible path is not competing on scheduling breadth \u2014 it is deepening clinical workflow integration (starting with lab systems) to become operationally indispensable, while simultaneously monetizing the existing 410-clinic base more aggressively before the competitive window narrows.\n\n---\n\n## SWOT Analysis\n\n### Strengths\n\n- **Proven traction in the independent segment:** 410 paying clinics signals repeatable sales motion and validated willingness to pay among an often-overlooked customer tier\n- **$1.9M ARR:** Real, recurring revenue provides runway and credibility for partnerships and hiring without requiring external capital urgency\n- **Strong reminder feature:** A feature described as \"strong\" by internal leadership suggests above-average retention signal and a quantifiable workflow outcome (reduced no-shows, front-desk time saved) \u2014 this is Pawpath's sharpest competitive edge\n- **Lean team of 14:** Low fixed cost base relative to ARR creates favorable unit economics and operational agility for pivoting H2 investment quickly\n\n### Weaknesses\n\n- **No lab system integrations:** Vet clinics run diagnostics constantly; the absence of lab connectivity is a daily workflow friction point that limits Pawpath's share of the clinical workflow and reduces switching costs\n- **Narrow feature surface:** With reminders as the standout strength, Pawpath may be perceived as a point solution rather than a platform \u2014 increasing vulnerability when bundled competitors enter\n- **14-person team capacity:** Engineering and sales bandwidth is finite; any H2 investment decision carries a real opportunity cost of what *doesn't* get built\n- **Unknown expansion revenue motion:** The PM input does not reference upsell, seat expansion, or tiered pricing \u2014 suggesting Pawpath may be leaving revenue on the table within its existing 410 clinics (Gap to validate: is there a growth tier today?)\n- **Unknown churn rate:** Without visibility into net revenue retention, the $1.9M ARR figure cannot be assessed for trajectory \u2014 this is a critical data gap for H2 planning (Assumption to validate: churn is under Target: 8% annually, otherwise the base is eroding)\n\n### Opportunities\n\n- **Lab system integration:** Building direct connections to major veterinary lab platforms (e.g., IDEXX, Antech \u2014 *note: Pawpath should validate which labs its 410 clinics actually use*) would embed Pawpath into the diagnostic loop, a high-frequency, high-stakes workflow\n- **Expansion revenue within 410 clinics:** Upselling reminders-only users to a richer tier (communications suite, lab alerts, reporting) represents near-zero CAC growth \u2014 the sales relationship already exists\n- **Independent clinic associations and buying groups:** Independent vets often organize into loose networks and associations; a partnership or preferred-vendor arrangement could unlock referral-based acquisition at low cost\n- **Workflow platform positioning:** No single tool dominates the independent vet clinic's full front-of-house + clinical workflow; Pawpath has a first-mover window to stitch reminders + scheduling + lab alerts into a unified layer before larger players invest in the segment\n- **Annual contract lock-in:** If Pawpath is predominantly month-to-month, migrating clinics to annual contracts improves ARR predictability and raises switching friction ahead of competitive pressure\n\n### Threats\n\n- **Free scheduling bundling by two large suites:** This is the most immediate existential signal. Clinics that evaluate scheduling in isolation may deprioritize Pawpath if a tool they already pay for adds \"good enough\" scheduling at no incremental cost\n- **Commoditization of reminders:** If scheduling is being bundled today, reminders are a logical next bundle addition \u2014 Pawpath's strongest feature could be devalued within Assumption: 12\u201318 months if large suites invest in it\n- **Resource asymmetry:** The two competing suites almost certainly have larger engineering teams; Pawpath cannot win a feature parity race and should not try\n- **Independent clinic budget sensitivity:** Independent practices operate on thin margins; any price increase or economic pressure on the veterinary sector could accelerate churn or resistance to upsells\n- **Key-person concentration risk:** A 14-person team means the loss of 1\u20132 senior engineers or the head of sales could materially impair H2 execution\n\n---\n\n## Strategic Action Mapping\n\n### SO Strategies \u2014 Use Strengths to Capture Opportunities\n\n- **Launch a Lab Alert tier built on the reminder engine:** Pawpath's reminder infrastructure is already proven for time-sensitive communication \u2014 extend it to lab result notifications. Market this to existing clinics as \"results in the flow you already use,\" leveraging the trusted reminder brand to accelerate adoption of the new module\n- **Deploy the 410-clinic base as a sales asset:** Create a structured referral program where active clinic users introduce Pawpath to peer clinics in their area or association network. Reward referrers with a discount or feature credit \u2014 low cost, high credibility\n- **Use ARR stability to fund one strategic hire in H2:** $1.9M ARR supports adding a clinical integrations engineer or a VP of Customer Success / Expansion Revenue focused on monetizing the existing base \u2014 neither requires external funding\n\n### WO Strategies \u2014 Overcome Weaknesses via Opportunities\n\n- **Partner-first lab integration:** Rather than building proprietary lab connectors from scratch (too slow for a 14-person team), negotiate data-sharing or API partnerships with 1\u20132 dominant veterinary lab platforms to accelerate integration. Offer co-marketing to the lab partner in exchange for integration support\n- **Introduce tiered pricing with a \"Clinical\" plan:** Package reminders + lab alerts + basic reporting as a premium tier. This converts the integration gap from a weakness into a monetization event \u2014 clinics that need lab connectivity pay more, improving ARPU (Assumption to validate: current average revenue per clinic vs. target with premium tier)\n- **Run a churn audit on the 410 clinics immediately:** Identify which clinics are at risk (low login frequency, single-user accounts, month-to-month contracts) before H2 investment is committed \u2014 retention is cheaper than acquisition\n\n### ST Strategies \u2014 Use Strengths to Counter Threats\n\n- **Reframe reminders as ROI, not a feature:** Equip the sales and CS team with a one-page ROI calculator showing what a reduction in no-shows is worth per month to an independent clinic. Make the reminder feature's value concrete and quantified so \"free scheduling\" bundled by a suite feels incomparable \u2014 because it is\n- **Publish a transparency comparison:** Create a simple, honest comparison of Pawpath's reminder depth vs. what the two bundling suites actually include. If their scheduling is genuinely basic, let clinics see that clearly. Independent clinic operators are skeptical of enterprise software and respond to peer-level honesty\n- **Convert month-to-month clinics to annual contracts in Q4:** Offer a modest discount (Assumption: Target: 10% off) for annual commitment before competitive pressure intensifies. Lock in the base now while Pawpath's value proposition is clear\n\n### WT Strategies \u2014 Minimize Weaknesses and Avoid Threats\n\n- **Narrow H2 focus to two bets maximum:** With a 14-person team facing a competitive threat, trying to ship lab integration, a new pricing tier, and a referral program simultaneously guarantees mediocre execution on all three. Force-rank and staff accordingly\n- **Do not compete on scheduling breadth:** Adding scheduling features to match large suites consumes engineering cycles Pawpath cannot afford and plays on the competitor's terms. Explicitly de-prioritize scheduling parity; double down on reminders + lab workflow\n- **Establish a minimum annual contract policy for new clinics:** New customer onboarding should default to annual terms going forward \u2014 this is low-effort to implement and directly addresses both churn risk and competitive poaching\n\n---\n\n## Top 3 Prioritized Strategic Actions for H2\n\n### 1. Build and Launch Lab Integration (Partner-First Approach)\n**Why first:** This is the single highest-leverage move \u2014 it deepens switching costs, opens a premium pricing tier, and positions Pawpath as a clinical workflow tool rather than a scheduling utility. A partnership-led approach makes it feasible for a 14-person team within a half-year window.\n**Owner:** Engineering lead + BD\n**Success metric:** Target: signed integration agreement with at least 1 lab platform by end of H2; Target: 30+ clinics piloting lab alerts before year-end\n\n### 2. Launch a \"Clinical\" Pricing Tier and Convert Base to Annual Contracts\n**Why second:** Captures expansion revenue from existing 410 clinics at near-zero CAC, improves net revenue retention, and hardens the base before competitive pressure peaks. This is primarily a packaging and sales motion, not an engineering project.\n**Owner:** Product + Customer Success\n**Success metric:** Target: 20% of existing clinics on annual contracts by end of H2; Target: measurable ARPU increase vs. H1 baseline\n\n### 3. Build the Reminder ROI Narrative and Sales Enablement Toolkit\n**Why third:** The competitive threat from free bundled scheduling is real but beatable on value \u2014 if Pawpath can demonstrate quantified ROI per clinic, free scheduling becomes irrelevant to the decision. This is a low-cost, high-impact defensive move that protects the entire base.\n**Owner:** Marketing + CS\n**Success metric:** Target: ROI calculator deployed to all CS touchpoints; Target: used in at least 80% of renewal conversations in H2\n\n---\n\n*Prepared for Pawpath H2 investment planning | October 2026*"
+    },
+    {
+      "key": "competitive/market-sizing",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 83422,
+      "outputTokensVisible": 2371,
+      "chars": 8784,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "TAM",
+          "ok": true
+        },
+        {
+          "label": "SAM",
+          "ok": true
+        },
+        {
+          "label": "SOM",
+          "ok": true
+        },
+        {
+          "label": "assumptions",
+          "ok": true
+        },
+        {
+          "label": "growth drivers",
+          "ok": true
+        },
+        {
+          "label": "market timing",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "top-down and bottom-up both used",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 20,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "INPUT",
+          "reason": "$29M = 6,200 \u00d7 $390 \u00d7 12; $20.3M = 70% of that.",
+          "sentence": "**Pawpath targets a $29M annual recurring revenue opportunity in its home country, with an immediately serviceable segment of $20.3M ARR among the 70% of independent vet clinics (2\u20138 vets) that currently lack a dedicated scheduling tool."
+        },
+        {
+          "n": 2,
+          "verdict": "UNSOURCED_FACT",
+          "reason": "The ~$3.0M 3-year capture comes from the assumed 15% SOM rate. Here it is presented as a realistic result 'anchored entirely' in CRM data, with no assumption label.",
+          "sentence": "Using both top-down and bottom-up analyses anchored entirely in Fernway's own CRM data, the realistically capturable opportunity over a 3-year horizon sits at approximately $3.0M ARR \u2014 a focused, achievable beachhead that justifies continued investment while surfacing critical data gaps the board should pressure-test before committing to growth capital.**"
+        },
+        {
+          "n": 3,
+          "verdict": "INPUT",
+          "reason": "6,200 clinics and $29.0M are both computed from the input.",
+          "sentence": "| **TAM** \u2014 All independent vet clinics (2\u20138 vets) in home country | 6,200 | **$29.0M** |"
+        },
+        {
+          "n": 4,
+          "verdict": "INPUT",
+          "reason": "4,340 = 70% \u00d7 6,200; $20.3M = 4,340 \u00d7 $4,680.",
+          "sentence": "| **SAM** \u2014 Clinics with no dedicated scheduling tool | 4,340 | **$20.3M** |"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "The row is labelled SOM (Target) and gives a realistic capture estimate.",
+          "sentence": "| **SOM (Target)** \u2014 Realistic 3-year capture | ~651 | **~$3.0M** |"
+        },
+        {
+          "n": 6,
+          "verdict": "INPUT",
+          "reason": "$390 \u00d7 12 = $4,680.",
+          "sentence": "- **Annual contract value (ACV)**: $390/month \u00d7 12 = **$4,680 per clinic per year**"
+        },
+        {
+          "n": 7,
+          "verdict": "INPUT",
+          "reason": "Computed directly from input figures.",
+          "sentence": "- **TAM = 6,200 clinics \u00d7 $4,680 ACV = $29.0M ARR**"
+        },
+        {
+          "n": 8,
+          "verdict": "INPUT",
+          "reason": "A hypothetical calculation using input figures.",
+          "sentence": "- If Pawpath were to close 100% of all 6,200 CRM-listed clinics: 6,200 \u00d7 $4,680 = **$29.0M ARR**"
+        },
+        {
+          "n": 9,
+          "verdict": "INPUT",
+          "reason": "6,200 \u00d7 70% = 4,340.",
+          "sentence": "- **SAM = 6,200 \u00d7 70% = 4,340 clinics**"
+        },
+        {
+          "n": 10,
+          "verdict": "INPUT",
+          "reason": "4,340 \u00d7 $4,680 \u2248 $20.3M.",
+          "sentence": "- **SAM = 4,340 \u00d7 $4,680 = $20.3M ARR**"
+        },
+        {
+          "n": 11,
+          "verdict": "INPUT",
+          "reason": "30% = 100% \u2212 70%; 1,860 = 6,200 \u2212 4,340; $8.7M = 1,860 \u00d7 $4,680.",
+          "sentence": "The remaining **30% (1,860 clinics, $8.7M ARR)** represent a longer-term displacement opportunity, not excluded from Pawpath's universe but requiring a different sales motion (competitive switch)."
+        },
+        {
+          "n": 12,
+          "verdict": "LABELLED",
+          "reason": "The 3% rate is explicitly labelled 'Assumption'.",
+          "sentence": "| **Conservative** (Year 1) | Assumption: 3% of SAM | ~130 | ~$0.6M |"
+        },
+        {
+          "n": 13,
+          "verdict": "LABELLED",
+          "reason": "The 8% rate is explicitly labelled 'Assumption'.",
+          "sentence": "| **Base** (Year 2) | Assumption: 8% of SAM | ~347 | ~$1.6M |"
+        },
+        {
+          "n": 14,
+          "verdict": "LABELLED",
+          "reason": "The 15% rate is explicitly labelled 'Assumption'.",
+          "sentence": "| **Optimistic** (Year 3) | Assumption: 15% of SAM | ~651 | ~$3.0M |"
+        },
+        {
+          "n": 15,
+          "verdict": "LABELLED",
+          "reason": "The 25% close rate is explicitly labelled 'Assumption'.",
+          "sentence": "- **Assumption**: Close rate = 25% of qualified opportunities"
+        },
+        {
+          "n": 16,
+          "verdict": "LABELLED",
+          "reason": "The figures are called 'Implied' and come from the stated bottom-up assumptions; $9,360 = $780 \u00d7 12.",
+          "sentence": "- **Implied ARR per AE per month**: 2 clinics \u00d7 $390 = $780 MRR \u2192 **$9,360 ARR/month per AE**"
+        },
+        {
+          "n": 17,
+          "verdict": "LABELLED",
+          "reason": "The 3 AEs are labelled an assumption; $336K and 9 AE-years are calculations based on those assumptions.",
+          "sentence": "- **With 3 AEs (Assumption: current or planned headcount)**: ~$336K ARR added per year \u2192 reaching ~$3.0M ARR requires **~9 AE-years of effort** (ramp included), consistent with the 3-year base case above"
+        },
+        {
+          "n": 18,
+          "verdict": "INPUT",
+          "reason": "1,860 clinics and $8.7M are computed from the input.",
+          "sentence": "- **30% displacement opportunity**: The 1,860 already-tooled clinics become reachable as competitor contracts expire or as Pawpath builds differentiated features, adding $8.7M ARR to addressable scope without requiring new clinic formation"
+        },
+        {
+          "n": 19,
+          "verdict": "INPUT",
+          "reason": "The 30% comes from the input (100% \u2212 70%).",
+          "sentence": "| Competitive tool adoption breakdown | Informs 30% displacement strategy | Ask \"what are you using today?\" in every discovery call |"
+        },
+        {
+          "n": 20,
+          "verdict": "LABELLED",
+          "reason": "\u00b115% is a hypothetical sensitivity threshold, not a factual claim about the product or market.",
+          "sentence": "A \u00b115% variance changes the board narrative."
+        }
+      ],
+      "unsourcedFacts": 1,
+      "output": "# Pawpath Market Size\n\n**Pawpath targets a $29M annual recurring revenue opportunity in its home country, with an immediately serviceable segment of $20.3M ARR among the 70% of independent vet clinics (2\u20138 vets) that currently lack a dedicated scheduling tool. Using both top-down and bottom-up analyses anchored entirely in Fernway's own CRM data, the realistically capturable opportunity over a 3-year horizon sits at approximately $3.0M ARR \u2014 a focused, achievable beachhead that justifies continued investment while surfacing critical data gaps the board should pressure-test before committing to growth capital.**\n\n---\n\n## Market Sizing Summary\n\n| Layer | Clinics | ARR |\n|---|---|---|\n| **TAM** \u2014 All independent vet clinics (2\u20138 vets) in home country | 6,200 | **$29.0M** |\n| **SAM** \u2014 Clinics with no dedicated scheduling tool | 4,340 | **$20.3M** |\n| **SOM (Target)** \u2014 Realistic 3-year capture | ~651 | **~$3.0M** |\n\n---\n\n## TAM \u2014 Total Addressable Market\n\n### Definition\nThe TAM represents every independent vet clinic with 2\u20138 vets in Pawpath's home country \u2014 Pawpath's stated ideal customer profile (ICP). This is a product-constrained TAM, not a total veterinary-industry TAM.\n\n### Top-Down Calculation\n- **Source**: Fernway's own CRM lists **6,200** qualifying clinics (independent, 2\u20138 vets, single country)\n- **Annual contract value (ACV)**: $390/month \u00d7 12 = **$4,680 per clinic per year**\n- **TAM = 6,200 clinics \u00d7 $4,680 ACV = $29.0M ARR**\n\n### Bottom-Up Calculation\n- Unit: one clinic signs at $390/month\n- If Pawpath were to close 100% of all 6,200 CRM-listed clinics: 6,200 \u00d7 $4,680 = **$29.0M ARR**\n- Both approaches converge because the market definition is already ICP-filtered\n\n### \u26a0\ufe0f Key Assumption to Validate\n- **Assumption**: The 6,200 figure from Fernway's CRM is materially complete (i.e., does not undercount or overcount the true national population of independent 2\u20138 vet clinics). CRM data can suffer from stale records, duplicates, or coverage gaps. A one-time list validation against a national veterinary licensing registry is recommended before presenting TAM to investors.\n\n---\n\n## SAM \u2014 Serviceable Addressable Market\n\n### Definition\nThe SAM narrows to clinics that are *immediately displaceable* \u2014 those without an existing dedicated scheduling tool. Clinics already using a competing product require a displacement sales motion with materially higher cost and longer cycles and are excluded from the near-term SAM.\n\n### Calculation\n- **70%** of 6,200 clinics have no dedicated scheduling tool (PM-provided estimate)\n- **SAM = 6,200 \u00d7 70% = 4,340 clinics**\n- **SAM = 4,340 \u00d7 $4,680 = $20.3M ARR**\n\nThe remaining **30% (1,860 clinics, $8.7M ARR)** represent a longer-term displacement opportunity, not excluded from Pawpath's universe but requiring a different sales motion (competitive switch).\n\n### \u26a0\ufe0f Key Assumptions to Validate\n- **Assumption**: The 70% \"no dedicated scheduling tool\" estimate originates from internal observation or informal surveying. Its precision is unknown. A structured win/loss or discovery survey across a sample of 50\u2013100 CRM contacts would either confirm or significantly revise the SAM.\n- **Assumption**: \"No dedicated scheduling tool\" means the clinic is using spreadsheets, phone-only scheduling, or generic calendar tools \u2014 not that they are uninterested in automation. Interest level may be lower than the penetration gap implies.\n\n---\n\n## SOM \u2014 Serviceable Obtainable Market\n\n### Definition\nThe SOM represents what Pawpath can realistically close within a defined horizon given its current team, sales capacity, and go-to-market maturity. Three scenarios are modeled below; all percentages are **targets/assumptions, not guarantees**.\n\n### Top-Down SOM (Market Share Lens)\n\n| Scenario | SAM Capture Rate | Clinics Closed | ARR |\n|---|---|---|---|\n| **Conservative** (Year 1) | Assumption: 3% of SAM | ~130 | ~$0.6M |\n| **Base** (Year 2) | Assumption: 8% of SAM | ~347 | ~$1.6M |\n| **Optimistic** (Year 3) | Assumption: 15% of SAM | ~651 | ~$3.0M |\n\n### Bottom-Up SOM (Sales Capacity Lens)\n\nThis approach builds from sales rep throughput rather than market share. Inputs below are **assumptions to replace with actuals**:\n\n- **Assumption**: One account executive (AE) can run 8 discovery-to-close cycles per month at Pawpath's current deal complexity\n- **Assumption**: Close rate = 25% of qualified opportunities\n- **Assumption**: New closed logos per AE per month = 2 clinics\n- **Implied ARR per AE per month**: 2 clinics \u00d7 $390 = $780 MRR \u2192 **$9,360 ARR/month per AE**\n- **With 3 AEs (Assumption: current or planned headcount)**: ~$336K ARR added per year \u2192 reaching ~$3.0M ARR requires **~9 AE-years of effort** (ramp included), consistent with the 3-year base case above\n\n---\n\n## Growth Drivers\n\n- **Scheduling complexity rising**: Multi-vet coordination (even within a 2\u20138 vet clinic) creates no-show costs and double-booking errors that paper/phone systems cannot handle \u2014 the pain is structural, not optional\n- **Staff cost sensitivity**: Independent clinics cannot afford front-desk errors that waste vet time; a $390/month spend with measurable no-show reduction pays for itself quickly \u2014 **Assumption**: Pawpath should quantify and publish a ROI/payback calculator using real customer data to shorten sales cycles\n- **30% displacement opportunity**: The 1,860 already-tooled clinics become reachable as competitor contracts expire or as Pawpath builds differentiated features, adding $8.7M ARR to addressable scope without requiring new clinic formation\n- **Geographic expansion**: Replicating this model in adjacent markets with similar independent-clinic densities would multiply TAM by a country-count multiplier \u2014 **TBD**: Fernway has not provided international clinic count data\n\n---\n\n## Market Timing Assessment\n\n- **Positive signal**: 70% of the ICP has no dedicated tool \u2014 the market is in early adoption, meaning Pawpath can own category positioning before a dominant incumbent emerges\n- **Risk**: Low penetration could also indicate low willingness-to-pay or low perceived urgency, not just lack of supply \u2014 distinguish these with pipeline conversion data\n- **Window**: Independent vet clinics face consolidation pressure from corporate vet groups; the independent segment may shrink over a 5\u20137 year horizon, creating urgency to capture share while the TAM is intact \u2014 **Assumption**: consolidation rate in home country is unknown and should be tracked as a leading indicator\n\n---\n\n## Critical Data Gaps\n\n| Gap | Why It Matters | How to Close |\n|---|---|---|\n| CRM completeness / accuracy | TAM could be materially off | Cross-reference with national licensing database |\n| 70% \"no tool\" estimate confidence | SAM is the key board metric | Survey 50\u2013100 CRM prospects in discovery |\n| Current Pawpath customer count and churn | SOM credibility | Share actual ARR, logo count, and net revenue retention with board |\n| AE headcount and close rate actuals | Bottom-up SOM validity | Pull from CRM (pipeline stage conversion rates) |\n| Competitive tool adoption breakdown | Informs 30% displacement strategy | Ask \"what are you using today?\" in every discovery call |\n| International clinic populations | Expansion TAM | TBD \u2014 requires country-level research |\n\n---\n\n## Prioritized Next Steps\n\n1. **[Week 1\u20132] Validate the 6,200 TAM figure** \u2014 Cross-check Fernway's CRM against the national veterinary licensing body's public registry. Identify duplicates, closed clinics, and missing records. A \u00b115% variance changes the board narrative.\n\n2. **[Week 2\u20134] Run a 50-clinic \"no tool\" validation survey** \u2014 Call or email 50 CRM contacts and ask directly: \"What do you use today to manage appointment scheduling?\" Use responses to sharpen the 70% estimate and segment by tool type (spreadsheet vs. phone vs. legacy EHR scheduling add-on).\n\n3. **[Week 3] Pull actual pipeline conversion rates from CRM** \u2014 Replace the bottom-up SOM assumptions (close rate, deals per AE) with Fernway's real funnel data. This is the number the board will scrutinize hardest.\n\n4. **[Month 2] Build and publish a 1-page ROI calculator** \u2014 Anchor it on real customer outcomes (time saved, no-show reduction, revenue recovered). A payback-period framing at $390/month lowers buyer resistance and shortens deal cycles.\n\n5. **[Month 2\u20133] Initiate a consolidation tracker** \u2014 Monitor corporate vet group acquisition activity in the home country. If the independent clinic count is declining faster than Pawpath's growth rate, the board needs to know before the next funding round.\n\n6. **[Month 3] Scope one international market** \u2014 Identify the next-most-similar country (regulatory environment, independent clinic density) and produce a comparable CRM-equivalent list to size the expansion TAM for Series A materials."
+    }
+  ],
+  "calls": [
+    {
+      "label": "discovery/jtbd:gen",
+      "ms": 58079,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Why Clinics Switch to Pawpath\n### Jobs-to-be-Done Analysis \u2014 Independent Vet Clinics\n*Prepared for: Pawpath Product Team | Date: 15 October 2026*\n\n---\n\nAcross 8 interviews with clinic managers who switched to Pawpath within the last year, a consistent pattern emerges: independent vet clinics are n",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 935,
+        "output_tokens": 2569,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 245
+      },
+      "cost_usd_list": 0.04134,
+      "num_turns": 1
+    },
+    {
+      "label": "discovery/jtbd:judge",
+      "ms": 7471,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"'Under 2 minutes' is the desired outcome in a user job story ('I want to... so I can'), so it reads as an aspiration, not a measured fact. This is a borderline call because there is no explicit label word such as 'target'.\"},{\"n\":2,\"verdict\":\"INPUT\",\"r",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 608,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 986,
+        "thinking_tokens": 237
+      },
+      "cost_usd_list": 0.020230199999999997,
+      "num_turns": 2
+    },
+    {
+      "label": "specs/prd:gen",
+      "ms": 66410,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pawpath Online Rebooking \u2014 Product Requirements Document\n\n**Author:** [account name from CLI context] | **Date:** October 15, 2026 | **Status:** Draft v1.0 | **Review by:** TBD\n\n---\n\nPawpath's reminder workflow breaks down at the finish line: 31% of patients due for a recheck never rebook, costing clinics revenue ",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 3139,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1028,
+        "thinking_tokens": 274
+      },
+      "cost_usd_list": 0.053262,
+      "num_turns": 1
+    },
+    {
+      "label": "specs/prd:judge",
+      "ms": 13585,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The '5 days out' timing is part of an illustrative user scenario under a 'Context:' heading. It describes an example, not a claimed fact about the product.\"},{\"n\":2,\"verdict\":\"UNSOURCED_FACT\",\"reason\":\"'Under 60 seconds' is stated as a user need with n",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 1307,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1487,
+        "thinking_tokens": 533
+      },
+      "cost_usd_list": 0.0382182,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/okrs:gen",
+      "ms": 145991,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pawpath H2 Clinic Growth\n\n*OKR Set | Fernway Labs \u2014 Pawpath | Owner: [account name from CLI context] | Sprint: Oct 15 \u2013 Dec 31, 2026*\n\n---\n\nFernway Labs enters the final 11 weeks of H2 with 410 paying clinics, $1.9M ARR, and a 2.1% monthly logo churn rate that quietly removes an Estimate of ~8\u20139 clinics every mont",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 979,
+        "output_tokens": 8025,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 5576
+      },
+      "cost_usd_list": 0.12331199999999998,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/risk-register:gen",
+      "ms": 81241,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pawpath SMS Reminders Launch Risks\n\n**Risk Register | FMEA Framework | Date: 2026-10-15 | Owner: TBD**\n\nPawpath faces a hard-deadline migration of SMS reminders to a new vendor by 30 November \u2014 a 6-week window with compounding risk factors: an untested vendor throughput ceiling, two regions requir",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 946,
+        "output_tokens": 4351,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 1551
+      },
+      "cost_usd_list": 0.068103,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/risk-register:judge",
+      "ms": 5823,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 2-week PTO blackout is presented as a proposed policy, which is a plan parameter. It is tied to the 30 November contract end date from the input.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"The >5% alert threshold is explicitly marked 'Assumption'.\"},{",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 393,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 979,
+        "thinking_tokens": 115
+      },
+      "cost_usd_list": 0.015874199999999998,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/okrs:judge",
+      "ms": 17092,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"INPUT\",\"reason\":\"8.6/month is computed from 2.1% \u00d7 410; 11 weeks is derived from the current date to the end of H2.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"1.2% is explicitly a Target; 2.1% is from the input.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"85% is labelled Target,",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 1683,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 2048,
+        "thinking_tokens": 563
+      },
+      "cost_usd_list": 0.0502262,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/north-star:gen",
+      "ms": 95016,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pawpath North Star\n\nPawpath's retention data reveals a clear activation threshold: clinics that confirm at least 80% of their appointments through Pawpath reminders renew at a materially higher rate than those that do not, yet today only 52% of booked appointments are confirmed via the platform. T",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 907,
+        "output_tokens": 4579,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 1915
+      },
+      "cost_usd_list": 0.071406,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/north-star:judge",
+      "ms": 9682,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 60% figure is a hypothetical example (\\\"If a clinic only enters 60%...\\\") used to show a mathematical cap. It is not stated as a fact.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"95%+ is explicitly marked \\\"Target\\\".\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reas",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 938,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1401,
+        "thinking_tokens": 240
+      },
+      "cost_usd_list": 0.0301502,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/positioning:gen",
+      "ms": 73163,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Positioning Pawpath\n\nPawpath sits in a genuinely defensible position: it is the only appointment tool built around how veterinary medicine actually works \u2014 species-specific time requirements and treatment-driven follow-up \u2014 while remaining light enough for a small independent clinic to adopt in a ",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 934,
+        "output_tokens": 3226,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 1047
+      },
+      "cost_usd_list": 0.051192,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/positioning:judge",
+      "ms": 4783,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 20\u201330% figure is explicitly marked 'Assumption: placeholder \u2014 validate with clinic interviews'.\"}]}",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 113,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 813,
+        "thinking_tokens": 0
+      },
+      "cost_usd_list": 0.008946200000000001,
+      "num_turns": 2
+    },
+    {
+      "label": "specs/user-stories:gen",
+      "ms": 64446,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pawpath Waitlist \u2014 User Stories\n\n**Prepared by:** [account name from CLI context] | **Date:** 2026-10-15 | **Framework:** INVEST + Gherkin\n\n---\n\nPawpath's current paper waitlist forces front-desk staff to make manual phone calls whenever an appointment slot is freed \u2014 a slow, error-prone process that leaves slots ",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 903,
+        "output_tokens": 3220,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 453
+      },
+      "cost_usd_list": 0.051009000000000006,
+      "num_turns": 1
+    },
+    {
+      "label": "specs/user-stories:judge",
+      "ms": 6682,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The '60 seconds' figure is not in the input. It sits in a Given/When/Then acceptance criterion, so it reads as a proposed performance threshold the system must meet, not as a fact about the product or market. This is a judgement call because the senten",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 491,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 799,
+        "thinking_tokens": 261
+      },
+      "cost_usd_list": 0.016394199999999998,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/swot:gen",
+      "ms": 75768,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pawpath SWOT\n\n**Strategic Action Mapping | H2 Investment Decision | October 2026**\n\n---\n\n## Executive Summary\n\nPawpath has established genuine product-market fit with 410 independent vet clinics and $1.9M ARR, anchored by a reminder feature that drives measurable clinic workflow value. The company",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 907,
+        "output_tokens": 3257,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 959
+      },
+      "cost_usd_list": 0.051576,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/swot:judge",
+      "ms": 5065,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"8% churn is explicitly labelled as an assumption/target to validate.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"12\u201318 months is explicitly labelled as an assumption.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"10% discount is labelled as an assumption/target.",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 265,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1070,
+        "thinking_tokens": 0
+      },
+      "cost_usd_list": 0.014042200000000001,
+      "num_turns": 2
+    },
+    {
+      "label": "analytics/ab-design:gen",
+      "ms": 160168,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Reminder Send-Time A/B Test Design\n\n**Pawpath | Prepared by: [account email from CLI context] | Date: 2026-10-15**\n\nThis document designs a rigorous experiment to determine whether shifting recheck reminder send-time from 3 days to 7 days before the appointment due date meaningfully improves rebooking rates",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 921,
+        "output_tokens": 8387,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 5795
+      },
+      "cost_usd_list": 0.128568,
+      "num_turns": 1
+    },
+    {
+      "label": "analytics/ab-design:judge",
+      "ms": 11918,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"INPUT\",\"reason\":\"205 = 410 clinics / 2, computed from input.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"Explicitly labelled 'Assumption \u2014 MDE' and flagged for PM validation; 71% and 2.9% derive from that assumption plus the input 69%.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 1133,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1220,
+        "thinking_tokens": 342
+      },
+      "cost_usd_list": 0.0326022,
+      "num_turns": 2
+    },
+    {
+      "label": "competitive/market-sizing:gen",
+      "ms": 83422,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pawpath Market Size\n\n**Pawpath targets a $29M annual recurring revenue opportunity in its home country, with an immediately serviceable segment of $20.3M ARR among the 70% of independent vet clinics (2\u20138 vets) that currently lack a dedicated scheduling tool. Using both top-down and bottom-up analy",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 910,
+        "output_tokens": 4082,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 0,
+        "thinking_tokens": 1711
+      },
+      "cost_usd_list": 0.06395999999999999,
+      "num_turns": 1
+    },
+    {
+      "label": "competitive/market-sizing:judge",
+      "ms": 19275,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"INPUT\",\"reason\":\"$29M = 6,200 \u00d7 $390 \u00d7 12; $20.3M = 70% of that.\"},{\"n\":2,\"verdict\":\"UNSOURCED_FACT\",\"reason\":\"The ~$3.0M 3-year capture comes from the assumed 15% SOM rate. Here it is presented as a realistic result 'anchored entirely' in CRM data, with no assumption lab",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 1893,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1791,
+        "thinking_tokens": 861
+      },
+      "cost_usd_list": 0.0523702,
+      "num_turns": 2
+    }
+  ]
+}

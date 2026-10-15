@@ -25,13 +25,26 @@ Everything lives in your browser (IndexedDB). The only thing that leaves your ma
 
 ### Why AI here, why code there
 
-| Step | Done by | Why |
-|---|---|---|
+| Step                                                                                         | Done by                             | Why                                                                                                                   |
+| -------------------------------------------------------------------------------------------- | ----------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | Drafting a PRD, OKR set, persona or other document from your inputs, and analyzing a tracker | The model, on your own provider key | Turning rough notes into a structured first draft is the part a model is good at. 81 of the 82 modules have a prompt. |
-| Forms, trackers, canvases, storage, export and the knowledge base | Code | Your data should behave the same every time and never leave the browser unless you click Generate or Analyze. |
-| Which provider runs, and where the key lives | Code (server-side `/api/ai` route) | Keys stay in env vars, never in the browser bundle. |
+| Forms, trackers, canvases, storage, export and the knowledge base                            | Code                                | Your data should behave the same every time and never leave the browser unless you click Generate or Analyze.         |
+| Which provider runs, and where the key lives                                                 | Code (server-side `/api/ai` route)  | Keys stay in env vars, never in the browser bundle.                                                                   |
 
 The model writes first drafts for you to edit; nothing checks them for accuracy. See [Status and limitations](#status-and-limitations).
+
+### Evals
+
+10 of the 82 modules (PRD, OKRs, JTBD, risk register, North Star, positioning, A/B test design, user stories, SWOT, market sizing), each generated from a fictional input and graded against a fixed rubric plus a model judge for figures. Method and every miss: [EVALS.md](EVALS.md).
+
+| Measure                                                                                     | Before  | After two prompt fixes |
+| ------------------------------------------------------------------------------------------- | ------- | ---------------------- |
+| Statements of fact with a figure that is neither in the input nor labelled as an assumption | 28      | 2                      |
+| Modules with no such figure                                                                 | 2 / 10  | 8 / 10                 |
+| Outputs too long for the 4,000-token cap (cut off in the app)                               | 7 / 10  | 0 / 10                 |
+| Modules with every required section (manual review)                                         | 10 / 10 | 10 / 10                |
+
+The 2 misses left: OKRs states a 13-week cycle as a norm, and A/B test design sizes arms from an invented input. Prompts were fixed against these same 10 inputs. Generated with `claude-sonnet-4-6` and judged with `claude-opus-5-5` through the Claude Code CLI, not the production API path; an API rerun is planned.
 
 ---
 
