@@ -1,81 +1,81 @@
-# pm-os module output eval
+# pm-os document quality test
 
-First-pass rubric eval of the module generator: `buildModulePrompt` in `src/lib/ai.ts` with the per-module prompts in `src/lib/ai-prompts.ts`. Run on 2026-10-15, then rerun twice the same day: after a first prompt fix (round 1) and after a second prompt fix (round 2). See "Before and after the fix".
+This is a first test of the documents pm-os writes, graded against a scoring checklist. The code under test is `buildModulePrompt` in `src/lib/ai.ts`, plus each module's own prompt in `src/lib/ai-prompts.ts`. I ran it on 2026-10-15. I then ran it twice more the same day: once after a first prompt fix (round 1) and once after a second prompt fix (round 2). See "Before and after the fix".
 
-**Method note.** Measured via the Claude Code CLI with the app's own prompts and schema, not the production API path; an API rerun is planned.
+**How it was run.** I sent the app's own prompts and output format through the Claude Code CLI (Anthropic's command-line tool), not through the API path the live app uses. A rerun through the API is planned.
 
-## Why not the existing `eval-prompts` setup
+## Why I did not use the existing `eval-prompts` check
 
-`scripts/eval-prompts.ts` and `.github/workflows/eval-prompts.yml` are a snapshot-drift check, not a quality eval:
+`scripts/eval-prompts.ts` and `.github/workflows/eval-prompts.yml` only check whether output changed from a saved copy. They do not judge quality:
 
-- They store one output per fixture and fail when the next output differs.
-- There is no committed baseline (`evals/snapshots/` holds only `.gitkeep`) and no rubric.
-- They need a provider API key, and they pick Groq first.
-- The 5 fixtures in `evals/fixtures/` reference real third-party brands.
+- They save one output per test input and fail when the next output is different.
+- No saved copy is committed (`evals/snapshots/` holds only `.gitkeep`), and there is no scoring checklist.
+- They need a provider API key, and they try Groq first.
+- The 5 test inputs in `evals/fixtures/` name real outside brands.
 
-So this eval does not use them. It is a separate rubric eval in `evals/rubric/` that reuses the same production entry points as `eval-prompts.ts`: `buildModulePrompt`, `getModule` and `getOutputName`. The snapshot setup is untouched.
+So this test does not use them. It is a separate test, scored with a checklist, in `evals/rubric/`. It calls the same app code that `eval-prompts.ts` calls: `buildModulePrompt`, `getModule` and `getOutputName`. The existing check is left as it was.
 
-How it runs (`evals/rubric/harness/run.ts`):
+How the test script runs (`evals/rubric/harness/run.ts`):
 
-- **Generation.** Each module prompt goes through `claude -p` with `--system-prompt` set to the app's system prompt, `--tools ""`, `--strict-mcp-config`, `--setting-sources ""`, `--no-session-persistence` and `--model claude-sonnet-4-6`, the Anthropic provider's `defaultModel`. There is no `--json-schema`: the app asks for markdown, not structured output.
-- **Load-time imports.** `ai.ts` loads `@sentry/nextjs` and `zod` at import time. `setup-shims.sh` puts a no-op Sentry stub and a standalone zod in the gitignored `node_modules`, instead of a full `npm ci`.
+- **Writing the documents.** Each module prompt is sent to `claude -p` with these flags: `--system-prompt` set to the app's system prompt, `--tools ""`, `--strict-mcp-config`, `--setting-sources ""`, `--no-session-persistence` and `--model claude-sonnet-4-6`. That model is the Anthropic provider's `defaultModel` in the app. There is no `--json-schema` flag, because the app asks for plain markdown, not a fixed data format.
+- **Libraries loaded at start.** `ai.ts` loads `@sentry/nextjs` and `zod` as soon as it is imported. `setup-shims.sh` puts a do-nothing Sentry stand-in and a standalone copy of zod in the gitignored `node_modules`. This avoids a full `npm ci`.
 
-Differences from the API path:
+How this differs from the live app's API path:
 
-- **No temperature or `max_tokens`.** Production sends `temperature` (0.7 default, 0 in `eval-prompts.ts`) and `maxTokens: 4000`; the CLI passes neither.
-- **The CLI added extended thinking** (thinking tokens are excluded from the counts below).
-- **No `--bare`.** It needs `ANTHROPIC_API_KEY`, and this run used a plan login.
+- **No temperature or `max_tokens`.** The live app sends `temperature`, a randomness setting (0.7 by default, 0 in `eval-prompts.ts`), and `maxTokens: 4000`. The CLI sends neither.
+- **The CLI turned on extended thinking**, where the model reasons before it answers. Those thinking tokens are left out of the counts below.
+- **No `--bare`.** That flag needs `ANTHROPIC_API_KEY`, and this run used a plan login instead.
 
-## Dataset
+## Test inputs
 
-10 fictional module inputs about a made-up product: Pawpath, appointment software for independent vet clinics, made by the made-up Fernway Labs. File: `evals/rubric/fixtures.json`.
+10 made-up module inputs about a made-up product: Pawpath, appointment software for independent vet clinics, from the made-up company Fernway Labs. File: `evals/rubric/fixtures.json`.
 
-Modules: PRD, OKRs, Jobs-to-be-Done, risk register, North Star, positioning (Dunford), A/B test design, user stories, SWOT, and market sizing.
+Modules tested: PRD, OKRs, Jobs-to-be-Done, risk register, North Star, positioning (Dunford), A/B test design, user stories, SWOT, and market sizing.
 
-The required sections and framework markers for each module were written before the run, taken from that module's own system prompt and the shared format rules (summary first, prioritised next steps last).
+I wrote down the required sections and framework markers for each module before the run. They come from that module's own system prompt and the shared format rules (summary first, prioritised next steps last).
 
-## Rubric and metrics
+## What was checked
 
-1. **Required sections (deterministic regex).** 88 checks in total: 3 common (H1 title, executive summary, next steps) plus each module's own list. Example: the A/B module needs hypothesis, primary metric, guardrails, MDE, sample size, duration, randomisation unit, analysis plan and pitfalls.
-2. **Named framework followed (deterministic regex).** 15 checks. Examples:
+1. **Required sections (fixed text-pattern checks, same result every time).** 88 checks in total: 3 shared by every module (H1 title, executive summary, next steps) plus each module's own list. For example, the A/B module needs a hypothesis, primary metric, guardrails, MDE (the smallest change the test can detect), sample size, duration, randomisation unit, analysis plan and pitfalls.
+2. **Named framework followed (same kind of fixed text-pattern checks).** 15 checks. Examples:
    - JTBD needs 3 or more "When ..., I want to ..., so I can ..." statements.
-   - OKRs need 2 or more objectives, 6 or more KRs, and at least 80% of KRs with a number.
+   - OKRs need 2 or more objectives, 6 or more key results (KRs), and at least 80% of KRs with a number.
    - SWOT needs SO, WO, ST and WT strategies.
    - Market sizing needs both top-down and bottom-up.
    - A/B design needs an If/then/because hypothesis.
-3. **No invented metrics presented as facts.**
-   - **Deterministic step.** Every sentence or table row with a metric-like figure (%, money, multiplier, magnitude, or a count with a unit) whose number is not in the input is extracted.
-   - **LLM judge** (`claude-opus-5-5`, one CLI call per module, JSON schema). The judge labels each extracted sentence as one of:
-     - `INPUT`: restated or computed from the input
-     - `LABELLED`: a clearly marked target, assumption, estimate or example
-     - `UNSOURCED_FACT`: presented as fact with no basis
+3. **No made-up metrics presented as facts.**
+   - **Step one, done by code.** Code pulls out every sentence or table row that has a metric-like figure (%, money, multiplier, magnitude, or a count with a unit) whose number is not in the input.
+   - **Step two, another AI grading the answers** (`claude-opus-5-5`, one CLI call per module, answers in a fixed JSON format). The grader labels each pulled-out sentence as one of:
+     - `INPUT`: repeated from the input, or worked out from it
+     - `LABELLED`: clearly marked as a target, assumption, estimate or example
+     - `UNSOURCED_FACT`: stated as fact with nothing to back it
 
-     The judge grades presentation, not plausibility.
+     The grader judges how a figure is presented, not whether it sounds plausible.
 
-4. **Length.** Visible output tokens against the production `maxTokens: 4000`.
+4. **Length.** Visible output tokens (the word pieces the reader sees), compared with the live app's limit of `maxTokens: 4000`.
 
-Two harness fixes were made after the run. Both are formatting fixes, applied by re-grading the saved outputs with `rescore.ts`, with no new model calls:
+I made two fixes to the test script after the run. Both are formatting fixes. I applied them by re-grading the saved outputs with `rescore.ts`, with no new model calls:
 
-- Bold markers are stripped before matching, because "**When** ... **I want to**" split the phrase.
-- User stories may wrap across lines.
+- Bold markers are removed before matching, because "**When** ... **I want to**" split the phrase.
+- User stories may run across more than one line.
 
 Both are recorded in the results file.
 
 ## Results (first run, before the fix)
 
-| Metric                                            | Result                                |
-| ------------------------------------------------- | ------------------------------------- |
-| Modules generated                                 | 10 / 10                               |
-| Required-section checks passed                    | 87 / 88                               |
-| Modules with every required section               | 9 / 10 (10 / 10 after manual review)  |
-| Framework checks passed                           | 14 / 15                               |
-| Modules following the named framework             | 9 / 10 (10 / 10 after manual review)  |
-| Sentences with a figure not in the input          | 290                                   |
-| Judge: from input / labelled / **unsourced fact** | 44 / 218 / **28**                     |
-| **Modules with zero unsourced facts**             | **2 / 10** (A/B design, user stories) |
-| Outputs over the production 4,000-token cap       | **7 / 10**                            |
+| What was measured                                      | Result                                   |
+| ------------------------------------------------------ | ---------------------------------------- |
+| Modules written                                        | 10 / 10                                  |
+| Required-section checks passed                         | 87 / 88                                  |
+| Modules with every required section                    | 9 / 10 (10 / 10 after I checked by hand) |
+| Framework checks passed                                | 14 / 15                                  |
+| Modules following the named framework                  | 9 / 10 (10 / 10 after I checked by hand) |
+| Sentences with a figure not in the input               | 290                                      |
+| AI grader: from input / labelled / **fact, no source** | 44 / 218 / **28**                        |
+| **Modules with no unsourced facts**                    | **2 / 10** (A/B design, user stories)    |
+| Outputs longer than the live app's 4,000-token limit   | **7 / 10**                               |
 
-Unsourced facts per module:
+Unsourced facts in each module:
 
 | Module        | Count |
 | ------------- | ----- |
@@ -90,127 +90,127 @@ Unsourced facts per module:
 | A/B design    | 0     |
 | User stories  | 0     |
 
-## Misses, by failure category (first run)
+## What went wrong, by type (first run)
 
-1. **Invented metrics presented as fact: 28 sentences across 8 modules.** This is the main finding. The prompt itself invites it: "Add your expert analysis, identify gaps, and provide actionable recommendations beyond what was provided." Patterns:
-   - **Invented market statistics with named outside sources** (market sizing, 13). Examples: a global market value with a growth rate attributed to research firms, staffing vacancy rates attributed to an association, comparable-vendor growth stories. None of these sources is in the input.
-   - **Invented industry benchmarks** (OKRs, North Star, PRD). Examples: "Industry benchmark for SMB veterinary SaaS is 10–14% annual logo churn"; "Personalized reminders ... see 15–25% higher response rates"; an average visit value attributed to an association.
-   - **Invented operational or legal figures** (risk register). A per-message regulatory penalty range, and a 15–25% volume spike.
-   - **Invented derived claims** (SWOT). "Pawpath has penetrated roughly 1.4% of its addressable market", with no market size in the input.
-   - **Borderline judge calls (2)**: the JTBD "first 30 days" and the positioning "works in 20 minutes" quote. Without them, 3 of 10 modules are clean.
-2. **Length over the production cap: 7 modules.** Visible output was 4,217 to 14,766 tokens against `maxTokens: 4000`. In production these would be cut off, and the format puts "prioritized next steps" last, so that section is what gets lost. Two caveats apply:
-   - Temperature and thinking differ on the CLI path, so this needs confirming on the API path.
-   - Every checked section was present here because nothing was truncated.
-3. **Rubric false negatives (SWOT, 2 checks).** Both were found by manual review:
-   - The summary is a bold paragraph under an H2 subtitle, which the H1-to-first-H2 rule misses.
+1. **Made-up metrics presented as fact: 28 sentences across 8 modules.** This is the main finding. The prompt itself invites it: "Add your expert analysis, identify gaps, and provide actionable recommendations beyond what was provided." The patterns:
+   - **Made-up market statistics credited to named outside sources** (market sizing, 13). Examples: a global market value with a growth rate credited to research firms, staffing vacancy rates credited to an association, and growth stories of similar vendors. None of these sources is in the input.
+   - **Made-up industry benchmarks** (OKRs, North Star, PRD). Examples: "Industry benchmark for SMB veterinary SaaS is 10–14% annual logo churn"; "Personalized reminders ... see 15–25% higher response rates"; an average visit value credited to an association.
+   - **Made-up operational or legal figures** (risk register). A range of regulatory fines per message, and a 15–25% jump in volume.
+   - **Made-up derived claims** (SWOT). "Pawpath has penetrated roughly 1.4% of its addressable market", with no market size in the input.
+   - **Close calls by the grader (2)**: the JTBD "first 30 days" and the positioning "works in 20 minutes" quote. Without them, 3 of 10 modules are clean.
+2. **Too long for the live app's limit: 7 modules.** Visible output was 4,217 to 14,766 tokens, against `maxTokens: 4000`. The live app would cut these off. The format puts "prioritized next steps" last, so that is the section that would be lost. Two limits apply:
+   - The CLI path handles temperature and thinking differently, so this needs to be confirmed on the API path.
+   - Every checked section was present here only because nothing was cut off.
+3. **The checklist marked a pass as a fail (SWOT, 2 checks).** I found both by checking by hand:
+   - The summary is a bold paragraph under an H2 subtitle. The check looks for it between the H1 and the first H2, so it missed it.
    - The "top 3 actions" are headed "Priority 1/2/3", not "top 3".
 
-   The output meets both requirements. The regexes were left unchanged and the miss is reported.
+   The output meets both requirements. I left the checks unchanged and report the miss.
 
-No module failed to produce its named framework once formatting was handled.
+Once formatting was handled, every module followed its named framework.
 
 ## Before and after the fix
 
-Round 1 fix (production code), in `src/lib/ai.ts`:
+Round 1 fix, made in the live app code in `src/lib/ai.ts`:
 
-- **Figures rule**, added to the shared format rules of both `buildModulePrompt` and `buildAnalysisPrompt`: use only figures from the PM's input or figures clearly labelled as an assumption, estimate, target or placeholder; never cite outside sources, studies, surveys, analyst reports, market statistics or industry benchmarks the input did not provide; state a missing number as an assumption to validate.
-- **Length budget**, same place: keep the document under about 1,800 words, cover every section briefly rather than dropping one, and always finish with the next steps. `maxTokens` stays at 4,000. Raising it is not safe across the selectable models: gpt-4-turbo allows at most 4,096 output tokens, so a higher cap would make that model fail outright.
+- **Figures rule**, added to the shared format rules of both `buildModulePrompt` and `buildAnalysisPrompt`. It says: use only figures from the PM's input, or figures clearly labelled as an assumption, estimate, target or placeholder. Never cite outside sources, studies, surveys, analyst reports, market statistics or industry benchmarks the input did not give. If a number is missing, state it as an assumption to check.
+- **Length budget**, added in the same place: keep the document under about 1,800 words, cover every section briefly rather than dropping one, and always finish with the next steps. `maxTokens` stays at 4,000. Raising it is not safe for every model a user can pick: gpt-4-turbo allows at most 4,096 output tokens, so a higher limit would make that model fail outright.
 
-Checks after the fix: `npm run typecheck` clean; `npm run lint` back to the upstream baseline of 0 errors and 55 warnings (the eval harness had added 45 errors; it is now kept out of the app lint run); `npm run build` succeeds. pm-os has no unit test suite.
+Checks after the fix: `npm run typecheck` passes with no errors. `npm run lint` is back to the original project's level of 0 errors and 55 warnings (the test script had added 45 errors; it is now kept out of the app's lint run). `npm run build` succeeds. pm-os has no unit tests.
 
-**Rubric version.** Unchanged from the first run's final grading: `evals/rubric/fixtures.json` sha256 `8620d49e...b69efe` (recorded in both result files' summaries from this rerun on), plus the two formatting fixes already applied to the first run (bold stripped; user stories may wrap). Nothing was loosened for the rerun. Same 10 inputs, same generation model (`claude-sonnet-4-6`), same judge (`claude-opus-5-5`). Results: `evals/rubric/results/2026-10-15-claude-cli.json` (before), `evals/rubric/results/2026-10-15-claude-cli-after-fix.json` (round 1) and `evals/rubric/results/2026-10-15-claude-cli-round-2.json` (round 2). The round 2 summary records the same rubric sha256.
+**Checklist version.** The same as the first run's final grading: `evals/rubric/fixtures.json` sha256 `8620d49e...b69efe` (a fingerprint of the file, recorded in both result files' summaries from this rerun on), plus the two formatting fixes already applied to the first run (bold removed; user stories may run across lines). Nothing was made easier for the rerun. Same 10 inputs, same writing model (`claude-sonnet-4-6`), same AI grader (`claude-opus-5-5`). Results: `evals/rubric/results/2026-10-15-claude-cli.json` (before), `evals/rubric/results/2026-10-15-claude-cli-after-fix.json` (round 1) and `evals/rubric/results/2026-10-15-claude-cli-round-2.json` (round 2). The round 2 summary records the same checklist sha256 fingerprint.
 
-| Metric                                                      | Before            | Round 1         | Round 2         |
-| ----------------------------------------------------------- | ----------------- | --------------- | --------------- |
-| Required-section checks passed                              | 87 / 88           | 87 / 88         | 87 / 88         |
-| Modules with every required section (regex)                 | 9 / 10            | 9 / 10          | 9 / 10          |
-| Modules with every required section (after manual review)   | 10 / 10           | **9 / 10**      | **10 / 10**     |
-| Framework checks passed                                     | 14 / 15           | 14 / 15         | 14 / 15         |
-| Modules following the named framework (after manual review) | 10 / 10           | 10 / 10         | 10 / 10         |
-| Sentences with a figure not in the input                    | 290               | 90              | 82              |
-| Judge: from input / labelled / **unsourced fact**           | 44 / 218 / **28** | 14 / 74 / **2** | 15 / 65 / **2** |
-| **Modules with zero unsourced facts**                       | **2 / 10**        | **8 / 10**      | **8 / 10**      |
-| **Outputs over the production 4,000-token cap**             | **7 / 10**        | **0 / 10**      | **0 / 10**      |
-| Visible output tokens, range                                | 3,241 to 14,766   | 2,179 to 2,865  | 2,123 to 2,852  |
-| Generation latency p50 / p90                                | 188 s / 435 s     | 81 s / 160 s    | 81 s / 125 s    |
-| Modules whose last H1 or H2 section is next steps           | 10 / 10           | 9 / 10          | 10 / 10         |
+| What was measured                                              | Before fixes      | After round 1   | After round 2   |
+| -------------------------------------------------------------- | ----------------- | --------------- | --------------- |
+| Required-section checks passed                                 | 87 / 88           | 87 / 88         | 87 / 88         |
+| Modules with every required section (automatic check)          | 9 / 10            | 9 / 10          | 9 / 10          |
+| Modules with every required section (after checking by hand)   | 10 / 10           | **9 / 10**      | **10 / 10**     |
+| Framework checks passed                                        | 14 / 15           | 14 / 15         | 14 / 15         |
+| Modules following the named framework (after checking by hand) | 10 / 10           | 10 / 10         | 10 / 10         |
+| Sentences with a figure not in the input                       | 290               | 90              | 82              |
+| AI grader: from input / labelled / **fact, no source**         | 44 / 218 / **28** | 14 / 74 / **2** | 15 / 65 / **2** |
+| **Modules with no unsourced facts**                            | **2 / 10**        | **8 / 10**      | **8 / 10**      |
+| **Outputs longer than the live app's 4,000-token limit**       | **7 / 10**        | **0 / 10**      | **0 / 10**      |
+| Visible output tokens, shortest to longest                     | 3,241 to 14,766   | 2,179 to 2,865  | 2,123 to 2,852  |
+| Time to write one document, median (p50) / near slowest (p90)  | 188 s / 435 s     | 81 s / 160 s    | 81 s / 125 s    |
+| Modules whose last H1 or H2 heading is next steps              | 10 / 10           | 9 / 10          | 10 / 10         |
 
-Remaining misses after round 1, all reported as found:
+Problems left after round 1, all reported as found:
 
-1. **SWOT has no next-steps section (real miss, new).** It ends after "Top 3 Prioritized Strategic Actions". The length budget may have pushed the model to stop there; the rule says to always finish with next steps, so this is a prompt-compliance miss. One case in ten.
+1. **SWOT has no next-steps section (a real miss, new).** It ends after "Top 3 Prioritized Strategic Actions". The length budget may have pushed the model to stop there. The rule says to always finish with next steps, so the model did not follow the prompt. One case in ten.
 2. **Unsourced facts (2 sentences).**
-   - PRD: "Book a time in under 60 seconds without a phone call" stated as a user need with no label. Borderline: a design goal, not a statistic.
-   - Market sizing: the summary calls the ~$3.0M 3-year capture "realistic" and "anchored entirely in CRM data", when it rests on an assumed 15% SOM rate the body does label.
-3. **Rubric false negative (OKRs).** The three objectives are headed "OKR 1/2/3: ..." with key results under each, so the "at least 2 objectives" regex misses them. The regex was not changed; the miss is reported and adjusted by hand.
+   - PRD: "Book a time in under 60 seconds without a phone call" is stated as a user need with no label. A close call: it is a design goal, not a statistic.
+   - Market sizing: the summary calls the ~$3.0M 3-year capture "realistic" and "anchored entirely in CRM data". But it rests on an assumed 15% SOM rate (the share of the market Pawpath can realistically win), which the body does label.
+3. **The checklist marked a pass as a fail (OKRs).** The three objectives are headed "OKR 1/2/3: ..." with key results under each, so the "at least 2 objectives" check misses them. I did not change the check; I report the miss and corrected the count by hand.
 
 ### Round 2
 
-Root causes of the three round 1 misses, each traced to the prompt:
+Why the three round 1 problems happened. Each one traced back to the prompt:
 
-- **SWOT dropped next steps.** The SWOT module prompt ends with "Prioritize the top 3 strategic actions", and the shared rules only said "End with prioritized next steps". The model treated its top 3 actions as the prioritised ending. The length rule said to always finish with next steps but never named the section or listed what was required.
-- **PRD user need "under 60 seconds".** The figures rule spoke of numbers and percentages, so a time limit inside a requirement did not read as a figure. The same PRD set a "<90 seconds" target elsewhere.
-- **Market sizing summary.** The body labelled the 15% SOM rate as an assumption, but nothing asked for that label to travel with the figure when the summary repeated it. The module prompt also still asked for top-down sizing from "industry reports", which the figures rule forbids.
+- **SWOT dropped next steps.** The SWOT module prompt ends with "Prioritize the top 3 strategic actions". The shared rules only said "End with prioritized next steps". So the model treated its top 3 actions as the prioritised ending. The length rule said to always finish with next steps, but it never named the section or listed what was required.
+- **PRD user need "under 60 seconds".** The figures rule talked about numbers and percentages. So a time limit inside a requirement did not read as a figure. The same PRD set a "<90 seconds" target elsewhere.
+- **Market sizing summary.** The body labelled the 15% SOM rate as an assumption. But nothing asked for that label to stay with the figure when the summary repeated it. The module prompt also still asked for top-down sizing from "industry reports", which the figures rule forbids.
 
-Fix (production prompts, same commit as these results):
+Fix (live app prompts, in the same commit as these results):
 
-- `src/lib/ai.ts`, the length and closing-section rules: list the required sections (executive summary, every section the framework asks for, a final "## Next Steps"), say to shorten other sections when running long and never drop a required one, and say Next Steps is always last and separate from any top actions the framework asks for. The about 1,800-word budget stays; `maxTokens` stays at 4,000.
-- `src/lib/ai.ts`, `FIGURES_RULE`: the rule applies to user needs, requirements, the summary and next steps; a time limit, threshold or goal the model introduces is a target, labelled and consistent across the document; a repeated figure that rests on an assumption must say so in that sentence.
-- `src/lib/ai-prompts.ts`, market sizing: top-down now starts from "figures the PM provided or explicitly stated assumptions" instead of "industry reports".
+- `src/lib/ai.ts`, the length and closing-section rules: they now list the required sections (executive summary, every section the framework asks for, a final "## Next Steps"). They say to shorten other sections when running long and never drop a required one. They say Next Steps always comes last and is separate from any top actions the framework asks for. The budget of about 1,800 words stays; `maxTokens` stays at 4,000.
+- `src/lib/ai.ts`, `FIGURES_RULE`: the rule now covers user needs, requirements, the summary and next steps. A time limit, threshold or goal the model adds is a target: it must be labelled and stay the same across the document. A repeated figure that rests on an assumption must say so in that sentence.
+- `src/lib/ai-prompts.ts`, market sizing: top-down sizing now starts from "figures the PM provided or explicitly stated assumptions" instead of "industry reports".
 
-Checks: `npm run typecheck` clean; `npm run lint` 0 errors, 55 warnings (upstream baseline); `npm run build` succeeds. No unit test suite exists.
+Checks: `npm run typecheck` passes with no errors. `npm run lint` shows 0 errors and 55 warnings (the original project's level). `npm run build` succeeds. There are no unit tests.
 
-Round 2 result: all three targeted misses are gone. The PRD and market sizing have no unsourced facts, and every module now ends with "## Next Steps". The unsourced-fact count is still 2, from two different modules:
+Round 2 result: all three problems it targeted are gone. The PRD and market sizing have no unsourced facts, and every module now ends with "## Next Steps". There are still 2 unsourced facts, now in two other modules:
 
-1. **OKRs (new).** "too short for a standard 13-week OKR cycle": an industry norm stated as fact. The 11 weeks it is compared with is computed from the date and counts as input.
-2. **A/B design (new).** Clinic-level randomisation "would require ~545 clinics per arm (after applying a design effect of ~3.9)": a derived figure from an unstated intra-cluster correlation, with no assumption label. Borderline: it is a calculation, but its input is invented.
+1. **OKRs (new).** "too short for a standard 13-week OKR cycle": an industry norm stated as fact. The 11 weeks it is compared with is worked out from the date, so it counts as input.
+2. **A/B design (new).** Clinic-level randomisation "would require ~545 clinics per arm (after applying a design effect of ~3.9)". This figure comes from a statistical assumption (intra-cluster correlation) that is never stated, and it has no assumption label. A close call: it is a calculation, but its input is made up.
 
-Rubric false negatives in round 2 (the regexes were not changed; adjusted by hand in the table):
+Places where the checklist marked a pass as a fail in round 2 (I did not change the checks; I corrected the table by hand):
 
-- **JTBD executive summary.** The summary is a full paragraph, but it sits under an H2 subtitle ("## Jobs-to-be-Done Analysis ..."), the same pattern that tripped SWOT in the first run.
-- **JTBD job statements.** All 10 statements follow "When ..., I want ..., so I can ...", but only 2 use "I want to"; the rest read "I want [a thing]", so the "I want to" regex counts 2 of the 3 it needs. The framework is followed; the canonical wording is not, in 8 of 10 statements.
+- **JTBD executive summary.** The summary is a full paragraph, but it sits under an H2 subtitle ("## Jobs-to-be-Done Analysis ..."). This is the same pattern that tripped SWOT in the first run.
+- **JTBD job statements.** All 10 statements follow "When ..., I want ..., so I can ...". But only 2 use "I want to"; the rest read "I want [a thing]". So the "I want to" check counts 2 of the 3 it needs. The framework is followed, but the standard wording is not, in 8 of 10 statements.
 
-One quality note outside the rubric: the JTBD summary ends with a meta sentence ("figures are drawn exclusively from the PM's inputs, with any additions clearly labelled"), which echoes the prompt rule into the deliverable. One case in ten; not fixed.
+One quality note outside the checklist: the JTBD summary ends with a sentence about the rules ("figures are drawn exclusively from the PM's inputs, with any additions clearly labelled"). It repeats the prompt's rule inside the document. One case in ten; not fixed.
 
-Also noticed on the first two runs: 4 of 10 outputs put an author line with the CLI's logged-in account name or email, which the CLI injects as context. That is a CLI-path artifact, not production behaviour; the strings are replaced with placeholders in both result files. In round 2 one output (PRD) did the same and is redacted the same way.
+Also seen on the first two runs: 4 of 10 outputs added an author line with the CLI's logged-in account name or email. The CLI adds that as background context. It is a side effect of the CLI path, not something the live app does. I replaced those strings with placeholders in both result files. In round 2 one output (PRD) did the same, and it is hidden the same way.
 
-### Review follow-up and spot-check
+### Code review follow-up and spot-check
 
-After code review, the shared rules were scoped so they fit every module, not only the 10 graded ones:
+After code review, I narrowed the shared rules so they fit every module, not only the 10 graded ones:
 
-- **Analysis path.** `buildAnalysisPrompt` has its own numbered structure (observations, gaps, recommendations, next actions) and works from the PM's own data. It keeps the figures rule, which now also allows figures "computed directly from" the input, and a plain length budget. It no longer gets the forced executive summary or `## Next Steps`.
-- **Modules with their own structure.** A per-module opt-out list in `src/lib/ai.ts` covers modules whose prompt defines its own opening and ending, or whose output is user-facing: one-pager, API docs, daily and weekly plans, release notes, meeting notes, agenda, announcement, changelog and meeting templates. They get "follow the structure above, do not add an executive summary or next steps it does not ask for", plus the same length budget. The other modules, including all 10 graded ones, get the same prompt text as round 2 apart from the "computed directly from it" wording.
+- **Analysis path.** `buildAnalysisPrompt` has its own numbered structure (observations, gaps, recommendations, next actions) and works from the PM's own data. It keeps the figures rule, which now also allows figures "computed directly from" the input, plus a simple length budget. It no longer gets the forced executive summary or `## Next Steps`.
+- **Modules with their own structure.** A per-module opt-out list in `src/lib/ai.ts` covers modules whose prompt sets its own opening and ending, or whose output is read by end users: one-pager, API docs, daily and weekly plans, release notes, meeting notes, agenda, announcement, changelog and meeting templates. They get "follow the structure above, do not add an executive summary or next steps it does not ask for", plus the same length budget. The other modules, including all 10 graded ones, get the same prompt text as round 2, except for the "computed directly from it" wording.
 
-Spot-check of 5 modules outside the rubric set (`evals/rubric/harness/spot-check.ts`, results in `evals/rubric/results/2026-10-15-spot-check.json`). Each was generated once with the same CLI path and model, from fictional Pawpath inputs. This is n=1 per module and not graded by the rubric or the judge; it checks length and structure only.
+I also spot-checked 5 modules outside the graded set (`evals/rubric/harness/spot-check.ts`, results in `evals/rubric/results/2026-10-15-spot-check.json`). Each was written once, through the same CLI path and model, from made-up Pawpath inputs. That is n=1 (a single try) per module. Neither the checklist nor the AI grader scored them; this checks length and structure only.
 
-| Module                         | Visible tokens | Ends with Next Steps | Structure                                                                                                  |
-| ------------------------------ | -------------- | -------------------- | ---------------------------------------------------------------------------------------------------------- |
-| API docs (opt-out)             | 3,238          | No                   | Overview, base URL, auth, endpoints, errors, rate limits, code examples, then a gaps table and a changelog |
-| Release notes (opt-out)        | 1,422          | No                   | New, Improved, Fixed, Breaking Changes, then a gaps list for the PM and a feedback line                    |
-| Meeting notes (opt-out)        | 901            | No                   | Attendees, agenda items, decisions, action items, parking lot, follow-up date: the module's own order      |
-| Technical design (not opt-out) | 3,036          | Yes                  | Overview through rollout plan and monitoring, then Next Steps; a design doc for the team, so the tail fits |
-| Assumption tracker analysis    | 2,441          | No                   | The analysis prompt's numbered 1 to 4 sections, then a short verdict                                       |
+| Module                         | Visible tokens | Ends with Next Steps | Structure                                                                                                           |
+| ------------------------------ | -------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| API docs (opt-out)             | 3,238          | No                   | Overview, base URL, auth, endpoints, errors, rate limits, code examples, then a gaps table and a changelog          |
+| Release notes (opt-out)        | 1,422          | No                   | New, Improved, Fixed, Breaking Changes, then a gaps list for the PM and a feedback line                             |
+| Meeting notes (opt-out)        | 901            | No                   | Attendees, agenda items, decisions, action items, parking lot, follow-up date: the module's own order               |
+| Technical design (not opt-out) | 3,036          | Yes                  | Overview through rollout plan and monitoring, then Next Steps. It is a design doc for the team, so that ending fits |
+| Assumption tracker analysis    | 2,441          | No                   | The analysis prompt's numbered 1 to 4 sections, then a short verdict                                                |
 
-All 5 are under the 4,000-token cap, and none has a Next Steps tail where it does not belong. One structural issue remains: API docs and release notes still end with an "Expert Analysis / Identified Gaps" section. That comes from the shared user prompt ("Add your expert analysis, identify gaps ..."), which every module gets; it is useful to the PM but would need removing before the document is published. It is not fixed in this round. Separately, the release notes invent a support email address, which the figures rule does not cover. The technical design put the CLI account name in an author line, redacted as in the other result files.
+All 5 are under the 4,000-token limit, and none ends with Next Steps where it does not belong. One structure problem remains: API docs and release notes still end with an "Expert Analysis / Identified Gaps" section. It comes from the shared user prompt ("Add your expert analysis, identify gaps ..."), which every module gets. That section helps the PM, but it would need removing before the document is published. It is not fixed in this round. Separately, the release notes make up a support email address, which the figures rule does not cover. The technical design put the CLI account name in an author line; I hid it, as in the other result files.
 
-## Latency and usage (first run)
+## Speed and usage (first run)
 
-|                                  | Calls | p50   | p90   | Max   |
-| -------------------------------- | ----- | ----- | ----- | ----- |
-| Generation (`claude-sonnet-4-6`) | 10    | 188 s | 435 s | 435 s |
-| Judge (`claude-opus-5-5`)        | 10    | 20 s  | 47 s  | 47 s  |
+|                               | Calls | p50 (median) | p90 (near slowest) | Slowest |
+| ----------------------------- | ----- | ------------ | ------------------ | ------- |
+| Writing (`claude-sonnet-4-6`) | 10    | 188 s        | 435 s              | 435 s   |
+| AI grader (`claude-opus-5-5`) | 10    | 20 s         | 47 s               | 47 s    |
 
-- Wall time was 13 min at 3 concurrent.
-- Usage reported by the CLI: about 38k input tokens and 120k output tokens, which includes thinking.
+- The whole run took 13 min, with 3 calls at a time.
+- Usage reported by the CLI: about 38k input tokens and 120k output tokens, including thinking.
 - 0 CLI errors.
-- An earlier attempt of this run was stopped by a harness bug: the usage-limit detector matched "rate limit" inside a generated risk register. The bug was fixed and the run redone. That attempt's calls are not in the results.
+- An earlier try at this run stopped because of a bug in the test script: the check for usage limits matched the words "rate limit" inside a generated risk register. I fixed the bug and redid the run. Calls from that try are not in the results.
 
-## Reading the result
+## What the results mean
 
-The first run found structure and framework adherence good enough to publish, but not the invented-metric rate or the length. Its two recommended fixes (a figures rule, and a length limit instead of a higher cap) are applied as described above, so the original recommendations are not repeated here.
+The first run showed that structure and framework use were good enough to publish. The rate of made-up metrics and the length were not. Its two suggested fixes (a figures rule, and a length limit instead of a higher token limit) are applied as described above, so I do not repeat them here.
 
-Both fixes are applied, a second prompt round followed, and this eval has been rerun after each. Before quoting numbers: run the planned API rerun, where `maxTokens: 4000` and temperature actually apply, and watch whether the length budget costs the closing next steps more than once in ten.
+Both fixes are in, a second round of prompt fixes followed, and I reran this test after each. Before quoting these numbers, run the planned API rerun, where `maxTokens: 4000` and temperature really apply. Also watch whether the length budget causes the closing next steps to be dropped more than once in ten.
 
-## Reproduce
+## Run it yourself
 
 ```sh
 cd pm-os
@@ -222,4 +222,4 @@ EVAL_ONLY=strategy/okrs bun --no-install evals/rubric/harness/run.ts            
 bun --no-install evals/rubric/harness/spot-check.ts   # ungraded n=1 spot-check of 5 other modules
 ```
 
-`setup-shims.sh` only writes the stub when no real `@sentry/nextjs` is installed and only adds zod when it is missing, so it is safe to run on a full `npm ci` install. To go back to a normal dev setup after using the shims, run `npm ci`.
+`setup-shims.sh` only writes the stand-in when no real `@sentry/nextjs` is installed, and only adds zod when it is missing. So it is safe to run on a full `npm ci` install. To go back to a normal dev setup after using the shims, run `npm ci`.
