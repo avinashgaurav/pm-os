@@ -7,16 +7,16 @@ A PM's own working documents (PRDs, OKRs, personas, trackers) end up scattered a
 ![pm-os home, a PRD draft, the backlog tracker and provider settings, with fictional data](docs/demo.gif)
 
 > [!NOTE]
-> **Evals: 10 of the 82 modules**, each generated from a fictional input and graded against a fixed rubric plus a model judge for figures.
+> **Tested: 10 of the 82 modules.** Each wrote a document from a made-up input. A fixed scoring checklist graded each one, and another AI checked the figures.
 >
-> | Measure                                                                                     | Before  | After two prompt fixes |
-> | ------------------------------------------------------------------------------------------- | ------- | ---------------------- |
-> | Statements of fact with a figure that is neither in the input nor labelled as an assumption | 28      | **2**                  |
-> | Modules with no such figure                                                                 | 2 / 10  | **8 / 10**             |
-> | Outputs over the 4,000-token cap (measured via the CLI; would be cut off in the app)        | 7 / 10  | **0 / 10**             |
-> | Modules with every required section (manual review)                                         | 10 / 10 | **10 / 10**            |
+> | What was measured                                                                                  | Before fixes | After two prompt fixes |
+> | -------------------------------------------------------------------------------------------------- | ------------ | ---------------------- |
+> | Figures stated as fact that were neither in the input nor labelled as an assumption                | 28           | **2**                  |
+> | Modules with no such figure                                                                        | 2 / 10       | **8 / 10**             |
+> | Documents over the 4,000-token length limit (measured through the CLI; the app would cut them off) | 7 / 10       | **0 / 10**             |
+> | Modules with every required section (checked by hand)                                              | 10 / 10      | **10 / 10**            |
 >
-> Caveat: prompts were fixed against these same 10 inputs, run through the Claude Code CLI rather than the production API path, one run per round. Method and every miss: [EVALS.md](EVALS.md).
+> Limits: I fixed the prompts while looking at these same 10 inputs. The tests ran through the Claude Code CLI, not the live app's API path, and each round ran once. How it was tested, and every miss: [EVALS.md](EVALS.md).
 
 ## Why AI here, why code there
 
@@ -54,7 +54,7 @@ Then `npm run dev`, open [http://localhost:3000](http://localhost:3000) → **Se
 - [What it does](docs/overview.md): the 82 modules, the 10 disciplines and the frameworks behind the prompts
 - [Architecture and deploy](docs/architecture.md): Next.js route, providers, IndexedDB, one-click deploy
 - [Roadmap, status and privacy](docs/status.md): what is planned, known limitations, what leaves your machine
-- [Evals](EVALS.md): method, rubric and every miss
+- [Evals](EVALS.md): how it was tested, the scoring checklist and every miss
 
 ---
 
