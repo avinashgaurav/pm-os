@@ -20,7 +20,11 @@ import { CALL_LOG, callClaude } from './claude-cli.mjs';
 const GEN_MODEL = process.env.EVAL_MODEL ?? 'claude-sonnet-4-6'; // anthropic provider defaultModel
 const JUDGE_MODEL = process.env.EVAL_JUDGE_MODEL ?? 'claude-opus-5-5';
 const PROD_MAX_TOKENS = 4000; // providers/anthropic.ts default maxTokens
-export const DS = JSON.parse(readFileSync(resolve(import.meta.dir, '..', 'fixtures.json'), 'utf8'));
+// EVAL_FIXTURES picks another case file (for example fixtures-new-cases.json); default is the tuned set.
+const FIXTURES = process.env.EVAL_FIXTURES
+  ? resolve(process.env.EVAL_FIXTURES)
+  : resolve(import.meta.dir, '..', 'fixtures.json');
+export const DS = JSON.parse(readFileSync(FIXTURES, 'utf8'));
 const only = process.env.EVAL_ONLY?.split(',');
 
 const rx = (s: string, flags = 'im') => new RegExp(s, flags);
@@ -204,9 +208,8 @@ async function main() {
   const ok = results.filter((r) => !r.error);
   const summary = {
     started,
-    rubricSha256: new Bun.CryptoHasher('sha256')
-      .update(readFileSync(resolve(import.meta.dir, '..', 'fixtures.json')))
-      .digest('hex'),
+    rubricSha256: new Bun.CryptoHasher('sha256').update(readFileSync(FIXTURES)).digest('hex'),
+    fixturesFile: FIXTURES.split('/').slice(-2).join('/'),
     wallMs,
     generationModel: GEN_MODEL,
     judgeModel: JUDGE_MODEL,
