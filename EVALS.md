@@ -192,6 +192,40 @@ I also spot-checked 5 modules outside the graded set (`evals/rubric/harness/spot
 
 All 5 are under the 4,000-token limit, and none ends with Next Steps where it does not belong. One structure problem remains: API docs and release notes still end with an "Expert Analysis / Identified Gaps" section. It comes from the shared user prompt ("Add your expert analysis, identify gaps ..."), which every module gets. That section helps the PM, but it would need removing before the document is published. It is not fixed in this round. Separately, the release notes make up a support email address, which the figures rule does not cover. The technical design put the CLI account name in an author line; I hid it, as in the other result files.
 
+### Issue #97 follow-up (2026-11-04)
+
+Five follow-ups from the review of the round 2 work. What I changed:
+
+- **A test for the opt-out list.** The list of modules with their own structure now sits next to the prompts registry in `src/lib/ai-prompts.ts`. A new test (`src/lib/ai-prompts.test.ts`, run with `npm test`, also added to CI) fails if any id in that list is not a registry key, so a renamed module can no longer lose its opt-out without anyone noticing. I checked the test fails by renaming one id; it did. These are pm-os's first unit tests: 5 tests, all pass.
+- **No "Expert Analysis" tail on API docs and release notes.** The last line of the user prompt ("Add your expert analysis, identify gaps ...") now goes only to modules without their own structure. Modules with their own structure are told to write only the document and to put a short `[TBD: ...]` placeholder where something is missing.
+- **Contact details.** The figures rule now also forbids invented email addresses, phone numbers, URLs, addresses and social handles. Use the PM's, or a placeholder such as `[support email]`.
+- **Tech spec summary.** The shared rule now asks for the summary under a "## Executive Summary" heading, and the tech spec prompt lists it. In the October spot-check the tech spec did have a summary paragraph, but with no heading, so it was easy to miss.
+- **The two figure misses.** The figures rule now says a number calculated from an assumed input is an estimate and must name that input, and that nothing is called "standard", "typical" or "industry" unless the PM said so. The OKR prompt says not to call any cycle length standard. The A/B prompt asks for every input to the sample size (including intra-cluster correlation and design effect) to be listed, with the ones the PM did not give marked as assumptions.
+
+Checks: `npm test` 5 / 5 pass. `npm run typecheck` no errors. `npm run lint` 0 errors, 55 warnings (unchanged). `npm run build` succeeds.
+
+**Rerun on the same 10 inputs** (one run, same writing model `claude-sonnet-4-6`, same AI grader `claude-opus-5-5`, results in `evals/rubric/results/2026-11-04-claude-cli-issue-97.json`):
+
+| What was measured                                      | Round 2         | After #97       |
+| ------------------------------------------------------ | --------------- | --------------- |
+| Required-section checks passed                         | 87 / 88         | 87 / 88         |
+| Framework checks passed                                | 14 / 15         | 15 / 15         |
+| AI grader: from input / labelled / **fact, no source** | 15 / 65 / **2** | 21 / 66 / **3** |
+| **Modules with no unsourced facts**                    | **8 / 10**      | **9 / 10**      |
+| Outputs longer than the live app's 4,000-token limit   | 0 / 10          | 0 / 10          |
+| Visible output tokens, shortest to longest             | 2,123 to 2,852  | 2,187 to 2,938  |
+| Modules with a "## Executive Summary" heading          | not counted     | 10 / 10         |
+| Modules whose last H1 or H2 heading is Next Steps      | 10 / 10         | 10 / 10         |
+
+- The OKR "standard 13-week cycle" sentence is gone. The A/B design now lists the intra-cluster correlation (0.05) as an assumption, and its sample size sentence says it rests on that assumption. The grader found no unsourced fact in either.
+- **All 3 unsourced facts are in the risk register and have one cause.** The CLI tells the model today's date (4 November 2026). The input, written in October, says the migration is "in 6 weeks" with a 30 November deadline, so the model wrote that only 26 days are left and that this is the real window. The live app does not send the date, so I count this as a side effect of the test path, but it is still an unlabelled figure and I report it.
+- **One real miss, new:** the user stories never mention INVEST, so the "INVEST check" section check fails. The stories, epics and Given/When/Then criteria are all there. One case in ten.
+- The fixtures file's fingerprint is now `8d0e1374...bf6f73`, not the `8620d49e...` recorded in October, although git shows no change to the file since it was added. The commit hook reformats JSON, which may explain it. I did not change the file.
+
+**Spot-check rerun** (same 5 modules and inputs as October, n=1 each, `evals/rubric/results/2026-11-04-spot-check.json`): API docs and release notes no longer have an analysis section; the release notes write `[support email]` instead of inventing one; the tech spec opens with "## Executive Summary" and ends with Next Steps. All 5 are under 4,000 tokens (868 to 2,964). Meeting notes and the analysis prompt keep their own structure.
+
+CLI-reported cost for these two runs: $1.04 (rerun) + $0.26 (spot-check).
+
 ## Speed and usage (first run)
 
 |                               | Calls | p50 (median) | p90 (near slowest) | Slowest |
