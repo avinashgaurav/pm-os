@@ -1,0 +1,1494 @@
+{
+  "method": "Claude Code CLI (claude -p) with the app's own buildModulePrompt output; not the production API path",
+  "summary": {
+    "started": "2026-11-04T07:21:01.726Z",
+    "rubricSha256": "e280a38586424325ad3a354ac7db37808bf19b37be3030e9f9f1cfc429bb4960",
+    "fixturesFile": "rubric/fixtures-new-cases.json",
+    "wallMs": 445993,
+    "generationModel": "claude-sonnet-4-6",
+    "judgeModel": "claude-opus-5-5",
+    "modelsAnswered": ["claude-sonnet-4-6", "claude-opus-5-5"],
+    "cliCalls": 20,
+    "cliErrors": 0,
+    "generationLatencyMs": {
+      "n": 10,
+      "p50": 120732,
+      "p90": 188614,
+      "max": 188614
+    },
+    "judgeLatencyMs": {
+      "n": 10,
+      "p50": 9102,
+      "p90": 15805,
+      "max": 15805
+    },
+    "usageTotals": {
+      "input": 33704,
+      "output": 60727
+    },
+    "modules": 10,
+    "generated": 10,
+    "requiredSectionsAllPresent": 9,
+    "requiredSectionChecks": {
+      "passed": 87,
+      "total": 88
+    },
+    "frameworkFollowed": 10,
+    "frameworkChecks": {
+      "passed": 15,
+      "total": 15
+    },
+    "sentencesWithNewFigures": 83,
+    "judgeVerdicts": {
+      "INPUT": 22,
+      "LABELLED": 61
+    },
+    "modulesWithNoUnsourcedFacts": 10,
+    "modulesOverProdMaxTokens": [],
+    "errors": []
+  },
+  "results": [
+    {
+      "key": "specs/prd",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 73034,
+      "outputTokensVisible": 2618,
+      "chars": 9961,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "problem statement",
+          "ok": true
+        },
+        {
+          "label": "target users / personas",
+          "ok": true
+        },
+        {
+          "label": "goals & success metrics",
+          "ok": true
+        },
+        {
+          "label": "functional requirements",
+          "ok": true
+        },
+        {
+          "label": "non-functional requirements",
+          "ok": true
+        },
+        {
+          "label": "user stories",
+          "ok": true
+        },
+        {
+          "label": "acceptance criteria",
+          "ok": true
+        },
+        {
+          "label": "scope in/out",
+          "ok": true
+        },
+        {
+          "label": "technical considerations",
+          "ok": true
+        },
+        {
+          "label": "risks & mitigations",
+          "ok": true
+        },
+        {
+          "label": "timeline / milestones",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "user stories in 'As a ... I want ... so' form",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 8,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "INPUT",
+          "reason": "The 78% is worked out from 1-in-9 and 1-in-40 (about 11.1% down to 2.5%, roughly 77.5%), and the sentence says so. The 7 bakeries and the March deadline come from the input. The year 2027 is only a scheduling assumption.",
+          "sentence": "A beta with 7 bakeries will ship before the March 2027 spring menu change, targeting a reduction in order-quantity errors from 1-in-9 to under 1-in-40 (an approximately 78% improvement, computed from the two given rates)."
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "≥80% is a bolded success-metric target with a deadline ('by end of beta') and a 0% baseline, so it reads as a goal.",
+          "sentence": "| Remove buyer phone calls | % wholesale accounts placing orders via Standing Orders | **≥ 80%** by end of beta | 0% |"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "≥70% within 4 weeks is a bolded adoption target in a metrics table with a 0% baseline.",
+          "sentence": "| Buyer adoption | Buyer-initiated edits via platform (not WhatsApp) | **≥ 70%** of standing-order accounts within 4 weeks of onboarding | 0% |"
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "The 2 hours is explicitly marked TBD and flagged for tech alignment.",
+          "sentence": "- Owner can unlock and amend up to [TBD: 2 hours] before production cut-off (flag for tech alignment)"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "99.5% uptime is explicitly marked '(target)'. The 9 pm–5 am window comes from the input.",
+          "sentence": "| NF3 | Uptime during buyer ordering window (9 pm – 5 am local) | **≥ 99.5%** (target) |"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "90 days minimum is a requirement in a non-functional requirements table, so it is a design parameter and not a claim of fact.",
+          "sentence": "| NF4 | Data retention for order change logs | **90 days** minimum |"
+        },
+        {
+          "n": 7,
+          "verdict": "LABELLED",
+          "reason": "The 30 seconds is a threshold in an acceptance criterion (AC), so it is a requirement and not a reported fact.",
+          "sentence": "- **AC:** Buyer receives link, edits quantities, submits; portal confirms submission with a summary; edit is reflected in owner's dashboard within 30 seconds."
+        },
+        {
+          "n": 8,
+          "verdict": "LABELLED",
+          "reason": "The 2-week lead time is a proposed mitigation in the risk table, so it is a plan parameter.",
+          "sentence": "| Menu changes break templates | High (spring) | Medium | \"Template review\" prompt sent to owner 2 weeks before spring menu change date |"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Crumbline Standing Orders\n\n## Executive Summary\n\nCrumbline's wholesale channel is leaking reliability: 1 in 9 wholesale orders last quarter contained a wrong quantity, and bakery owners are spending most of Sunday evening re-keying repeat orders that arrive via WhatsApp. Standing Orders replaces that manual loop with a buyer-editable recurring order that locks at a bakery-defined cut-off and writes directly to Crumbline's order system — no re-keying, no transcription errors. A beta with 7 bakeries will ship before the March 2027 spring menu change, targeting a reduction in order-quantity errors from 1-in-9 to under 1-in-40 (an approximately 78% improvement, computed from the two given rates).\n\n---\n\n## Problem Statement\n\n**What is happening:** Independent bakery owners manage wholesale accounts — cafes, delis — by receiving WhatsApp messages and manually entering quantities into Crumbline every week.\n\n**Measured pain:**\n- **1 in 9** wholesale orders last quarter contained a wrong quantity (source: PM input)\n- Re-keying consumes **most of Sunday evening** per bakery owner (source: owner interviews)\n- Buyers place orders between **9 pm and 5 am** — outside staff hours — meaning errors aren't caught until Monday\n\n**Why it matters:** A wrong-quantity error wastes baked goods, damages buyer trust, and forces phone calls that the owner then has to resolve during peak morning prep.\n\n**Identified gap:** We do not yet have data on average weekly wholesale order count per bakery or revenue attributed to wholesale. **Recommendation:** Instrument current WhatsApp-to-Crumbline flow during beta to capture baseline order volume and owner time spent before launch.\n\n---\n\n## Target Users & Personas\n\n### Persona 1 — Maya, Bakery Owner / Shift Lead\n- Runs 1–3 shops; oversees 3–8 wholesale accounts\n- Orders Sunday night for Monday–Friday production\n- Pain: spends Sunday evening transcribing WhatsApp threads; wakes to dispute calls\n\n### Persona 2 — Carlos, Wholesale Buyer (Cafe Owner)\n- Orders at night after his cafe closes (~10 pm–midnight)\n- Accustomed to WhatsApp; resistant to new apps unless genuinely faster\n- Pain: no confirmation his order was received correctly; must call to verify\n\n**Identified gap:** We have no data on buyers' device split (mobile vs. desktop) or connectivity during ordering hours. **Assumption to validate:** majority of buyers order on mobile with intermittent connectivity — this assumption drives the offline-capable requirement.\n\n---\n\n## Goals & Measurable Success Metrics\n\n| Goal | Metric | Target | Baseline |\n|---|---|---|---|\n| Eliminate transcription errors | Wrong-quantity rate | **< 1 in 40 orders** | 1 in 9 orders |\n| Reduce owner Sunday effort | Weekly order-entry time per bakery | **Target: ≤ 15 min** (assumption; validate in beta) | \"Most of Sunday evening\" |\n| Remove buyer phone calls | % wholesale accounts placing orders via Standing Orders | **≥ 80%** by end of beta | 0% |\n| Buyer adoption | Buyer-initiated edits via platform (not WhatsApp) | **≥ 70%** of standing-order accounts within 4 weeks of onboarding | 0% |\n\n---\n\n## Detailed Requirements\n\n### Functional Requirements\n\n**F1 — Standing Order Creation (Owner)**\n- Owner creates a recurring order template per buyer: SKUs, default quantities, unit, delivery day\n- Owner sets a weekly cut-off time per buyer (e.g., \"Tuesday 11 pm\")\n- System auto-generates next week's draft order from the template on a configurable cadence\n\n**F2 — Buyer Edit Portal**\n- Buyer receives a link (SMS or email) to a lightweight edit view — no app install required\n- Buyer can adjust quantities up/down on existing SKUs; cannot add new SKUs without owner approval (scope guard)\n- Edit window closes at the bakery-defined cut-off; portal shows countdown to cut-off\n\n**F3 — Confirmation & Lock**\n- On cut-off, system locks the order and sends confirmation to both buyer and owner\n- Locked order writes to Crumbline's existing order record — no re-keying\n- Owner can unlock and amend up to [TBD: 2 hours] before production cut-off (flag for tech alignment)\n\n**F4 — Change Log**\n- Every quantity edit is timestamped and attributed (buyer vs. owner) for dispute resolution\n\n**F5 — Offline Mode (Tablet)**\n- Owner can view locked orders and add manual overrides on the shop tablet without connectivity\n- Changes sync when connection restores; conflict resolution: last-write-wins with a visible conflict flag\n\n### Non-Functional Requirements\n\n| ID | Requirement | Target |\n|---|---|---|\n| NF1 | Page load for buyer edit portal | **< 2 s** on a 3G connection (assumption: representative buyer connectivity) |\n| NF2 | Offline queue durability | Survive tablet restart; sync within 60 s of reconnection |\n| NF3 | Uptime during buyer ordering window (9 pm – 5 am local) | **≥ 99.5%** (target) |\n| NF4 | Data retention for order change logs | **90 days** minimum |\n| NF5 | Accessibility | Buyer portal: WCAG 2.1 AA for form elements |\n\n---\n\n## User Stories & Acceptance Criteria\n\n**US1 — Template setup**\n*As an owner, I want to define a standing order for each wholesale buyer so I never re-key the same SKUs.*\n- **AC:** Given a buyer account, owner can create a template with ≥1 SKU in < 5 taps; template persists across weeks.\n\n**US2 — Buyer edits quantities**\n*As a buyer, I want to adjust this week's quantities from my phone before cut-off.*\n- **AC:** Buyer receives link, edits quantities, submits; portal confirms submission with a summary; edit is reflected in owner's dashboard within 30 seconds.\n\n**US3 — Cut-off enforcement**\n*As an owner, I want orders to lock at my cut-off so I can start production planning.*\n- **AC:** At cut-off, portal shows \"Order locked\" to buyer; further edits are blocked; owner dashboard marks order as locked with timestamp.\n\n**US4 — Offline tablet access**\n*As a shift lead, I want to view today's locked orders on the tablet even without Wi-Fi.*\n- **AC:** Locked orders visible offline; any offline override is queued and synced; shift lead sees sync-pending indicator.\n\n**US5 — Conflict alert**\n*As an owner, I want to know if an offline edit conflicts with a buyer edit so I can resolve it.*\n- **AC:** On sync, conflicting fields are highlighted in the owner dashboard with both values displayed.\n\n---\n\n## Scope\n\n### In Scope\n- Standing order template creation and management (owner)\n- Buyer-facing quantity edit portal (web, no install)\n- Configurable per-buyer cut-off times\n- Automatic order lock and confirmation (SMS/email)\n- Offline read + override on shop tablet, with sync\n- Order change log\n\n### Out of Scope\n- Invoicing and payment\n- Delivery routing or scheduling\n- New-SKU requests from buyers\n- Multi-currency or tax calculation\n- Native mobile app for buyers\n\n---\n\n## Technical Considerations\n\n1. **Buyer portal as a stateless web link:** Use a signed, time-limited token in the URL — no buyer login required, reducing friction but requiring token expiry enforcement at cut-off.\n2. **Offline-first on tablet:** Evaluate a service-worker + IndexedDB approach; confirm Crumbline's existing tablet stack supports it before committing. **Gap:** no tablet OS/browser version data provided — flag for engineering spike.\n3. **Cut-off scheduler reliability:** Cut-off enforcement must run server-side, not client-side, to prevent buyers from bypassing it by keeping the tab open.\n4. **Crumbline order record integration:** Standing order writes must be transactional — partial writes should roll back. Confirm current order API supports atomic upserts.\n5. **SMS/email delivery during 9 pm–5 am window:** Confirm provider SLA for overnight delivery; consider a fallback channel.\n\n---\n\n## Risks & Mitigations\n\n| Risk | Likelihood | Impact | Mitigation |\n|---|---|---|---|\n| Buyers resist leaving WhatsApp | High | High | Make edit link one-tap from a WhatsApp-forwarded message; measure adoption weekly in beta |\n| Offline sync conflicts cause wrong orders | Medium | High | Conflict flag + owner must explicitly resolve before order locks; never auto-resolve silently |\n| Menu changes break templates | High (spring) | Medium | \"Template review\" prompt sent to owner 2 weeks before spring menu change date |\n| 7 beta bakeries too small to validate error-rate target | Medium | Medium | Instrument all orders (not just standing orders) to maintain a comparable control group |\n| Cut-off scheduler drift under load | Low | High | Integration test with simulated load; alert if job runs > 30 s late |\n\n---\n\n## Timeline & Milestones\n\n| Milestone | Date | Owner |\n|---|---|---|\n| Engineering spike: offline stack + order API | 2026-11-21 | Engineering lead |\n| Design: buyer portal + owner dashboard flows | 2026-12-05 | Product design |\n| Alpha: internal dogfood with 1 bakery | 2026-12-19 | PM + Eng |\n| Beta launch: 7 bakeries onboarded | 2027-01-16 | PM |\n| Beta review checkpoint (error rate, adoption) | 2027-02-13 | PM + Data |\n| Spring menu change guard shipped | 2027-02-27 | Engineering |\n| GA decision / spring menu change | 2027-03-06 | Leadership |\n\n*All dates target the pre-March 2027 spring menu change constraint stated by PM.*\n\n---\n\n## Next Steps\n\n1. **Validate the owner time baseline** — instrument or interview to quantify \"most of Sunday evening\" in minutes before beta, so the ≤ 15 min target has a defensible baseline.\n2. **Confirm wholesale order volume** — pull last quarter's wholesale order count per bakery to size the error-rate metric correctly (denominator matters for 1-in-40 target).\n3. **Engineering spike (by 2026-11-21)** — determine tablet browser/OS versions in beta bakeries and confirm offline-first feasibility; unblock architecture decisions.\n4. **Recruit 7 beta bakeries** — prioritise bakeries with ≥ 3 active wholesale accounts to generate enough order volume to measure the error-rate target within the beta window.\n5. **Define the buyer onboarding flow** — the WhatsApp-to-link transition is the highest adoption risk; prototype and test with 2–3 buyers before beta launch."
+    },
+    {
+      "key": "strategy/okrs",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 124193,
+      "outputTokensVisible": 2161,
+      "chars": 7519,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "objectives",
+          "ok": true
+        },
+        {
+          "label": "key results",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "at least 2 objectives",
+          "ok": true
+        },
+        {
+          "label": "at least 6 key results",
+          "ok": true
+        },
+        {
+          "label": "KRs measurable (80% contain a number)",
+          "ok": true
+        },
+        {
+          "label": "outcomes vs outputs or sandbagging addressed",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 16,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "INPUT",
+          "reason": "The 6% and about $36.7K both come straight from 94% NRR and $612K ARR.",
+          "sentence": "Crumbline enters Q1 2026 (6 January – 28 March) with 238 paying bakeries, $612K ARR, and a net revenue retention of 94% — meaning roughly 6% of recurring revenue erodes annually, equating to approximately $36,700 per year computed from those two figures."
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "The 100% NRR figure is presented as what the plan is aiming for, not as a fact.",
+          "sentence": "This OKR set attacks three compounding levers — activating new bakeries into wholesale, recovering downgraded bakeries, and shipping offline tablet mode — all aimed at pushing NRR toward and above 100%. **Two baselines are missing and must be established before 6 January for this OKR set to be scoreable:** the current wholesale activation rate within month one, and the count of bakeries on the fre"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "75% is explicitly called a target, and the baseline is marked TBD.",
+          "sentence": "- **KR 1.1:** Raise the percentage of new bakeries completing wholesale ordering setup within their first 30 days from **[Assumption: baseline TBD — pull from database before 6 January]** to **Target: 75%** by 28 March."
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "10 days is explicitly called a target.",
+          "sentence": "- **KR 1.2:** Reduce median time-to-first-wholesale-order for new bakeries from **[Assumption: baseline TBD]** to **Target: 10 days** after account creation."
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "100% within 7 days is a key-result target, and the sentence flags it for validation.",
+          "sentence": "- **KR 1.3:** Deliver a live or recorded CS walkthrough to 100% of new bakeries within 7 days of signup, tracked in the CS activity log. *(⚠️ Sandbagging risk: validate Q1 new-signup volume against 2 CS leads' capacity before locking 100%.)*"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "The $38,565 is called a target and rests on an assumed 15 bakeries. The $2,571 per bakery is computed from the input.",
+          "sentence": "- **KR 2.2:** Recover **Target: $38,565 in ARR** from win-back campaigns by 28 March. *(Computed from: 15 bakeries × $2,571 average ARR per paying bakery, where $2,571 = $612K ÷ 238; both inputs carry the same assumptions as KR 2.1.)*"
+        },
+        {
+          "n": 7,
+          "verdict": "LABELLED",
+          "reason": "The 3 touchpoints and the 21 January date are key-result plan parameters.",
+          "sentence": "- **KR 2.3:** Deploy a structured win-back sequence of at least 3 CS touchpoints to 100% of identified free-plan bakeries by 21 January, logged in the CS tracker."
+        },
+        {
+          "n": 8,
+          "verdict": "LABELLED",
+          "reason": "28 February is called a target, and the 4 weeks is worked out from the quarter end date.",
+          "sentence": "- **KR 3.1:** Ship offline tablet mode to general availability for all 238 paying bakeries by **Target: 28 February**, leaving 4 weeks of the quarter for adoption measurement."
+        },
+        {
+          "n": 9,
+          "verdict": "LABELLED",
+          "reason": "20% is called a target and also a placeholder assumption.",
+          "sentence": "- **KR 3.2:** Achieve offline mode activation by **Target: 20%** of the 238 paying bakeries within 30 days of release. *(Assumption: 20% is a placeholder — set based on the size of the connectivity-limited segment within the bakery base.)*"
+        },
+        {
+          "n": 10,
+          "verdict": "LABELLED",
+          "reason": "Zero incidents over 4 weeks is a key-result target.",
+          "sentence": "- **KR 3.3:** Record zero data-loss incidents attributable to offline sync in the first 4 weeks of production, as measured by error logs and CS tickets."
+        },
+        {
+          "n": 11,
+          "verdict": "INPUT",
+          "reason": "The 11.5 weeks is roughly the time between 6 January and 28 March. The team sizes come from the input.",
+          "sentence": "5 engineers and 1 designer are being asked to ship a non-trivial offline feature, improve onboarding flows, and potentially build win-back tooling — in 11.5 weeks, with no new hires."
+        },
+        {
+          "n": 12,
+          "verdict": "INPUT",
+          "reason": "Both figures are computed from 94% NRR and $612K ARR, and the sentence shows the working.",
+          "sentence": "At 94% NRR on $612K ARR, Crumbline erodes approximately $36,720 annually and roughly $9,180 per quarter (computed from 6% × $612K ÷ 4)."
+        },
+        {
+          "n": 13,
+          "verdict": "LABELLED",
+          "reason": "Getting NRR above 100% is presented as something the plan is working towards, not as a fact.",
+          "sentence": "All three objectives, executed together, compound toward pushing NRR above 100%."
+        },
+        {
+          "n": 14,
+          "verdict": "LABELLED",
+          "reason": "100%+ is explicitly called a target.",
+          "sentence": "- **O1 (Wholesale Activation)** → Company KR: Raise NRR from 94% to **Target: 100%+** by end of fiscal year"
+        },
+        {
+          "n": 15,
+          "verdict": "LABELLED",
+          "reason": "7 weeks is a planning threshold for deciding whether to re-scope.",
+          "sentence": "If the estimate exceeds 7 weeks of engineering capacity, re-scope or re-sequence before the team is mid-sprint."
+        },
+        {
+          "n": 16,
+          "verdict": "LABELLED",
+          "reason": "10 January is a proposed deadline in the plan.",
+          "sentence": "3. **By 10 January:** Forecast Q1 new-bakery signup volume to validate that 2 CS leads can deliver 100% 7-day touchpoints (KR 1.3)."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Crumbline Q1 Retention\n\n## Executive Summary\n\nCrumbline enters Q1 2026 (6 January – 28 March) with 238 paying bakeries, $612K ARR, and a net revenue retention of 94% — meaning roughly 6% of recurring revenue erodes annually, equating to approximately $36,700 per year computed from those two figures. Oakhollow's own cohort data reveals the clearest retention signal available: bakeries that configure wholesale ordering in month one stay far longer. This OKR set attacks three compounding levers — activating new bakeries into wholesale, recovering downgraded bakeries, and shipping offline tablet mode — all aimed at pushing NRR toward and above 100%. **Two baselines are missing and must be established before 6 January for this OKR set to be scoreable:** the current wholesale activation rate within month one, and the count of bakeries on the free plan. Securing those numbers is the single highest-priority action before the quarter opens.\n\n---\n\n## OKR Set\n\n### Objective 1: Make the first month so compelling that every new bakery unlocks wholesale ordering before they look up\n\n**Rationale:** Oakhollow's own cohort data is the strongest retention lever in this document. This objective operationalises that signal.\n\n- **KR 1.1:** Raise the percentage of new bakeries completing wholesale ordering setup within their first 30 days from **[Assumption: baseline TBD — pull from database before 6 January]** to **Target: 75%** by 28 March.\n- **KR 1.2:** Reduce median time-to-first-wholesale-order for new bakeries from **[Assumption: baseline TBD]** to **Target: 10 days** after account creation.\n- **KR 1.3:** Deliver a live or recorded CS walkthrough to 100% of new bakeries within 7 days of signup, tracked in the CS activity log. *(⚠️ Sandbagging risk: validate Q1 new-signup volume against 2 CS leads' capacity before locking 100%.)*\n\n**⚠️ Measurability flag:** KR 1.1 and 1.2 cannot be objectively scored without documented baselines. If historical data cannot be pulled before 6 January, treat the first two weeks as a measurement sprint and set targets by 20 January.\n\n---\n\n### Objective 2: Bring downgraded bakeries home — and earn back their trust permanently\n\n**Rationale:** Win-backs convert at higher rates than cold prospects and directly repair NRR erosion.\n\n- **KR 2.1:** Re-convert **Target: 15 free-plan bakeries** to a paid plan by 28 March. *(Assumption: 15 is a placeholder — validate against the actual free-plan count, which was not provided, before quarter start. If the pool is smaller, this target is unachievable; if larger, it may be sandbagged.)*\n- **KR 2.2:** Recover **Target: $38,565 in ARR** from win-back campaigns by 28 March. *(Computed from: 15 bakeries × $2,571 average ARR per paying bakery, where $2,571 = $612K ÷ 238; both inputs carry the same assumptions as KR 2.1.)*\n- **KR 2.3:** Deploy a structured win-back sequence of at least 3 CS touchpoints to 100% of identified free-plan bakeries by 21 January, logged in the CS tracker.\n\n**⚠️ Gap flagged:** Free-plan bakery count is not documented. KR 2.1 and 2.2 targets are unverifiable until this number is known.\n\n---\n\n### Objective 3: Extend Crumbline's reach to every bakery, online or not\n\n**Rationale:** \"Ship offline tablet mode\" is an output goal, not an outcome. Reframed here as a business outcome: removing the connectivity barrier expands Crumbline's addressable use cases and reduces churn risk in that segment. Shipping without adoption earns nothing.\n\n- **KR 3.1:** Ship offline tablet mode to general availability for all 238 paying bakeries by **Target: 28 February**, leaving 4 weeks of the quarter for adoption measurement.\n- **KR 3.2:** Achieve offline mode activation by **Target: 20%** of the 238 paying bakeries within 30 days of release. *(Assumption: 20% is a placeholder — set based on the size of the connectivity-limited segment within the bakery base.)*\n- **KR 3.3:** Record zero data-loss incidents attributable to offline sync in the first 4 weeks of production, as measured by error logs and CS tickets.\n\n**⚠️ Output-to-outcome flag:** KR 3.1 tracks delivery; KR 3.2 and 3.3 track whether delivery created value. If KR 3.1 ships but KR 3.2 is missed, the objective fails — intentionally.\n\n---\n\n## Expert Analysis & Gaps\n\n### Capacity Is the Quarter's Biggest Risk\n\n5 engineers and 1 designer are being asked to ship a non-trivial offline feature, improve onboarding flows, and potentially build win-back tooling — in 11.5 weeks, with no new hires. Recommended sequencing: **timebox-protect offline mode in Weeks 1–7** (since KR 3.1's 28 February target requires it), **onboarding flow improvements in Weeks 5–10**, and **CS-led win-back running from Week 1** (minimal engineering dependency). Letting these three tracks overlap without explicit prioritisation is the most likely way the quarter ends with partial delivery on all three.\n\n### Missing Baselines\n\n| Metric | Status | Blocks |\n|---|---|---|\n| Wholesale activation rate (month 1) | Not documented | KR 1.1, KR 1.2 |\n| Free-plan bakery count | Not documented | KR 2.1, KR 2.2 |\n| Median time-to-first-wholesale-order | Not documented | KR 1.2 |\n\n### NRR as the Unifying North Star\n\nAt 94% NRR on $612K ARR, Crumbline erodes approximately $36,720 annually and roughly $9,180 per quarter (computed from 6% × $612K ÷ 4). All three objectives, executed together, compound toward pushing NRR above 100%. Monthly NRR tracking during the quarter — not just at quarter end — will surface drift early enough to course-correct.\n\n---\n\n## Company-Level OKR Alignment\n\nThese objectives should roll up to a company-level objective such as: **\"Build Crumbline into a retention-first business that expands every dollar of ARR.\"** Suggested mapping:\n\n- **O1 (Wholesale Activation)** → Company KR: Raise NRR from 94% to **Target: 100%+** by end of fiscal year\n- **O2 (Win-Back)** → Company KR: Recover **Target: [TBD]** in ARR from churned/downgraded accounts annually *(Assumption: target to be set by leadership)*\n- **O3 (Offline Tablet Mode)** → Company KR: Expand Crumbline's serviceable bakery base to include connectivity-limited accounts\n\nIf company-level OKRs do not yet exist, drafting them is a prerequisite — these Q1 OKRs are rootless without a parent to roll up to.\n\n---\n\n## Next Steps\n\n1. **Before 6 January — highest priority:** Pull historical data to establish the three missing baselines (wholesale activation rate, free-plan bakery count, median time-to-first-wholesale-order). KRs 1.1, 1.2, and 2.1 cannot be scored without them.\n2. **By 10 January:** Get an engineering estimate for the offline tablet mode build to confirm whether the 28 February ship target (KR 3.1) is achievable. If the estimate exceeds 7 weeks of engineering capacity, re-scope or re-sequence before the team is mid-sprint.\n3. **By 10 January:** Forecast Q1 new-bakery signup volume to validate that 2 CS leads can deliver 100% 7-day touchpoints (KR 1.3). Adjust the target if volume makes full coverage unrealistic.\n4. **By 13 January:** Validate KR 2.1's placeholder target of 15 win-back bakeries against the actual free-plan pool.\n5. **By 13 January:** Draft company-level OKRs with leadership so all three objectives have a clear parent and the NRR north star is formally owned.\n6. **Week of 6 January:** Assign a named DRI for each objective — recommended: one CS lead for O2, one engineer lead for O3, and a CS + engineer pair for O1. Set a check-in cadence *(Assumption: bi-weekly, as the PM did not specify one)* for the duration of the quarter."
+    },
+    {
+      "key": "discovery/jtbd",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 69060,
+      "outputTokensVisible": 2264,
+      "chars": 9611,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "functional jobs",
+          "ok": true
+        },
+        {
+          "label": "emotional jobs",
+          "ok": true
+        },
+        {
+          "label": "social jobs",
+          "ok": true
+        },
+        {
+          "label": "hiring criteria",
+          "ok": true
+        },
+        {
+          "label": "competing solutions",
+          "ok": true
+        },
+        {
+          "label": "switching triggers",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "job statements in 'When ..., I want to ..., so I can ...' form (3+)",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 3,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "INPUT",
+          "reason": "The 10 calls figure comes straight from the input (ten calls).",
+          "sentence": "> **Gap flagged:** None of the 10 calls captured what managers feel during the first week of using new software — a critical emotional moment for onboarding."
+        },
+        {
+          "n": 2,
+          "verdict": "INPUT",
+          "reason": "The 10 calls figure restates the input. No other figure is in the sentence.",
+          "sentence": "- **Not mentioned explicitly** in the 10 calls, but likely present in some homes given the segment size (**gap: confirm whether any interviewees use hybrid paper+digital**)"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "3–5 interviews is a proposed next step, written as a recommendation.",
+          "sentence": "1. **Run 3–5 staff (care worker) interviews** before finalising the onboarding checklist — staff adoption is an unvalidated assumption that could undermine manager outcomes."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Why Care Homes Adopt Shiftnest\n\n## Executive Summary\n\nInterviews with 10 registered managers who adopted Shiftnest this year reveal three distinct pain points driving adoption: reactive, late-night shift-filling that consumes personal time; agency staffing spend described as exceeding the cost of running the building itself; and rota fragmentation that creates compliance risk during CQC inspections. Seven of the 10 managers were running rotas in emailed spreadsheets before switching. The core job Shiftnest is hired to do is not \"make a rota\" — it is **to give a single registered manager the operational control she would otherwise need a staffing coordinator to maintain**. The website rewrite and onboarding checklist should speak directly to that job: control, defensibility under inspection, and relief from out-of-hours firefighting.\n\n---\n\n## Functional Jobs\n\nThese are the tangible tasks managers hired Shiftnest to accomplish.\n\n- **When** a shift falls vacant at short notice — including late at night — **I want to** broadcast the gap and collect acceptances without picking up my phone, **so I can** fill the shift before morning without leaving my kitchen table in a crisis.\n\n- **When** I am building the weekly rota, **I want to** see staff availability, contracted hours, and open gaps in one place, **so I can** reduce the number of times I call an agency and absorb the premium cost.\n\n- **When** a CQC inspector requests evidence of safe staffing levels, **I want to** produce a single, authoritative rota history instantly, **so I can** avoid the embarrassment and risk of presenting conflicting document versions.\n\n- **When** a staff member requests a shift swap, **I want to** approve or reject it without managing a chain of WhatsApp messages, **so I can** keep the rota accurate without manual re-entry.\n\n---\n\n## Emotional Jobs\n\nThese are the feelings managers were trying to gain or avoid.\n\n- **When** I am responsible for care quality around the clock, **I want to** feel that staffing is under control even on my days off, **so I can** switch off without anxiety.\n\n- **When** agency costs spike unexpectedly, **I want to** understand why and act on it, **so I can** feel like a competent financial steward of the home, not a passive victim of the roster.\n\n- **When** an inspector arrives unannounced, **I want to** feel confident rather than defensive, **so I can** demonstrate that I run a well-managed service.\n\n> **Gap flagged:** None of the 10 calls captured what managers feel during the first week of using new software — a critical emotional moment for onboarding. This should be investigated before the setup checklist is finalised.\n\n---\n\n## Social Jobs\n\nThese are the ways managers want to be perceived by others.\n\n- **When** I am accountable to the home's owner or board, **I want to** show a credible staffing plan and trend data, **so I can** be seen as a professional manager, not an administrator making it up as I go.\n\n- **When** staff ask \"who's on shift this weekend?\", **I want to** point them to one source of truth, **so I can** be seen as organised and fair — not the person who loses track of swaps.\n\n- **When** I am compared to managers at other homes in my group (if multi-site), **I want to** demonstrate lower agency reliance, **so I can** build a reputation as someone who runs a tight operation.\n\n---\n\n## Hiring Criteria\n\nThe conditions a solution must meet to be chosen over alternatives.\n\n| Criterion | Signal from Interviews |\n|---|---|\n| **Speed of gap-filling** | Midnight incidents described as the breaking-point trigger; solution must work asynchronously, without phone calls |\n| **Single source of truth** | \"Three versions\" of the rota during inspection is a direct compliance failure; one live document is non-negotiable |\n| **Low manager overhead** | Homes in this segment (15–60 staff) rarely have a dedicated HR or scheduling coordinator; the tool must work for one person |\n| **Audit trail** | Inspectors asked for the rota; the solution must produce exportable, timestamped records |\n| **Staff self-service** | Shift swaps and availability updates must not funnel back to the manager as manual tasks |\n\n---\n\n## Competing Solutions\n\nWhat managers were using — or still use alongside Shiftnest — to do the same jobs.\n\n### Spreadsheet + Email (Primary incumbent)\n- **Used by:** 7 of 10 managers interviewed\n- **Strengths perceived:** Familiar, free, fully customisable\n- **Critical weaknesses:** No version control (the \"three versions\" problem), no real-time visibility, requires manager to distribute manually every week, no audit trail by default\n- **Why it survives:** Low switching cost to start; high switching cost once it is embedded in team habit\n\n### Agency Staffing\n- **Used as:** A parallel solution to gap-fill when the rota method fails\n- **Cost signal from PM:** Described by at least one manager as costing more than the building — exact figure not provided (**assumption to validate: gather actual agency spend figures from willing participants**)\n- **Role in the system:** Agency is the emergency fallback that Shiftnest's shift-broadcast feature directly competes with\n\n### WhatsApp / Direct Phone Calls\n- **Used for:** Ad hoc swap negotiation and urgent gap alerts\n- **Weakness:** No record, no manager oversight, creates the multi-version problem\n\n### Paper Rotas\n- **Not mentioned explicitly** in the 10 calls, but likely present in some homes given the segment size (**gap: confirm whether any interviewees use hybrid paper+digital**)\n\n---\n\n## Switching Triggers\n\nThe specific moments that caused managers to hire Shiftnest.\n\n1. **The midnight crisis** — Filling a gap from home, out of hours, by phone, was the most viscerally described trigger. This is the \"I can't keep doing this\" moment. Shiftnest's onboarding messaging should name this scenario explicitly.\n\n2. **Inspection failure or near-miss** — Being asked for the rota and having multiple conflicting versions is a direct CQC risk. Managers who experienced this (or feared it) were primed to switch.\n\n3. **Agency bill shock** — Receiving an invoice that felt disproportionate to the home's income created urgency to find an internal alternative. (**Gap: no specific invoice figures were captured; these would make compelling website copy if managers consent to share them.**)\n\n4. **New manager taking over** — Not explicitly stated, but a likely trigger to investigate: a new registered manager inheriting a chaotic spreadsheet system has high motivation to establish her own process quickly.\n\n---\n\n## Gaps in Current Research\n\nPrioritised by impact on the website rewrite and onboarding checklist.\n\n- **No staff (non-manager) perspective captured.** Staff acceptance of a new tool is a known adoption barrier. If staff ignore app notifications, the manager's job is not done. Recommend 3–5 interviews with care workers.\n- **No data on first-week experience.** The onboarding checklist is being rewritten without evidence of where new managers get stuck. (**Target: add 2–3 questions about week-one friction to the next 5 customer calls.**)\n- **No agency cost data.** Quantifying savings is the single most powerful proof point for the website. (**Target: collect anonymised before/after agency spend from at least 3 willing customers.**)\n- **No insight on multi-site vs. single-site homes.** The 15–60 staff range could include single-site and small group operators with different social jobs.\n- **Switching-back risk unknown.** None of the calls appear to have asked what would cause a manager to stop using Shiftnest. This is critical for retention messaging.\n\n---\n\n## Prioritised Opportunities for Shiftnest\n\n1. **Website headline job:** Lead with relief from out-of-hours gap-filling, not \"rota software.\" The emotional job (sleep, control, not being at a kitchen table at midnight) is stronger than the functional job.\n2. **Compliance proof point:** Build a one-click \"inspection-ready export\" feature or emphasise it prominently if it already exists. The \"three versions\" quote is a ready-made testimonial hook.\n3. **Agency cost calculator:** A simple interactive tool on the website — manager enters rough agency hours per month, tool shows estimated savings — converts the switching trigger into a decision accelerator. (**Label as an estimate tool, not a guarantee; validate the underlying cost assumptions with real customer data first.**)\n4. **Onboarding checklist framing:** Frame week-one milestones around jobs, not features. E.g., \"Day 1: Your first gap filled without a phone call\" rather than \"Day 1: Set up shift types.\"\n\n---\n\n## Next Steps\n\n1. **Run 3–5 staff (care worker) interviews** before finalising the onboarding checklist — staff adoption is an unvalidated assumption that could undermine manager outcomes.\n2. **Add a first-week friction question** to the next 5 customer discovery calls: \"What almost made you give up in the first week?\" Feed answers directly into the setup checklist rewrite.\n3. **Collect anonymised agency spend data** (before and after Shiftnest) from at least 3 consenting customers to anchor the website's cost narrative in real figures rather than estimates.\n4. **A/B test two website headlines**: one leading with the midnight/gap-filling emotional job versus one leading with the compliance/inspection job — the interviews suggest both are strong triggers but it is unclear which converts better for the target segment.\n5. **Validate the \"new manager taking over\" trigger** in the next round of calls; if confirmed, add it as a distinct acquisition channel and tailor onboarding messaging accordingly."
+    },
+    {
+      "key": "strategy/risk-register",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 85032,
+      "outputTokensVisible": 2395,
+      "chars": 8855,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "severity",
+          "ok": true
+        },
+        {
+          "label": "likelihood",
+          "ok": true
+        },
+        {
+          "label": "risk score",
+          "ok": true
+        },
+        {
+          "label": "mitigation",
+          "ok": true
+        },
+        {
+          "label": "owners",
+          "ok": true
+        },
+        {
+          "label": "missing risks / clusters",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "severity x likelihood scoring shown",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 2,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "March 15 is called a target, and the 2.5-week window is stated as an assumption.",
+          "sentence": "- **Deadline:** Target: March 15 (Assumption: 2.5 weeks before April 1 is the minimum safe window for fix-and-retest)"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "November 18 is a proposed escalation deadline, and the 2-week response window is stated as an assumption.",
+          "sentence": "- **Deadline:** Provider escalation by November 18 (Assumption: today is 4 November 2026; 2 weeks to get a response before sprint planning locks)"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Shiftnest Payroll Export Launch Risks\n\n## Executive Summary\n\nShiftnest's payroll export, targeting a fixed 1 April launch across 126 care homes and three payroll providers, carries a concentration of high-severity risks that are compounded by severe resource constraints—two engineers (one part-time), no dedicated QA, and one provider with no test environment. The highest-priority risk is midnight-crossing shift miscalculation (Risk Priority Number: 72), which could directly cause mass underpayment or overpayment of care workers. A second critical cluster involves the untestable provider and no-QA combination: defects that would normally be caught in a test environment or QA cycle have no safety net before live payroll runs. Because hours worked feed directly into staff pay, any export error is not a UI defect—it is a payroll failure affecting livelihoods in a regulated sector. Immediate action is required on shift-split logic validation, a data-processing agreement audit, and a manual fallback plan before April 1.\n\n---\n\n## Risk Register\n\nScoring: **Severity (S)** × **Likelihood (L)** = **RPN** (1–10 each; max 100). RPN ≥ 50 = **High**, 25–49 = **Medium**, < 25 = **Low**.\n\n| ID | Risk | Failure Mode | Effect | S | L | RPN | Priority |\n|----|------|-------------|--------|---|---|-----|----------|\n| R-01 | Midnight-crossing shift split wrong per provider | Each of 3 providers applies different split logic; Shiftnest implements one or more incorrectly | Staff paid for wrong hours; potential under/overpayment across all 126 homes | 9 | 8 | **72** | 🔴 High |\n| R-02 | Untestable provider exports incorrect data | No test environment means errors are only discoverable in a live payroll run | Mass pay error for homes on that provider, discovered on payday | 9 | 7 | **63** | 🔴 High |\n| R-03 | Delivery incomplete by April 1 | Two engineers (one part-time) cannot finish all three integrations in time | Feature launches partially or not at all; care homes revert to manual process under time pressure | 8 | 7 | **56** | 🔴 High |\n| R-04 | Defect escapes to production (no QA) | No dedicated QA gate; engineers self-review only | Incorrect export logic ships; errors discovered in live payroll | 8 | 7 | **56** | 🔴 High |\n| R-05 | Partial batch failure with no fallback | Export job fails mid-run; some homes exported, others not | Some homes have no payroll data; no manual override process exists | 7 | 6 | **42** | 🟡 Medium |\n| R-06 | GDPR/data protection breach | Care worker personal data transmitted without valid DPA or insecurely | Regulatory fine; reputational damage; legal liability | 9 | 5 | **45** | 🟡 Medium |\n| R-07 | Staffing records mismatch triggers regulator finding | Exported hours differ from records in Shiftnest visible to regulator | Care home cited for inaccurate staffing records; licence risk | 8 | 5 | **40** | 🟡 Medium |\n| R-08 | Key-person dependency | Full-time engineer unavailable (illness, departure) in March or April | Only part-time engineer left; production incidents cannot be resolved | 9 | 4 | **36** | 🟡 Medium |\n| R-09 | Care homes approve incorrect hours pre-export | Approval workflow not validated; wrong hours approved and correctly exported | Downstream pay error; liability rests with Shiftnest or home; audit trail unclear | 8 | 4 | **32** | 🟡 Medium |\n| R-10 | Provider API outage on April 1 | Provider infrastructure fails on the first day of the tax year (high-load event) | Payroll blocked for affected homes; no manual export fallback | 7 | 4 | **28** | 🟡 Medium |\n\n---\n\n## Risk Clusters & Correlations\n\n### Cluster A: Data-Accuracy Chain (R-01, R-02, R-04, R-09)\nThese risks form a cascade. Incorrect shift-split logic (R-01) is most likely to escape if the provider has no test environment (R-02) and there is no QA (R-04). If upstream approval of wrong hours (R-09) is also undetected, every link in the chain fails silently. A single end-to-end reconciliation check (expected vs. exported hours) is the only cross-cutting control.\n\n### Cluster B: Delivery Capacity (R-03, R-04, R-08)\nResource scarcity drives all three. Two engineers self-reviewing three integrations simultaneously creates correlated failure probability; if the full-time engineer is absent, R-03 and R-04 both worsen materially.\n\n### Cluster C: Regulatory & Legal Exposure (R-06, R-07)\nPersonal data transmission and staffing-record accuracy are independent legal obligations but share the same root cause: no audit trail or reconciliation report documenting what was exported, when, and to whom.\n\n---\n\n## Identified Gaps (Missing Risks)\n\nThe following risks are not mentioned in the PM's input and should be assessed:\n\n- **No export audit log**: There is no mention of a durable record of what was exported per home, per pay period, to which provider. This is a compliance and dispute-resolution gap.\n- **No reconciliation report for care homes**: Homes have no mechanism to verify that what Shiftnest exported matches what their payroll provider received. Errors may go undetected until payday.\n- **Data Processing Agreements (DPAs) with payroll providers**: Sending care worker personal data to third-party providers requires a DPA under UK GDPR. No mention that these exist for all three providers.\n- **Rollback / manual override procedure**: If export fails or produces errors, there is no documented fallback (e.g., CSV download, manual submission). This is critical given the fixed date.\n- **Provider acceptance testing sign-off**: No mention of whether any provider has formally accepted the integration specification before go-live.\n\n---\n\n## Mitigation Strategies — High-Priority Risks\n\n### R-01 · Midnight Shift Split Logic — RPN 72\n**Mitigation:** Create a written specification table documenting how each of the 3 providers expects midnight-crossing shifts to be split (e.g., split at 00:00 vs. reported as a single shift). Build automated unit tests covering ≥ 10 boundary scenarios per provider (e.g., 22:00–06:00, 23:30–00:30). Execute cross-provider comparison on the same sample shift dataset and require sign-off from each provider's integration contact before March 15.\n- **Owner:** Full-time engineer\n- **Deadline:** Target: March 15 (Assumption: 2.5 weeks before April 1 is the minimum safe window for fix-and-retest)\n\n### R-02 · Untestable Provider — RPN 63\n**Mitigation:** Escalate immediately to the provider to request a sandbox, staging URL, or at minimum a named technical contact who can review export files before go-live. If none is available, design a **shadow-run protocol**: on March 28–29, generate and send a real export to that provider flagged as a test batch (coordinate with provider to discard it), review response payloads and error logs before April 1. Document acceptance in writing.\n- **Owner:** PM + Full-time engineer\n- **Deadline:** Provider escalation by November 18 (Assumption: today is 4 November 2026; 2 weeks to get a response before sprint planning locks)\n\n### R-03 · Delivery Risk — RPN 56\n**Mitigation:** Scope-triage immediately. Rank the 3 providers by number of the 126 care homes using each. Launch with the top 2 providers on April 1; treat provider 3 (especially the untestable one) as a phased rollout on a date TBD. Document the deferral decision. If all 3 must launch, identify which features (e.g., error-notification UI) can be deferred while the core export runs.\n- **Owner:** PM\n- **Deadline:** Scope decision by November 11\n\n### R-04 · No QA Gate — RPN 56\n**Mitigation:** Assign a **structured peer-review checklist** for every integration: shift-split logic, data-type mapping (hours as decimals vs. HH:MM), authentication token handling, error response handling, PII fields. Each engineer reviews the other's integration. Engage one care home willing to act as a beta tester to run the export on a parallel payroll run in March (not live submission).\n- **Owner:** Both engineers\n- **Deadline:** Checklist drafted by November 25; beta home identified by December 10\n\n---\n\n## Next Steps\n\n1. **November 11** — PM makes scope decision: confirm whether all 3 providers launch April 1 or provider 3 is phased. Brief care homes affected by any deferral.\n2. **November 18** — Full-time engineer contacts the untestable provider to negotiate a shadow-run protocol or staging access. PM confirms DPAs exist for all 3 providers; if not, engage legal immediately.\n3. **November 25** — Engineers produce midnight-shift split specification table for all 3 providers and begin unit-test suite (R-01).\n4. **December 10** — Identify at least 1 volunteer care home for beta parallel-run in March. Draft the manual fallback (CSV export) procedure and export audit log spec.\n5. **January (TBD)** — Re-score RPN on R-01, R-02, R-03, R-04 based on progress. Escalate to leadership if any remain above 50 without an active owner and closed action."
+    },
+    {
+      "key": "strategy/north-star",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 135022,
+      "outputTokensVisible": 2164,
+      "chars": 9321,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "north star metric",
+          "ok": true
+        },
+        {
+          "label": "input metrics",
+          "ok": true
+        },
+        {
+          "label": "counter metrics",
+          "ok": true
+        },
+        {
+          "label": "targets",
+          "ok": true
+        },
+        {
+          "label": "initiatives mapped",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "single north star named",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 7,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 30-day window is a parameter in a proposed metric definition. It doesn't claim anything as fact.",
+          "sentence": "**Definition:** % of contracted homes that posted at least one open shift on Shiftnest in the past 30 days, as opposed to posting offline (phone call, whiteboard, coordinator spreadsheet)"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "The 30-day window is a parameter in a proposed metric definition.",
+          "sentence": "**Definition:** % of eligible staff members per home who have accepted or picked up at least one shift via Shiftnest in the past 30 days"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "The 24-hour window is marked as a Target and an example, and the sentence says it still needs validating.",
+          "sentence": "**Definition:** % of shifts posted on Shiftnest that receive at least one acceptance from the home's own staff within a defined response window *(Target — response window, e.g. 24 hours, to be validated against operational data)*"
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "The 50% figure is labelled a Target and placeholder. The 30-day length is a parameter of the proposed program.",
+          "sentence": "- **CS activation playbook:** Structured 30-day program for homes posting below Target: 50% of their open shifts on-platform *(50% is a placeholder; adjust once baselined)*"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "The 48 hours is marked as a Target and as a threshold that still needs validating.",
+          "sentence": "- **Early-warning posting incentive:** Reward coordinators (e.g., dashboard recognition) for posting shifts ≥Target: 48 hours in advance *(48-hour threshold to validate with operations data)* to maximise the response window"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "The 55%–69% band is labelled a Target and placeholder. The 14-point move comes from that proposed band and the 70% threshold in the input.",
+          "sentence": "- **Cusp-home CS programme:** Identify homes between Target: 55%–69% self-fill as high-priority accounts for monthly check-ins; a 14-percentage-point move brings them to graduation *(55%–69% band is a Target: placeholder to refine with data)*"
+        },
+        {
+          "n": 7,
+          "verdict": "LABELLED",
+          "reason": "The 30-day pilot timeline is a plan parameter, and the band is labelled a Target.",
+          "sentence": "5. **Run a cusp-home pilot in the next 30 days** — select a cohort of homes currently near Target: 55%–69% self-fill, assign CS reps for intensive support, and use outcomes to validate the graduation model before scaling the playbook company-wide."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Shiftnest North Star\n\n## Executive Summary\n\nShiftnest's subscription model—billed per care home per month by headcount band—lives or dies on whether homes experience a clear, repeatable benefit before renewal. The PM's data identifies exactly where that threshold sits: homes that fill at least 70% of open shifts with their own staff via the platform rarely cancel. Today the platform-wide self-fill rate is 41%, leaving a 29-percentage-point gap to close. This document defines **Monthly Platform Self-Fill Rate** as Shiftnest's North Star Metric—the single number that quantifies value delivered to customers, predicts subscription retention, and gives every team a shared scoreboard. Five input metrics govern the NSM, each owned by a specific team. Before numeric targets can be set for those inputs, the company must baseline them (currently unknown); all input-metric targets below are labelled accordingly and must be confirmed with operational data.\n\n---\n\n## North Star Metric\n\n**Monthly Platform Self-Fill Rate**\n\n> The percentage of all open shifts posted across all active Shiftnest homes in a calendar month that are confirmed as filled by the home's own staff via the Shiftnest platform—excluding agency placements and phone-based cover.\n\n**Why this metric:**\n- **Customer value signal:** Every point above 41% is a shift a home covered without an agency call, directly reducing cost and improving staff familiarity with residents\n- **Retention proxy:** Homes at ≥70% self-fill rarely cancel; the NSM is therefore a leading indicator of subscription revenue, not a lagging one\n- **Influenceable across teams:** Product, Engineering, and Customer Success each have distinct levers\n- **Non-gameable:** A home cannot inflate this metric without genuinely routing shifts through the platform\n\n| | |\n|---|---|\n| **Current baseline** | 41% |\n| **Target** | 70% *(Target — derived from PM's stated retention threshold; delivery date TBD with leadership)* |\n\n---\n\n## Input Metrics\n\n### 1. Active Home Engagement Rate\n**Definition:** % of contracted homes that posted at least one open shift on Shiftnest in the past 30 days, as opposed to posting offline (phone call, whiteboard, coordinator spreadsheet)\n\n**Why it matters:** A home that bypasses the platform entirely cannot contribute to the NSM regardless of product quality. This is the top-of-funnel gate.\n\n**Owner:** Customer Success\n\n**Gap identified:** The PM's input does not state what share of homes are actively posting. *Assumption to validate: a material portion of the 29-percentage-point gap may be explained by homes that never open the platform for posting at all.*\n\n---\n\n### 2. Staff Pool Activation Rate\n**Definition:** % of eligible staff members per home who have accepted or picked up at least one shift via Shiftnest in the past 30 days\n\n**Why it matters:** A home may post consistently, but if only a small subset of staff have configured the app and enabled notifications, most swap opportunities will expire unfilled. Wider activation multiplies the probability that any given posted shift finds a taker.\n\n**Owner:** Product — onboarding and notifications squad\n\n---\n\n### 3. Swap Acceptance Rate\n**Definition:** % of shifts posted on Shiftnest that receive at least one acceptance from the home's own staff within a defined response window *(Target — response window, e.g. 24 hours, to be validated against operational data)*\n\n**Why it matters:** This is the moment of value creation. High posting with low acceptance indicates the platform is used for broadcasting but not filling — pointing to staff supply-side friction, notification UX, or coordinator trust gaps.\n\n**Owner:** Product — core matching squad\n\n---\n\n### 4. Time-to-Fill\n**Definition:** Median hours from shift posted on Shiftnest to shift confirmed as filled by own staff\n\n**Why it matters:** Even when a shift is eventually self-filled, slow time-to-fill causes coordinators to run a parallel agency track as a fallback. Speed is a habit trigger: a fast fill builds confidence in the platform; a slow fill reinforces the phone reflex.\n\n**Owner:** Product and Engineering — algorithms and matching\n\n---\n\n### 5. Home Graduation Rate\n**Definition:** Net count of homes crossing the ≥70% monthly self-fill threshold for the first time in a given month\n\n**Why it matters:** The NSM is a platform average that can mask a bimodal distribution. Graduation Rate surfaces how many homes are crossing the value threshold and generating retention-safe accounts, making it the most direct leading indicator of future churn reduction.\n\n**Owner:** Customer Success and Data\n\n---\n\n## Counter Metrics\n\nTrack these to ensure NSM gains are genuine and not masking downstream harm:\n\n| Counter Metric | Risk It Guards Against |\n|---|---|\n| **Unfilled shift rate** | NSM rises because fewer shifts are posted rather than more are filled, creating care coverage gaps |\n| **Staff overtime concentration** | A small cluster of staff accepting the majority of swaps, risking burnout and attrition |\n| **Agency spend per home (off-platform)** | Homes falsely appear to self-fill on-platform while still booking agencies through other channels |\n| **Monthly subscription churn rate** | Validates the assumed causal link between NSM ≥70% and retention; if churn does not fall as NSM rises, the model must be re-examined |\n\n---\n\n## Targets\n\n| Metric | Current | Target |\n|---|---|---|\n| Monthly Platform Self-Fill Rate *(NSM)* | 41% | 70% *(Target — from PM's retention threshold; timeline TBD)* |\n| Active Home Engagement Rate | Unknown | *Assumption: baseline first, then set target* |\n| Staff Pool Activation Rate | Unknown | *Assumption: baseline first, then set target* |\n| Swap Acceptance Rate | Unknown | *Assumption: baseline first, then set target* |\n| Time-to-Fill | Unknown | *Assumption: baseline first, then set target* |\n| Home Graduation Rate | Unknown | *Assumption: set monthly target once baseline established* |\n\n**PM action required:** The 29-percentage-point NSM gap cannot be allocated across input metrics until current values are measured. Instrumentation must precede target-setting for inputs.\n\n---\n\n## Initiatives Mapped to Input Metrics\n\n### → Active Home Engagement Rate\n- **Digital shift-posting prompt:** Automated coordinator nudge when a shift opening is predictable from roster patterns, intercepting the reflex to call an agency first\n- **CS activation playbook:** Structured 30-day program for homes posting below Target: 50% of their open shifts on-platform *(50% is a placeholder; adjust once baselined)*\n\n### → Staff Pool Activation Rate\n- **Guided staff setup sprint:** In-app onboarding flow for staff who have never accepted a shift, triggered by the home coordinator from the admin dashboard\n- **Notification A/B programme:** Test copy, timing, and channel (push vs. SMS) to maximise first-time shift acceptance rate\n\n### → Swap Acceptance Rate\n- **Behavioural matching:** Surface open shifts to staff most likely to accept based on past acceptance history, contracted-hours headroom, and proximity to shift time\n- **Coordinator transparency view:** Real-time feed showing which staff were notified, who opened the alert, and time remaining—allowing targeted follow-up before the agency fallback window opens\n\n### → Time-to-Fill\n- **Early-warning posting incentive:** Reward coordinators (e.g., dashboard recognition) for posting shifts ≥Target: 48 hours in advance *(48-hour threshold to validate with operations data)* to maximise the response window\n- **Instant-claim for recurring shifts:** Allow staff to claim pre-approved shift types without coordinator confirmation, eliminating one approval round-trip\n\n### → Home Graduation Rate\n- **Cusp-home CS programme:** Identify homes between Target: 55%–69% self-fill as high-priority accounts for monthly check-ins; a 14-percentage-point move brings them to graduation *(55%–69% band is a Target: placeholder to refine with data)*\n- **Graduation milestone celebration:** In-app notification to home managers when their home crosses 70% for the first time, reinforcing the behaviour and surfacing the metric to decision-makers who influence renewal\n\n---\n\n## Next Steps\n\n1. **Baseline all five input metrics this sprint** — instrument the platform to measure active home engagement, staff activation, swap acceptance, and time-to-fill. Without baselines, all input targets and initiative prioritisation are directional guesses only.\n2. **Confirm the NSM target timeline with leadership** — the 70% goal is directionally correct from the PM's retention data, but an agreed delivery date and quarterly milestones are required before teams can commit capacity.\n3. **Audit off-platform shift posting** — shadow or survey a sample of homes to quantify how many open shifts never reach Shiftnest at all; this invisible leakage may be the single largest driver of the 41% plateau.\n4. **Ship the counter metric dashboard before any initiative launches** — unfilled shift rate and staff overtime concentration must be monitored from day one to catch regressions early.\n5. **Run a cusp-home pilot in the next 30 days** — select a cohort of homes currently near Target: 55%–69% self-fill, assign CS reps for intensive support, and use outcomes to validate the graduation model before scaling the playbook company-wide."
+    },
+    {
+      "key": "strategy/positioning",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 79494,
+      "outputTokensVisible": 2357,
+      "chars": 10146,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "competitive alternatives",
+          "ok": true
+        },
+        {
+          "label": "unique attributes",
+          "ok": true
+        },
+        {
+          "label": "value",
+          "ok": true
+        },
+        {
+          "label": "target customers",
+          "ok": true
+        },
+        {
+          "label": "market category",
+          "ok": true
+        },
+        {
+          "label": "positioning statement",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "five Dunford steps all present",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 2,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "SKU 4421, top 10% and 30 days appear inside a hypothetical 'When a floor lead sees...' scenario. They illustrate how a suggested move is explained, not product facts.",
+          "sentence": "When a floor lead sees \"Move SKU 4421 from Row C to Row A because it ranked in pick frequency top 10% over the last 30 days,\" they can agree, override with context the system lacks, or escalate."
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "The 60 days is explicitly marked '(Target: complete within 60 days.)'.",
+          "sentence": "This single number unlocks every downstream sales and marketing motion. *(Target: complete within 60 days.)*"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Positioning Pallet Pilot\n\n## Executive Summary\n\nPallet Pilot is slotting software built for the specific operational reality of small, single-site third-party logistics warehouses (5,000–40,000 pallet spaces). Unlike enterprise slotting tools that require integration projects or WMS-native rules that cannot adapt to real pick patterns, Pallet Pilot reads a standard WMS export, learns from actual pick frequency, and recommends incremental nightly moves the floor team will voluntarily execute. Its defining advantage is not algorithmic—it is behavioral: by keeping moves small and explaining the reasoning behind each one, it achieves floor adoption where every competing approach has failed. This document works through April Dunford's five-step framework to sharpen that advantage into a crisp, ownable market position, then flags the data gaps the PM must close to validate and scale it.\n\n---\n\n## Step 1: Competitive Alternatives\n\nWhat do target customers do when Pallet Pilot does not exist?\n\n- **WMS built-in slotting rules** — static zone or velocity rules configured at go-live; never re-tune to reflect shifting product mix or seasonal demand.\n- **Planner's spreadsheet** — a manually maintained pick-frequency model; accurate only when someone has time to update it, and divorced from execution on the floor.\n- **Floor lead's memory / tribal knowledge** — fast to apply, zero documentation, lost when the person leaves; decisions are defensible only to the person who made them.\n- **Enterprise slotting platforms** (e.g., systems designed for multi-site, >100,000-location operations) — Assumption: priced and scoped well above what a single-site 3PL can justify; require dedicated WMS integration work the PM describes as the main barrier.\n\n**Key insight:** The realistic \"do-nothing\" alternative for this segment is option 3—floor lead instinct—not a competing software product. This means Pallet Pilot's first persuasion task is proving that disciplined slotting has measurable value *at all*, before arguing it does slotting better than rivals.\n\n---\n\n## Step 2: Unique Attributes\n\nThree capabilities distinguish Pallet Pilot from every alternative listed above:\n\n| # | Attribute | Why it is genuinely different |\n|---|-----------|-------------------------------|\n| **1** | **Zero-integration WMS export ingestion** | Learns pick frequency from the file the WMS already produces; no API, no middleware, no IT project. Spreadsheets require manual entry; enterprise tools require integration. |\n| **2** | **Incremental nightly micro-moves** | Re-slots via small, executable batches each night rather than a large weekend reshuffle. No competing alternative described offers this cadence. |\n| **3** | **Transparent move rationale** | Shows the floor lead *why* each move is suggested before it is executed. No other alternative (WMS rules, spreadsheet, memory) produces a human-readable justification at the move level. |\n\n---\n\n## Step 3: Value Those Attributes Enable\n\nEach attribute unlocks a specific, distinct outcome:\n\n### Zero-integration ingestion → Time-to-value measured in days, not months\nA warehouse that cannot afford a six-month integration project can be live and generating move recommendations without touching its WMS configuration. This removes the single largest adoption barrier for the segment.\n\n*(Gap: the PM has not provided an observed or target onboarding time. Suggested target to validate: **live within 5 business days of receiving the first WMS export**.)*\n\n### Nightly micro-moves → Floor adoption without a change-management campaign\nCustomers confirm this is why the floor accepts the system. A move list that asks staff to relocate Target: [TBD—PM to confirm average nightly move count] pallets per night is psychologically and physically executable without disrupting the shift. A weekend reshuffle is a risk event; a nightly micro-move is a routine task.\n\n### Transparent rationale → Floor lead trust and planner accountability\nWhen a floor lead sees \"Move SKU 4421 from Row C to Row A because it ranked in pick frequency top 10% over the last 30 days,\" they can agree, override with context the system lacks, or escalate. Trust compounds over time. This also makes the planner's decisions auditable—a governance benefit for 3PLs operating under customer SLAs.\n\n**Composite business outcome:** Better slot assignments executed consistently and voluntarily, translating to reduced picker travel distance and faster order cycle times.\n\n*(Gap: no quantified outcome data was provided. Assumption: a Target of **[X]% reduction in picker travel distance** within [Y] weeks should be established from early customer data and used as the primary proof point.)*\n\n---\n\n## Step 4: Target Customers Who Care Most\n\n### Primary profile\n- **Single-site third-party logistics warehouses**\n- **5,000–40,000 pallet spaces** (as specified by PM)\n- Operates a WMS capable of exporting pick-history data (even as a flat file)\n- Has a named floor lead with real authority over daily slotting decisions\n- Has no dedicated IT or integration resource to manage a software project\n- Operates under customer SLAs where order cycle time and accuracy are contractually visible\n\n### Why this segment cares most\nThe floor lead persona is the linchpin. In this size warehouse, the floor lead both makes slotting decisions *and* executes them. Winning their trust is the sale. Pallet Pilot's explainability feature is designed exactly for this person. Enterprise warehouses have separate planning and execution teams; the problem Pallet Pilot solves does not exist in the same form.\n\n### Secondary signal to watch\n*(Assumption to validate)* 3PLs onboarding new clients frequently—where SKU mix changes materially each quarter—may feel slotting drift most acutely and represent the highest-urgency buyer.\n\n### Who is *not* the target\n- Multi-site networks (complexity exceeds the product's current scope)\n- Warehouses with an in-house WMS integration team (they will reach for an enterprise tool)\n- Owner-operated micro-warehouses below 5,000 spaces (slotting ROI may not justify software cost at that scale—Assumption: validate with pricing model)\n\n---\n\n## Step 5: Market Category\n\n### Recommended category: **Floor-ready warehouse slotting software**\n\n**Why not \"warehouse slotting software\" broadly?**\nThat category is occupied by enterprise platforms. Entering it invites comparison on feature breadth, integration depth, and scalability—dimensions where Pallet Pilot does not win.\n\n**Why \"floor-ready\"?**\nIt signals the core differentiator (adoption, not just optimization) in the category name itself. A prospect who has bought slotting software that the floor ignored will immediately understand what \"floor-ready\" means. It reframes the buying question from *\"which optimizer is most accurate?\"* to *\"which optimizer will my floor actually use?\"*—a question only Pallet Pilot wins.\n\n---\n\n## Positioning Statement\n\n**For** single-site third-party warehouses managing 5,000–40,000 pallet spaces **who** are losing picker efficiency because WMS rules, spreadsheets, or institutional memory cannot keep slotting current, **Pallet Pilot** is **floor-ready warehouse slotting software** that **learns from your existing WMS export with no integration project, recommends incremental nightly moves the floor will voluntarily execute, and shows every floor lead exactly why each move is suggested**. Unlike enterprise slotting platforms that require IT projects and produce weekend reshuffles the floor resists, **Pallet Pilot delivers continuously optimized slots without change management overhead**—because the floor's buy-in is built into how the product works.\n\n---\n\n## Expert Analysis: Gaps to Close\n\n| Gap | Risk if unaddressed | Recommended action |\n|-----|--------------------|--------------------|\n| No quantified outcome metric (travel distance, cycle time, labor hours) | Cannot move from \"sounds useful\" to \"worth buying\" | Instrument 2–3 current customers; establish a baseline and a Target improvement figure |\n| No stated pricing | Cannot validate segment fit or rule out micro-warehouse buyers | Define a price point and confirm it is recoverable against labor savings at the low end (5,000 spaces) |\n| \"Nightly moves\" volume undefined | Floor leads need a concrete expectation | Report average nightly move count from existing deployments |\n| No ICP firmographic beyond size | Sales cannot qualify leads efficiently | Add: WMS vendor(s) in use, client count per 3PL, and onboarding frequency as qualification criteria |\n| Competitive intelligence on enterprise tools | Positioning assumes they are too expensive; this is unvalidated | Gather 3–5 lost/no-decision deal notes to confirm |\n| No articulation of what happens when the floor overrides a move | Floor leads will test boundaries; no answer = hesitation | Define and document the feedback loop so overrides improve future recommendations |\n\n---\n\n## Next Steps\n\n1. **Quantify the outcome** — Pull pick-travel or cycle-time data from at least 2 live customers before and after adoption. This single number unlocks every downstream sales and marketing motion. *(Target: complete within 60 days.)*\n2. **Define and document average nightly move count** — Interview floor leads at current accounts. Publish a range (e.g., \"Target: [X]–[Y] moves per night\") in all sales materials.\n3. **Set and stress-test pricing** — Build a simple labor-savings model at 5,000, 20,000, and 40,000 pallet spaces to confirm the product is economically defensible at the small end of the segment.\n4. **Validate the \"enterprise tools are out of reach\" assumption** — Review the last 10 deals for any lost-to-competitor or no-decision outcomes; document the named alternatives buyers considered.\n5. **Operationalize the override feedback loop** — Before scaling sales, define how floor-lead overrides feed back into the model; this closes the biggest trust and product-risk gap identified above.\n6. **Pilot the \"floor-ready\" category label** — Test the phrase in 3 sales calls and 1 outbound email sequence; measure whether it shortens the \"do we really need this?\" conversation."
+    },
+    {
+      "key": "analytics/ab-design",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 188614,
+      "outputTokensVisible": 2449,
+      "chars": 8830,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "hypothesis",
+          "ok": true
+        },
+        {
+          "label": "primary metric",
+          "ok": true
+        },
+        {
+          "label": "guardrail metrics",
+          "ok": true
+        },
+        {
+          "label": "minimum detectable effect",
+          "ok": true
+        },
+        {
+          "label": "sample size",
+          "ok": true
+        },
+        {
+          "label": "duration",
+          "ok": true
+        },
+        {
+          "label": "randomization unit",
+          "ok": true
+        },
+        {
+          "label": "analysis plan",
+          "ok": true
+        },
+        {
+          "label": "pitfalls",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "hypothesis in If/then/because form",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 9,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "+3 pp MDE is explicitly marked as a target; 85% = 82% + 3 pp from the input.",
+          "sentence": "| Minimum detectable effect (δ) | +3 pp → p₁ = 85% | **Target — PM must validate this threshold** |"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "80% power is explicitly labelled Assumption.",
+          "sentence": "| Statistical power (1−β) | 80% | **Assumption** |"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "4 weeks of historical data is a recommended plan parameter (an action to take), not a stated fact.",
+          "sentence": "Pull at least 4 weeks of historical shop-level data to compute σ\\_shop before finalizing the design."
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "4 weeks / 28 days is explicitly labelled Target.",
+          "sentence": "- **Target: 4 weeks (28 days)**"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "8-week cap is marked (Target).",
+          "sentence": "- **Do not extend beyond 8 weeks** without a pre-registered stopping rule; longer exposure risks behavioral adaptation and contamination *(Target)*"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "28 days refers to the 4-week target test duration, a plan parameter.",
+          "sentence": "- **Method:** Two-sample t-test (or OLS with treatment indicator) on **shop-level mean sell-through rate** averaged across all 28 days"
+        },
+        {
+          "n": 7,
+          "verdict": "LABELLED",
+          "reason": "4-week pre-period is a design and plan parameter for the covariate.",
+          "sentence": "- **ANCOVA covariate:** Each shop's pre-experiment sell-through rate (from the 4 weeks before launch) — reduces residual variance and partially controls for heterogeneity across the item-volume range"
+        },
+        {
+          "n": 8,
+          "verdict": "LABELLED",
+          "reason": "15% threshold is explicitly labelled a Target to validate.",
+          "sentence": "Flag and exclude any shop with a drop exceeding 15% of its pre-experiment baseline *(15% threshold is a Target — validate with the operations team)*."
+        },
+        {
+          "n": 9,
+          "verdict": "LABELLED",
+          "reason": "4 weeks of historical data is a recommended action and plan parameter.",
+          "sentence": "1. **Pull 4 weeks of historical shop-level sell-through data** to compute σ\\_shop — this is the single highest-priority action because the entire sample size estimate depends on it"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Shelf-Label Price Test: A/B Test Design\n\n## Executive Summary\n\nCrumbline proposes to test whether adding a \"baked today\" timestamp to shelf labels increases the daily sell-through rate above the current 82% baseline. With 412 shops available as randomization units, the experiment is adequately powered — based on an assumed cross-shop sell-through standard deviation of 0.08 and a targeted minimum detectable effect of 3 percentage points, an estimated 112 shops per arm are required, well within the 206-per-arm capacity — over a targeted 4-week run. The sample size is an estimate because both the standard deviation and MDE rest on assumptions the PM has not yet confirmed. This document details the complete test design, all assumed inputs, and six pitfalls the team must resolve before launch.\n\n---\n\n## Hypothesis\n\n**If** shelf labels display a \"baked today\" timestamp alongside the price, **then** the daily sell-through rate will increase above the current 82% baseline, **because** an explicit freshness signal prompts customers to treat same-day stock as time-sensitive, accelerating purchase decisions and reducing end-of-day surplus.\n\n---\n\n## Primary Metric\n\n- **Daily sell-through rate**: proportion of items baked each day sold by store closing, measured per shop per day and averaged across the test window\n- **Baseline: 82%** (PM-provided)\n\n---\n\n## Guardrail Metrics\n\n| Metric | Purpose |\n|---|---|\n| Daily items baked per shop | Detect bakeries gaming sell-through by baking less |\n| Label reprint rate | Monitor operational friction if timestamps miss print windows |\n| Shop churn / feature-disable rate | Detect shops reverting to avoid the new format |\n| Absolute unsold-item count at close | Confirm sell-through rate improvement reflects real waste reduction |\n\n---\n\n## Sample Size Inputs & Calculation\n\n### All Inputs\n\n| Parameter | Value | Source |\n|---|---|---|\n| Baseline sell-through rate (p₀) | 82% | PM-provided |\n| Minimum detectable effect (δ) | +3 pp → p₁ = 85% | **Target — PM must validate this threshold** |\n| Significance level (α) | 0.05, two-tailed | **Assumption** |\n| Statistical power (1−β) | 80% | **Assumption** |\n| Cross-shop SD of sell-through (σ\\_shop) | 0.08 | **Assumption — must be validated against historical data** |\n| Bakery-level intra-cluster correlation (ICC) | 0.10 | **Assumption — placeholder** |\n| Average shops per bakery (m) | 1.73 (= 412 ÷ 238) | Computed from PM-provided figures |\n| Design effect (DEFF = 1 + (m−1) × ICC) | 1.07 | Computed from assumed ICC |\n| Total available shops | 412 | PM-provided |\n| Mean items baked per shop per day | Unknown (range: 40–900) | PM-provided range; **mean is an assumption to validate** |\n\n### Calculation\n\nUsing a shop-level two-sample t-test on average sell-through per shop:\n\n**n per arm = 2 × (z\\_α/2 + z\\_β)² × σ\\_shop² ÷ δ²**\n= 2 × (1.96 + 0.84)² × (0.08)² ÷ (0.03)²\n= 2 × 7.84 × 0.0064 ÷ 0.0009\n= **≈ 112 shops per arm** *(estimate — rests on assumed σ\\_shop = 0.08 and assumed MDE of 3 pp)*\n\nAfter design effect adjustment: 112 × 1.07 = **≈ 120 shops per arm** *(estimate — rests on assumed ICC = 0.10)*\n\n**Available: 206 shops per arm** (412 ÷ 2). The design is adequately powered under these assumptions, with headroom to detect effects as small as ~2.2 percentage points *(estimate — rests on assumed σ\\_shop = 0.08)*.\n\n> ⚠️ **Critical caveat:** This is an estimate. If σ\\_shop exceeds 0.13, the experiment is under-powered even using all 412 shops. Pull at least 4 weeks of historical shop-level data to compute σ\\_shop before finalizing the design.\n\n---\n\n## Expected Duration\n\n- **Target: 4 weeks (28 days)**\n- Covers 4 full weekly cycles to control for day-of-week variation\n- Provides a 2-week novelty-effect washout window before drawing conclusions\n- Yields up to 206 × 28 = 5,768 shop-day observations per arm *(estimate — assumes shops are active every day)*\n- **Do not extend beyond 8 weeks** without a pre-registered stopping rule; longer exposure risks behavioral adaptation and contamination *(Target)*\n\n---\n\n## Randomization Unit\n\n- **Unit: shop** (PM-specified; label format is controlled per shop in Crumbline)\n- **Allocation: 50/50**, stratified by shop-size tier to prevent imbalance across the 40–900 items/day range:\n  - **Small:** 40–199 items/day\n  - **Medium:** 200–499 items/day\n  - **Large:** 500–900 items/day\n- **Within-bakery assignment:** With 412 shops across 238 bakeries (mean 1.73 shops/bakery), some bakeries hold multiple shops. Assign **all shops within a bakery to the same arm** wherever possible to prevent manager-level contamination. For bakeries with an odd number of shops, randomly assign the remainder — a minor power cost that eliminates the most likely contamination vector.\n\n---\n\n## Analysis Plan\n\n### Primary Analysis\n- **Method:** Two-sample t-test (or OLS with treatment indicator) on **shop-level mean sell-through rate** averaged across all 28 days\n- **ANCOVA covariate:** Each shop's pre-experiment sell-through rate (from the 4 weeks before launch) — reduces residual variance and partially controls for heterogeneity across the item-volume range\n- **Standard errors:** Cluster-robust at the bakery level to account for within-bakery shop correlation\n- **Decision rule:** p < 0.05 (two-tailed), effect in expected direction\n\n### Secondary Analyses\n- **Subgroup by shop-size tier** — the timestamp may matter most in large shops where visible surplus drives urgency\n- **Week-over-week sell-through trend** per arm — to identify and document novelty-effect decay\n- **Interaction term:** bakery size (shop count) × treatment, to test whether multi-shop bakeries respond differently\n\n### Pre-registration\nRegister hypothesis, primary metric, MDE, α, power, and analysis method in the internal experiment log **before any data is collected**. Fix the 28-day end date with no early peeking unless a guardrail metric is breached.\n\n---\n\n## Potential Pitfalls\n\n### 1. Novelty Effect\nCustomers and staff may react to *any* label change, not specifically to freshness information. **Mitigation:** Compare week-1 vs. week-3/4 sell-through within the treatment arm. If the effect shrinks to near zero by week 4, the feature is not working as hypothesized.\n\n### 2. Simpson's Paradox\nLarge shops (up to 900 items/day) can dominate aggregate sell-through even if they are a minority of shops. If they are over-represented in one arm, the aggregate difference is misleading. **Mitigation:** Stratified randomization and ANCOVA adjustment neutralize this.\n\n### 3. Bakery-Level Contamination\nA bakery manager who sees the new label in one of their shops may change ordering or staffing behavior across all their shops — including those in control. **Mitigation:** Assign all shops of a bakery to the same arm (see Randomization Unit).\n\n### 4. \"Closing Time\" Ambiguity\nShops may close at different times or dispose of unsold items differently (markdowns, donations, next-day carry-over). If sell-through is recorded inconsistently, the 82% baseline is noisy. **Mitigation:** Confirm Crumbline logs a consistent day-end event per shop. Exclude shops with missing or anomalous close events from the primary analysis.\n\n### 5. Metric Gaming via Reduced Baking\nIf bakeries infer freshness is being tracked, they may bake fewer items to inflate sell-through artificially. **Mitigation:** Monitor daily items baked per shop. Flag and exclude any shop with a drop exceeding 15% of its pre-experiment baseline *(15% threshold is a Target — validate with the operations team)*.\n\n### 6. Intra-Day Timestamp Staleness\nIf the \"baked today\" label is printed once at open and items sit until evening, customers near close may distrust the label. **Mitigation:** Confirm Crumbline can display bake-batch time (e.g., \"Baked at 7 am\") rather than just a date, and test both variants if possible.\n\n---\n\n## Next Steps\n\n1. **Pull 4 weeks of historical shop-level sell-through data** to compute σ\\_shop — this is the single highest-priority action because the entire sample size estimate depends on it\n2. **Confirm the 3 pp MDE** is the right business threshold with the PM and finance team; a smaller target MDE may require all 412 shops and a longer run\n3. **Audit the day-end event** in Crumbline's data pipeline to ensure consistent shop-level closing records before treating 82% as a reliable baseline\n4. **Lock the within-bakery assignment rule** (same arm for all shops in a bakery) and encode it in the experiment setup before enrollment begins\n5. **Pre-register** the hypothesis, metric, MDE, α, power, and analysis plan in the internal experiment log; set a hard 28-day end date before launch\n6. **Build a weekly monitoring dashboard** tracking sell-through per arm, all four guardrail metrics, and label-reprint rates — review at a standing experiment sync to catch guardrail breaches early"
+    },
+    {
+      "key": "specs/user-stories",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 72616,
+      "outputTokensVisible": 2903,
+      "chars": 11884,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "epics",
+          "ok": true
+        },
+        {
+          "label": "acceptance criteria",
+          "ok": true
+        },
+        {
+          "label": "INVEST check",
+          "ok": false
+        }
+      ],
+      "requiredPass": false,
+      "framework": [
+        {
+          "label": "3+ stories in 'As a ..., I want ..., so that ...' form",
+          "ok": true
+        },
+        {
+          "label": "3+ Given/When/Then criteria",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 2,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 90 minutes is explicitly marked as a target and an assumption for the PM to confirm.",
+          "sentence": "Given a claim has been pending for [Target: 90 minutes — assumption, PM to confirm]"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "30 minutes is the input's 2-hour approval window minus the 90-minute reminder point. That 90 minutes is labelled as an assumption in the same scenario, so this figure carries the same assumption label. It is not presented as an independent fact.",
+          "sentence": "Then I receive a reminder notification: \"30 minutes left to approve [worker]'s claim\""
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Shiftnest Open-Shift Offers\n\n## Executive Summary\n\nShiftnest's current open-shift workflow requires managers to call staff individually, creating delays and administrative burden when coverage is needed quickly. This document defines user stories for an in-app open-shift offer system that broadcasts available shifts to all eligible staff simultaneously and awards the shift to the first qualified claimant, subject to manager approval within a **2-hour window** (as specified by the PM). Eligibility is governed by each worker's maximum weekly hours cap and required training records. Four epics are covered: **Open Shift Publication & Eligibility**, **Shift Claiming**, **Manager Approval & Escalation**, and **Notifications**. Six identified gaps — including offer sequencing logic, escalation handling, and withdrawal rules — require PM decisions before development begins.\n\n---\n\n## Epic 1: Open Shift Publication & Eligibility\n\n**Goal:** Managers can publish an open shift; the system automatically determines and surfaces it to eligible staff only.\n\n### Story 1.1 — Publish an Open Shift\n\n**As a** registered manager, **I want** to publish an open shift with role, date, time, and required training tags, **so that** eligible staff see the opportunity immediately without me calling anyone.\n\n**Acceptance Criteria:**\n\n```gherkin\nFeature: Open shift publication\n\n  Scenario: Manager successfully publishes an open shift\n    Given I am logged in as a registered manager\n    And I am on the \"Shifts\" screen\n    When I tap \"Create Open Shift\" and enter role, date, start time, end time, and required training tags\n    And I tap \"Publish\"\n    Then the shift appears with status \"Open\" in the manager dashboard\n    And the system begins eligibility evaluation for all active staff\n\n  Scenario: Manager attempts to publish a shift with missing required fields\n    Given I am on the \"Create Open Shift\" form\n    When I leave the role or date field blank and tap \"Publish\"\n    Then I see an inline validation error on each empty required field\n    And the shift is not published\n```\n\n---\n\n### Story 1.2 — Eligibility Filtering\n\n**As the** system, **I want** to filter staff by weekly hours cap and required training before surfacing an open shift, **so that** only workers who are legally and operationally permitted to take the shift receive an offer.\n\n**Acceptance Criteria:**\n\n```gherkin\nFeature: Eligibility filtering\n\n  Scenario: Worker within hours cap with matching training is eligible\n    Given a care worker has [X hours remaining] in their weekly cap (Assumption: cap value is configured per worker profile)\n    And the worker holds all training tags required by the open shift\n    When the open shift is published\n    Then the worker is added to the eligible pool and receives a notification\n\n  Scenario: Worker exceeds weekly hours cap\n    Given a care worker's remaining weekly hours are fewer than the shift duration\n    When the open shift is published\n    Then the worker is excluded from the eligible pool\n    And receives no notification for this shift\n\n  Scenario: Worker lacks required training\n    Given a care worker does not hold one or more required training tags\n    When the open shift is published\n    Then the worker is excluded from the eligible pool\n    And receives no notification for this shift\n```\n\n**⚠️ Gap 1:** The PM has not defined what constitutes the \"maximum weekly hours\" source of truth (employment contract, a system field, or a regulatory rule set). Confirm before building eligibility logic.\n\n**⚠️ Gap 2:** Offer sequencing is undefined. Should all eligible workers receive the offer simultaneously, or in a prioritised order (e.g., part-time first, seniority)? **Assumption to validate:** simultaneous broadcast until PM confirms otherwise.\n\n---\n\n## Epic 2: Shift Claiming\n\n**Goal:** An eligible worker can claim the shift in one tap; only one claim succeeds.\n\n### Story 2.1 — Care Worker Claims a Shift\n\n**As a** care worker, **I want** to claim an open shift from my notifications or shifts list, **so that** I can secure additional hours without waiting to be called.\n\n**Acceptance Criteria:**\n\n```gherkin\nFeature: Shift claiming\n\n  Scenario: First eligible worker claims the shift\n    Given an open shift is available in my eligible shift list\n    When I tap \"Claim Shift\" and confirm\n    Then my claim is recorded with status \"Pending Approval\"\n    And the shift is locked from other claimants\n    And I see a confirmation message: \"Claim submitted — awaiting manager approval\"\n\n  Scenario: Second worker attempts to claim an already-claimed shift\n    Given worker A has already claimed the open shift\n    When worker B taps \"Claim Shift\" on the same shift\n    Then worker B sees a message: \"This shift has already been claimed\"\n    And worker B's action is not recorded as a claim\n\n  Scenario: Worker attempts to claim a shift that would breach their hours cap\n    Given claiming this shift would exceed my maximum weekly hours\n    When I tap \"Claim Shift\"\n    Then I see an error: \"You cannot claim this shift — it exceeds your weekly hours limit\"\n    And the claim is not submitted\n```\n\n**⚠️ Gap 3:** Can a worker **withdraw** a pending claim before manager approval? Define the withdrawal window and whether it re-opens the shift.\n\n---\n\n### Story 2.2 — Shift Lead Claims a Shift\n\n**As a** shift lead, **I want** to claim open shifts that match my role level, **so that** I can cover leadership gaps without manager intervention for every assignment.\n\n**Acceptance Criteria:**\n\n```gherkin\nFeature: Role-scoped shift claiming for shift leads\n\n  Scenario: Shift lead claims a shift tagged for shift lead or above\n    Given I am a shift lead and the open shift requires \"Shift Lead\" or no specific role restriction\n    When I claim the shift\n    Then the claim is accepted and enters \"Pending Approval\" status\n\n  Scenario: Shift lead attempts to claim a shift restricted to care workers only\n    Given the open shift is tagged as \"Care Worker\" role only\n    Then the shift does not appear in my eligible shift list\n    And I cannot claim it\n```\n\n---\n\n## Epic 3: Manager Approval & Escalation\n\n**Goal:** Managers approve claims within 2 hours; expired claims trigger automatic re-offer.\n\n### Story 3.1 — Manager Approves or Declines a Claim\n\n**As a** registered manager, **I want** to approve or decline a pending claim within **2 hours**, **so that** the worker knows their status and the shift is confirmed or re-offered.\n\n**Acceptance Criteria:**\n\n```gherkin\nFeature: Claim approval\n\n  Scenario: Manager approves a claim within 2 hours\n    Given a care worker has a pending claim on an open shift\n    And fewer than 2 hours have passed since the claim was submitted\n    When I tap \"Approve\" on the claim notification\n    Then the shift status changes to \"Confirmed\"\n    And the worker receives a confirmation notification\n    And the shift is removed from the open pool\n\n  Scenario: Manager declines a claim within 2 hours\n    Given I tap \"Decline\" and provide an optional reason\n    Then the shift status returns to \"Open\"\n    And the system re-offers the shift to remaining eligible staff\n    And the original claimant is notified of the decline\n```\n\n---\n\n### Story 3.2 — Automatic Re-Offer on Approval Timeout\n\n**As the** system, **I want** to re-offer a claimed shift if the manager does not act within **2 hours**, **so that** uncovered shifts are not silently lost.\n\n**Acceptance Criteria:**\n\n```gherkin\nFeature: Approval timeout and re-offer\n\n  Scenario: Approval window expires with no manager action\n    Given a shift has been in \"Pending Approval\" status for exactly 2 hours\n    When no approval or decline has been recorded\n    Then the claim is automatically cancelled\n    And the shift returns to \"Open\" status\n    And the original claimant is notified: \"Your claim expired — the shift has been re-offered\"\n    And the manager receives an alert: \"Claim approval window expired for [shift]\"\n\n  Scenario: No eligible workers remain after re-offer\n    Given the shift is re-offered and no eligible workers are in the pool\n    Then the shift status changes to \"Unfilled — Action Required\"\n    And the manager receives a high-priority alert\n```\n\n**⚠️ Gap 4:** What is the escalation path if the shift remains unfilled after Target: [N] re-offer cycles? Define a maximum number of re-offer rounds (PM to confirm) and the fallback action (e.g., manager must manually assign).\n\n---\n\n## Epic 4: Notifications\n\n**Goal:** All parties receive timely, actionable in-app notifications.\n\n### Story 4.1 — Worker Receives Open-Shift Notification\n\n**As a** care worker, **I want** to receive an in-app notification the moment an eligible open shift is published, **so that** I can claim it before colleagues do.\n\n**Acceptance Criteria:**\n\n```gherkin\nFeature: Worker shift notification\n\n  Scenario: Eligible worker receives notification on shift publication\n    Given I am an eligible worker with notifications enabled\n    When a manager publishes an open shift that matches my eligibility\n    Then I receive an in-app notification within [Target: TBD seconds — PM to define acceptable delivery latency]\n    And the notification links directly to the shift detail and \"Claim\" action\n```\n\n**⚠️ Gap 5:** Push notification channels (push, SMS, email) are undefined. The PM should confirm which channels are in scope for this release.\n\n---\n\n### Story 4.2 — Manager Receives Claim Alert\n\n**As a** registered manager, **I want** to be notified the moment a worker claims an open shift, **so that** I can review and act within the 2-hour approval window.\n\n**Acceptance Criteria:**\n\n```gherkin\nFeature: Manager claim notification\n\n  Scenario: Manager notified on new claim\n    Given a care worker has just claimed an open shift\n    When the claim is recorded\n    Then I receive an in-app notification with the worker's name, shift details, and a 2-hour countdown\n    And tapping the notification opens the approve/decline screen directly\n\n  Scenario: Manager receives a reminder before the window closes\n    Given a claim has been pending for [Target: 90 minutes — assumption, PM to confirm]\n    And I have not yet approved or declined\n    Then I receive a reminder notification: \"30 minutes left to approve [worker]'s claim\"\n```\n\n**⚠️ Gap 6:** Are registered managers the only approvers? Clarify whether shift leads can approve claims for lower-role shifts, or if that authority belongs exclusively to registered managers.\n\n---\n\n## Identified Gaps Summary\n\n| # | Gap | Owner | Priority |\n|---|-----|-------|----------|\n| 1 | Weekly hours cap data source | PM + Engineering | **High** |\n| 2 | Offer sequencing (simultaneous vs. ordered) | PM | **High** |\n| 3 | Claim withdrawal rules | PM | **Medium** |\n| 4 | Re-offer cycle limit and fallback | PM | **High** |\n| 5 | Notification channels (push/SMS/email) | PM | **Medium** |\n| 6 | Approver authority — shift leads vs. managers | PM | **Medium** |\n\n---\n\n## Next Steps\n\n1. **Resolve Gaps 1 and 4 first** — weekly hours data source and re-offer escalation logic are architectural dependencies; unresolved, they block sprint planning.\n2. **Confirm offer sequencing (Gap 2)** in the next PM review; document the decision as a product principle to prevent scope creep later.\n3. **Run an eligibility data audit** — verify that training records and weekly hours are already captured in Shiftnest's data model, or raise a data-migration ticket.\n4. **Define notification channels (Gap 5)** and confirm whether push-only is acceptable for MVP or if SMS is required for workers who may be offline.\n5. **Align with engineering on the 2-hour timer implementation** — confirm whether this is a background job, a webhook, or a scheduled task, and agree on failure-handling behaviour.\n6. **Schedule a refinement session** to size and prioritise stories; suggested sequence: Epic 1 → Epic 3 → Epic 2 → Epic 4."
+    },
+    {
+      "key": "strategy/swot",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 120732,
+      "outputTokensVisible": 2103,
+      "chars": 9275,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "strengths",
+          "ok": true
+        },
+        {
+          "label": "weaknesses",
+          "ok": true
+        },
+        {
+          "label": "opportunities",
+          "ok": true
+        },
+        {
+          "label": "threats",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "SO/WO/ST/WT strategies",
+          "ok": true
+        },
+        {
+          "label": "top 3 strategic actions",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 6,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "INPUT",
+          "reason": "$24K per warehouse is computed from the input: $744K ÷ 31 ≈ $24K.",
+          "sentence": "The implied unit revenue — approximately $24K ARR per warehouse (computed from PM-provided figures) — signals a customer profile that skews small-to-mid and is therefore more vulnerable to WMS bundling pressure."
+        },
+        {
+          "n": 2,
+          "verdict": "INPUT",
+          "reason": "$744K ARR comes from the input, and $24K per warehouse is computed from $744K ÷ 31.",
+          "sentence": "- **Revenue traction**: $744K ARR confirms willingness-to-pay; at approximately $24K ARR per warehouse (computed), there is a clear unit-economics baseline to build on"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "The 6-week timeline is explicitly marked as a Target and an Assumption.",
+          "sentence": "Target: MVP scoped and development started within the next 6 weeks (Assumption: validate against current engineering commitments)"
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "31 warehouses and the two vendors come from the input. The 2-week deadline is a plan parameter in a numbered action item.",
+          "sentence": "1. **Audit the 31-warehouse base for WMS platform overlap** with the two threatening vendors — determines churn exposure and prioritizes retention outreach (complete within 2 weeks)"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "The 3-week deadline is a plan parameter in a proposed action item.",
+          "sentence": "2. **Scope the multi-site MVP** with the engineering team: define minimum viable site-count, shared catalog requirements, and a realistic delivery timeline (complete within 3 weeks)"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "The 5–8 interviews and the 2-week kickoff are plan parameters in a proposed action list.",
+          "sentence": "3. **Launch 5–8 customer ROI interviews** to document quantified outcomes (pick-rate delta, labor hours recovered) for the performance record and case study library (kick off within 2 weeks)"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Pallet Pilot SWOT\n\n## Executive Summary\n\nPallet Pilot enters next year with 31 warehouses live, $744K ARR, and a technically differentiated nightly re-slotting engine — but faces an acute strategic inflection. Two large WMS vendors have announced built-in slotting in their next releases, threatening to commoditize the product's value proposition for single-site buyers at the exact moment Pallet Pilot is most exposed: the lack of multi-site operator support leaves an entire enterprise tier unaddressed and unmonetized. The implied unit revenue — approximately $24K ARR per warehouse (computed from PM-provided figures) — signals a customer profile that skews small-to-mid and is therefore more vulnerable to WMS bundling pressure. The two recommended bets for next year are **multi-site operator support** (open a defensible segment WMS vendors cannot serve) and **re-slotting engine depth** (advancing toward intraday cadence, labeled as a Target) to build a performance moat that a first-release WMS feature cannot replicate.\n\n---\n\n## Strengths\n\n- **Proven deployment**: 31 live warehouses provide real operational data, validated go-to-market motion, and customer references that pre-revenue competitors and new WMS modules lack on day one\n- **Differentiated core capability**: Nightly re-slotting is production-tested and ships today — not a roadmap item\n- **Revenue traction**: $744K ARR confirms willingness-to-pay; at approximately $24K ARR per warehouse (computed), there is a clear unit-economics baseline to build on\n- **Lean operating model**: 11-person team means low fixed costs, fast decisions, and the ability to pivot quickly if a bet underperforms\n\n---\n\n## Weaknesses\n\n- **No multi-site operator support**: Both a capability gap and a hard sales ceiling — any operator running 2 or more sites cannot be served today\n- **Small team bandwidth**: 11 people must simultaneously maintain 31 live customers, ship new features, and respond to competitive pressure; capacity is a binding constraint on the number of parallel bets\n- **Revenue stage**: $744K ARR limits aggressive hiring and may compress ability to sustain long enterprise sales cycles without additional capital\n- **Thin performance narrative**: The re-slotting value prop is easy for a large vendor to describe in a release note. Pallet Pilot has not yet built publicly visible, quantified proof that its engine materially outperforms a bundled alternative\n\n---\n\n## Opportunities\n\n- **Multi-site operators**: Enterprises running multiple distribution centers represent larger contract values, stickier relationships, and a customer type WMS bundled features cannot serve by design\n- **Cadence advancement**: Moving from nightly to intraday or event-triggered optimization (Target) would outpace anything a WMS vendor ships in a v1 slotting module\n- **Outcome-based pricing**: Linking contract value to measurable outcomes — pick-rate improvement, labor savings — reframes the ROI conversation away from \"why pay when WMS is bundled at no marginal cost\"\n- **Proprietary data asset**: 31 warehouses of nightly slotting data create a training corpus that improves model quality over time — an advantage a new WMS module will not have on release day\n- **WMS-agnostic positioning**: The two threatening vendors serve only their own installed bases; Pallet Pilot can serve customers across any WMS platform, making it a horizontal optimization layer\n\n---\n\n## Threats\n\n- **WMS bundling**: Two large vendors adding built-in slotting will reframe the buy-vs-bundle question at every renewal and new-prospect conversation, even if execution depth differs substantially\n- **Perception of commoditization**: Once slotting is announced as a checkbox feature, buyers may deprioritize evaluating standalone depth — Pallet Pilot must win a perception battle, not just a performance one\n- **Churn risk in existing base**: Some portion of the 31 live warehouses likely run on the two threatening WMS platforms. Assumption to validate: exact platform breakdown is unknown; this risk level is TBD pending a base audit\n- **Speed asymmetry**: Large WMS vendors have sales, marketing, and implementation resources that far exceed a team of 11, compressing Pallet Pilot's available response window\n- **Capital constraint**: Growing the team at $744K ARR without outside funding is limited. Assumption: current burn rate and runway are not provided; this risk is TBD pending financial review\n\n---\n\n## Strategic Action Mapping\n\n### SO — Use Strengths to Capture Opportunities\n\n- **Lead with the data moat**: 31 warehouses of production slotting data is a training asset no WMS module has at launch. Use it to accelerate intraday optimization (Target) and position Pallet Pilot as a continuously learning system — not a static rules engine\n- **Reference-led enterprise motion**: Convert 2–3 of the strongest existing customers into named case studies showing measurable operational outcomes, then use them as the wedge into multi-site operators at the same parent company or 3PL network\n- **Own the WMS-agnostic narrative**: The two threatening vendors can only serve their own installed bases. Pallet Pilot should actively claim the \"best-of-breed, platform-independent slotting layer\" category — a position those vendors cannot occupy by definition\n\n### WO — Overcome Weaknesses via Opportunities\n\n- **Ship multi-site MVP before WMS vendors release**: The most direct escape from the commoditization trap is to serve a customer type WMS bundling cannot touch. Even a constrained MVP — Target: support for 2–5 sites per operator with shared SKU catalog and cross-site rebalancing — captures the segment and creates an enterprise sales motion executable by the current team\n- **Shift to outcome-based pricing**: Replace or supplement per-warehouse pricing with an outcome-linked structure (Target: ACV tied to documented labor savings or pick-rate improvement). This grows revenue per customer without requiring proportional headcount growth and defuses the \"bundled is free\" objection\n\n### ST — Use Strengths to Counter Threats\n\n- **Document ROI before bundled releases land**: Proactively capture quantified outcomes across the existing 31 warehouses — pick-rate delta, labor hours recovered, SKU velocity changes — before WMS vendors activate their sales teams. The evidence must exist before buyers ask \"is built-in good enough?\"\n- **Lock in at-risk accounts with multi-year terms**: Identify the warehouses most exposed to the two threatening WMS platforms (Assumption: specific breakdown TBD from base audit) and offer multi-year pricing incentives now, in exchange for stability through the competitive window\n\n### WT — Minimize Weaknesses and Avoid Threats\n\n- **Redirect R&D away from commoditizable features**: Do not spend engineering cycles on UI polish or basic slot assignment that a WMS module will replicate. Concentrate on capabilities that require operational data depth — intraday cadence, cross-site rebalancing, demand-forecast integration\n- **Triage concentration risk immediately**: If a material share of the 31 warehouses run on the two threatening platforms (Assumption to validate), begin proactive retention conversations now, before those vendors' sales teams make the first move at renewal\n\n---\n\n## Top 3 Prioritized Strategic Actions\n\n1. **Ship multi-site operator support (MVP)** — Highest-leverage move available. Opens a customer tier WMS bundling cannot serve, increases average contract size (Target: TBD based on operator site counts), and reduces single-site commoditization exposure. The nightly re-slotting engine is the foundation; the incremental build is cross-site coordination. Target: MVP scoped and development started within the next 6 weeks (Assumption: validate against current engineering commitments)\n\n2. **Build and publish a quantified ROI record across the 31-warehouse base** — Before the WMS \"bundled is good enough\" narrative takes hold, Pallet Pilot must own the performance story. Work with existing customers to document specific, measurable outcomes. This protects renewals, enables outcome-based pricing, and anchors the enterprise pitch for multi-site prospects\n\n3. **Advance re-slotting cadence beyond nightly** — Move toward intraday or event-triggered optimization (Target) to establish a performance gap that a WMS vendor's v1 feature cannot close quickly. This directly leverages the proprietary data asset and creates a technically defensible moat that is expensive to replicate\n\n---\n\n## Next Steps\n\n1. **Audit the 31-warehouse base for WMS platform overlap** with the two threatening vendors — determines churn exposure and prioritizes retention outreach (complete within 2 weeks)\n2. **Scope the multi-site MVP** with the engineering team: define minimum viable site-count, shared catalog requirements, and a realistic delivery timeline (complete within 3 weeks)\n3. **Launch 5–8 customer ROI interviews** to document quantified outcomes (pick-rate delta, labor hours recovered) for the performance record and case study library (kick off within 2 weeks)\n4. **Identify 2–3 multi-site operator design partners** from the current customer network or adjacent accounts — confirm willingness before committing engineering resources to the multi-site build"
+    },
+    {
+      "key": "competitive/market-sizing",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 129091,
+      "outputTokensVisible": 2282,
+      "chars": 8096,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "TAM",
+          "ok": true
+        },
+        {
+          "label": "SAM",
+          "ok": true
+        },
+        {
+          "label": "SOM",
+          "ok": true
+        },
+        {
+          "label": "assumptions",
+          "ok": true
+        },
+        {
+          "label": "growth drivers",
+          "ok": true
+        },
+        {
+          "label": "market timing",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "top-down and bottom-up both used",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 28,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "INPUT",
+          "reason": "9,400 × $310 × 12 = $34.97M ≈ $35.0M",
+          "sentence": "Based on the national care regulator's public register of **9,400 care homes** in the 15–60 staff band and Shiftnest's established price of **$310/home/month**, the total addressable market is **$35.0M ARR**."
+        },
+        {
+          "n": 2,
+          "verdict": "INPUT",
+          "reason": "9,400 × 3/5 = 5,640; × $3,720 ≈ $21.0M",
+          "sentence": "The immediately serviceable segment — an estimated **5,640 homes** still running rotas in spreadsheets (60%, per sales call observations) — represents **$21.0M ARR**."
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "Explicitly a target capture rate resting on assumed team size and close rates",
+          "sentence": "A 3-year obtainable market of approximately **$2.1M ARR** (564 homes) emerges from both a top-down target capture rate and a bottom-up sales capacity model; this figure rests on assumed sales team size and close rates that must be validated before the investor update is finalised."
+        },
+        {
+          "n": 4,
+          "verdict": "INPUT",
+          "reason": "$310 × 12 = $3,720",
+          "sentence": "- **Unit economics:** **$310/home/month | $3,720/home/year ACV**"
+        },
+        {
+          "n": 5,
+          "verdict": "INPUT",
+          "reason": "$310 × 12",
+          "sentence": "| Annual contract value (ACV) | $3,720 |"
+        },
+        {
+          "n": 6,
+          "verdict": "INPUT",
+          "reason": "Computed TAM from input",
+          "sentence": "| **TAM** | **$35.0M ARR** |"
+        },
+        {
+          "n": 7,
+          "verdict": "INPUT",
+          "reason": "Direct computation from input figures",
+          "sentence": "9,400 × $3,720 = **$34,968,000**, rounded to **$35.0M ARR**."
+        },
+        {
+          "n": 8,
+          "verdict": "LABELLED",
+          "reason": "Explicitly stated assumption / theoretical ceiling",
+          "sentence": "This assumes 100% penetration of every in-band home at the current price — a theoretical ceiling, not a forecast."
+        },
+        {
+          "n": 9,
+          "verdict": "INPUT",
+          "reason": "9,400 × $3,720 from input",
+          "sentence": "For TAM the bottom-up converges with the top-down: **9,400 potential customers × $3,720 ACV = $35.0M ARR**."
+        },
+        {
+          "n": 10,
+          "verdict": "INPUT",
+          "reason": "$310 × 12",
+          "sentence": "| ACV | $3,720 |"
+        },
+        {
+          "n": 11,
+          "verdict": "INPUT",
+          "reason": "Computed from input",
+          "sentence": "| **SAM** | **$21.0M ARR** |"
+        },
+        {
+          "n": 12,
+          "verdict": "INPUT",
+          "reason": "Direct computation",
+          "sentence": "5,640 × $3,720 = **$20,980,800** → **$21.0M ARR**."
+        },
+        {
+          "n": 13,
+          "verdict": "INPUT",
+          "reason": "40% = 100% − 3 in 5",
+          "sentence": "**Note on the remaining 40%:** Homes already using a digital tool are not excluded from the long-term SAM — competitive displacement is possible — but no win-rate or switching-cost data was provided."
+        },
+        {
+          "n": 14,
+          "verdict": "INPUT",
+          "reason": "9,400 − 5,640 = 3,760; × $3,720 ≈ $14.0M",
+          "sentence": "Treat the remaining **3,760 homes ($14.0M ARR)** as an upside scenario, not the base case."
+        },
+        {
+          "n": 15,
+          "verdict": "LABELLED",
+          "reason": "Explicitly a target",
+          "sentence": "- **Target:** Capture 10% of SAM within 3 years *(this is a target, not a data-backed result)*"
+        },
+        {
+          "n": 16,
+          "verdict": "LABELLED",
+          "reason": "Derived from labelled 10% target",
+          "sentence": "- 5,640 × 10% = **564 homes**"
+        },
+        {
+          "n": 17,
+          "verdict": "LABELLED",
+          "reason": "Derived from labelled target",
+          "sentence": "- 564 × $3,720 = $2,097,360 → **$2.1M ARR by end of Year 3**"
+        },
+        {
+          "n": 18,
+          "verdict": "LABELLED",
+          "reason": "Bottom-up capacity model plan parameters, stated as assumed team size/close rates",
+          "sentence": "| Year 1 | 108 (3 AEs × 3 × 12) | 108 | $402K |"
+        },
+        {
+          "n": 19,
+          "verdict": "LABELLED",
+          "reason": "Capacity model plan parameters",
+          "sentence": "| Year 2 | 180 (5 AEs × 3 × 12) | 288 | $1.07M |"
+        },
+        {
+          "n": 20,
+          "verdict": "LABELLED",
+          "reason": "Capacity model plan parameters",
+          "sentence": "| Year 3 | 288 (8 AEs × 3 × 12) | 576 | **$2.14M** |"
+        },
+        {
+          "n": 21,
+          "verdict": "LABELLED",
+          "reason": "Output of assumption-based bottom-up model",
+          "sentence": "**Year 3 bottom-up SOM: ~$2.1M ARR** — converges with the top-down figure, providing mutual validation across both methods."
+        },
+        {
+          "n": 22,
+          "verdict": "LABELLED",
+          "reason": "Explicitly an assumed churn rate",
+          "sentence": "At an assumed 10% annual churn (an assumption, not a benchmark), Year 3 ARR would be reduced by approximately **$142K**."
+        },
+        {
+          "n": 23,
+          "verdict": "LABELLED",
+          "reason": "Explicitly a strategic target",
+          "sentence": "- **Window risk:** As larger SaaS vendors expand down-market, the spreadsheet cohort will shrink. **Target:** begin converting at scale within 12–18 months *(strategic target, not a data-backed deadline).*"
+        },
+        {
+          "n": 24,
+          "verdict": "LABELLED",
+          "reason": "Scenario values for modelling",
+          "sentence": "| **Churn rate** | Single biggest variable in net ARR; not modelled above | Pull from CRM; if data is sparse, model at 5%, 10%, 15% scenarios |"
+        },
+        {
+          "n": 25,
+          "verdict": "INPUT",
+          "reason": "40% = complement of 3 in 5",
+          "sentence": "| **Competitive 40%** | Upside displacement opportunity is unquantified | Win/loss analysis to identify incumbent tools |"
+        },
+        {
+          "n": 26,
+          "verdict": "LABELLED",
+          "reason": "Scenario values proposed",
+          "sentence": "1. **Confirm churn rate first** — pull from CRM or model at 5%/10%/15% scenarios; this single input has the highest impact on SOM credibility and investor confidence."
+        },
+        {
+          "n": 27,
+          "verdict": "INPUT",
+          "reason": "40% complement of input",
+          "sentence": "5. **Map the competitive 40%** — identify which tools non-spreadsheet homes currently use and decide whether to model competitive displacement as an explicit upside case."
+        },
+        {
+          "n": 28,
+          "verdict": "LABELLED",
+          "reason": "$310 is input; tier bands are a labelled example (e.g.)",
+          "sentence": "6. **Explore ACV tiering** — analyse whether staff count correlates with willingness to pay above $310; a tiered model (e.g., 15–30 staff vs. 31–60 staff) could expand SAM without adding new customers and strengthens the pricing story for investors."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Shiftnest Market Size\n\n## Executive Summary\n\nBased on the national care regulator's public register of **9,400 care homes** in the 15–60 staff band and Shiftnest's established price of **$310/home/month**, the total addressable market is **$35.0M ARR**. The immediately serviceable segment — an estimated **5,640 homes** still running rotas in spreadsheets (60%, per sales call observations) — represents **$21.0M ARR**. A 3-year obtainable market of approximately **$2.1M ARR** (564 homes) emerges from both a top-down target capture rate and a bottom-up sales capacity model; this figure rests on assumed sales team size and close rates that must be validated before the investor update is finalised. The market is well-defined, pricing is proven, and a large undigitized base signals genuine demand pull — but investor confidence will require Shiftnest to close gaps around churn, sales velocity, and competitive displacement before the deck goes out.\n\n---\n\n## Market Definition\n\n- **Geography:** One country (name TBD — confirm for investor deck)\n- **Segment:** Regulated care homes with 15–60 staff\n- **Universe source:** National care regulator's public register — **9,400 homes**\n- **Unit economics:** **$310/home/month | $3,720/home/year ACV**\n- **Buyer:** Care home operators and managers\n\n---\n\n## TAM — Total Addressable Market\n\n### Top-Down\n\n| Input | Value |\n|---|---|\n| Homes on regulator's register | 9,400 |\n| Monthly price | $310 |\n| Annual contract value (ACV) | $3,720 |\n| **TAM** | **$35.0M ARR** |\n\n9,400 × $3,720 = **$34,968,000**, rounded to **$35.0M ARR**. This assumes 100% penetration of every in-band home at the current price — a theoretical ceiling, not a forecast.\n\n### Bottom-Up\n\nFor TAM the bottom-up converges with the top-down: **9,400 potential customers × $3,720 ACV = $35.0M ARR**. The register supplies an exact head count and pricing is fixed, so there is no calculation gap to reconcile between the two methods.\n\n---\n\n## SAM — Serviceable Addressable Market\n\nSAM filters for homes where Shiftnest can win without first displacing an entrenched digital competitor — specifically, those still managing rotas in spreadsheets.\n\n| Input | Value |\n|---|---|\n| Homes on register | 9,400 |\n| Spreadsheet-dependent (3-in-5, from sales calls) | **60%** |\n| Addressable homes | **5,640** |\n| ACV | $3,720 |\n| **SAM** | **$21.0M ARR** |\n\n5,640 × $3,720 = **$20,980,800** → **$21.0M ARR**.\n\n**Assumption to validate:** The 60% figure comes from Shiftnest's own sales calls, which may skew toward spreadsheet users by selection bias (the team may preferentially target these prospects). An independent spot-check of a random sample would sharpen this input.\n\n**Note on the remaining 40%:** Homes already using a digital tool are not excluded from the long-term SAM — competitive displacement is possible — but no win-rate or switching-cost data was provided. Treat the remaining **3,760 homes ($14.0M ARR)** as an upside scenario, not the base case.\n\n---\n\n## SOM — Serviceable Obtainable Market\n\n### Top-Down (3-Year Target)\n\n- **Target:** Capture 10% of SAM within 3 years *(this is a target, not a data-backed result)*\n- 5,640 × 10% = **564 homes**\n- 564 × $3,720 = $2,097,360 → **$2.1M ARR by end of Year 3**\n\n### Bottom-Up (Sales Capacity Validation)\n\n| Assumption | Value |\n|---|---|\n| Account executives (AEs), Year 1 | 3 *(assumption — align with hiring plan)* |\n| New homes closed per AE per month | 3 *(assumption — validate from pipeline data)* |\n| AEs in Year 2 | 5 *(assumption)* |\n| AEs in Year 3 | 8 *(assumption)* |\n\n| Year | New Homes Signed | Cumulative Homes | Year-End Run-Rate ARR |\n|---|---|---|---|\n| Year 1 | 108 (3 AEs × 3 × 12) | 108 | $402K |\n| Year 2 | 180 (5 AEs × 3 × 12) | 288 | $1.07M |\n| Year 3 | 288 (8 AEs × 3 × 12) | 576 | **$2.14M** |\n\n**Year 3 bottom-up SOM: ~$2.1M ARR** — converges with the top-down figure, providing mutual validation across both methods.\n\n**Critical caveat:** This model assumes zero churn. No churn rate was provided. At an assumed 10% annual churn (an assumption, not a benchmark), Year 3 ARR would be reduced by approximately **$142K**. Churn data must be supplied before presenting to investors.\n\n---\n\n## Growth Drivers\n\n- **Large undigitized base:** 5,640 homes on spreadsheets create a pull market — buyers already understand the problem; Shiftnest only needs to sell the solution.\n- **Fixed, auditable prospect universe:** The regulator's register provides a precise, public list of targets, reducing prospecting cost and making pipeline forecasting more credible to investors.\n- **Proven price point:** $310/month has been validated in live sales calls, eliminating pricing-discovery risk from the investor narrative.\n- **Compliance pressure:** Care homes in regulated environments face documentation obligations that manual rotas complicate *(PM should specify the exact requirements and any upcoming regulatory changes to sharpen this driver for the deck).*\n- **Upsell headroom:** Additional modules (compliance reporting, payroll integration, absence tracking) are not priced into the current $310/month — each represents ARR expansion per existing customer. *(Assumption: these modules exist or are on the roadmap — confirm with product team.)*\n\n---\n\n## Market Timing\n\n- **Early-majority window:** 60% still on spreadsheets means the market has not yet tipped to digital. Shiftnest can ride adoption rather than create it — the lower-risk position for investors.\n- **Window risk:** As larger SaaS vendors expand down-market, the spreadsheet cohort will shrink. **Target:** begin converting at scale within 12–18 months *(strategic target, not a data-backed deadline).*\n- **Regulatory tailwinds:** Any increase in record-keeping requirements from the national regulator would accelerate spreadsheet abandonment and compress the sales cycle. PM should confirm whether such changes are forthcoming and include them explicitly in the investor narrative.\n\n---\n\n## Key Assumptions & Data Gaps\n\n| Gap | Why It Matters | Recommended Action |\n|---|---|---|\n| **Churn rate** | Single biggest variable in net ARR; not modelled above | Pull from CRM; if data is sparse, model at 5%, 10%, 15% scenarios |\n| **Current customer count** | Remaining SAM = 5,640 minus existing logos | PM to confirm and subtract from SAM |\n| **Sales cycle length** | Anchors the 3 closes/AE/month assumption | Audit last 20 closed deals for average days-to-close |\n| **AE headcount & hiring plan** | Foundation of bottom-up SOM | Align with finance model before investor meeting |\n| **60% spreadsheet figure** | Possible selection bias from sales call sample | Spot-check 50 homes outside current pipeline |\n| **ACV variance by home size** | A 60-staff home may support a higher price than a 15-staff home; flat $310 may undervalue larger accounts | Analyse billing data segmented by staff count |\n| **Competitive 40%** | Upside displacement opportunity is unquantified | Win/loss analysis to identify incumbent tools |\n| **Country name** | Investor deck must name the market | PM to confirm and add |\n\n---\n\n## Next Steps\n\n1. **Confirm churn rate first** — pull from CRM or model at 5%/10%/15% scenarios; this single input has the highest impact on SOM credibility and investor confidence.\n2. **Validate the 60% spreadsheet figure** — run a 50-home random spot-check outside the existing pipeline to remove selection bias from the SAM calculation.\n3. **Audit sales velocity** — review the last 20 closed deals to replace the assumed 3 closes/AE/month with an evidence-based figure.\n4. **Lock the AE hiring plan** — agree Year 1–3 headcount with finance so the bottom-up SOM uses actuals rather than placeholders.\n5. **Map the competitive 40%** — identify which tools non-spreadsheet homes currently use and decide whether to model competitive displacement as an explicit upside case.\n6. **Explore ACV tiering** — analyse whether staff count correlates with willingness to pay above $310; a tiered model (e.g., 15–30 staff vs. 31–60 staff) could expand SAM without adding new customers and strengthens the pricing story for investors."
+    }
+  ],
+  "calls": [
+    {
+      "label": "discovery/jtbd:gen",
+      "ms": 69060,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Why Care Homes Adopt Shiftnest\n\n## Executive Summary\n\nInterviews with 10 registered managers who adopted Shiftnest this year reveal three distinct pain points driving adoption: reactive, late-night shift-filling that consumes personal time; agency staffing spend described as exceeding the cost of ",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 2862,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1248,
+        "thinking_tokens": 598
+      },
+      "cost_usd_list": 0.050427,
+      "num_turns": 1
+    },
+    {
+      "label": "specs/prd:gen",
+      "ms": 73034,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Crumbline Standing Orders\n\n## Executive Summary\n\nCrumbline's wholesale channel is leaking reliability: 1 in 9 wholesale orders last quarter contained a wrong quantity, and bakery owners are spending most of Sunday evening re-keying repeat orders that arrive via WhatsApp. Standing Orders replaces t",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 3066,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1296,
+        "thinking_tokens": 448
+      },
+      "cost_usd_list": 0.053775,
+      "num_turns": 1
+    },
+    {
+      "label": "discovery/jtbd:judge",
+      "ms": 4547,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"INPUT\",\"reason\":\"The 10 calls figure comes straight from the input (ten calls).\"},{\"n\":2,\"verdict\":\"INPUT\",\"reason\":\"The 10 calls figure restates the input. No other figure is in the sentence.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"3–5 interviews is a proposed next step,",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 188,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 977,
+        "thinking_tokens": 0
+      },
+      "cost_usd_list": 0.0117582,
+      "num_turns": 2
+    },
+    {
+      "label": "specs/prd:judge",
+      "ms": 10251,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"INPUT\",\"reason\":\"The 78% is worked out from 1-in-9 and 1-in-40 (about 11.1% down to 2.5%, roughly 77.5%), and the sentence says so. The 7 bakeries and the March deadline come from the input. The year 2027 is only a scheduling assumption.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"rea",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 926,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1337,
+        "thinking_tokens": 342
+      },
+      "cost_usd_list": 0.0293982,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/okrs:gen",
+      "ms": 124193,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Crumbline Q1 Retention\n\n## Executive Summary\n\nCrumbline enters Q1 2026 (6 January – 28 March) with 238 paying bakeries, $612K ARR, and a net revenue retention of 94% — meaning roughly 6% of recurring revenue erodes annually, equating to approximately $36,700 per year computed from those two figure",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 6443,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1313,
+        "thinking_tokens": 4282
+      },
+      "cost_usd_list": 0.10453199999999999,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/okrs:judge",
+      "ms": 13048,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"INPUT\",\"reason\":\"The 6% and about $36.7K both come straight from 94% NRR and $612K ARR.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"The 100% NRR figure is presented as what the plan is aiming for, not as a fact.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"75% is explicitly called",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 1285,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 2043,
+        "thinking_tokens": 463
+      },
+      "cost_usd_list": 0.0422262,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/risk-register:gen",
+      "ms": 85032,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Shiftnest Payroll Export Launch Risks\n\n## Executive Summary\n\nShiftnest's payroll export, targeting a fixed 1 April launch across 126 care homes and three payroll providers, carries a concentration of high-severity risks that are compounded by severe resource constraints—two engineers (one part-tim",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 3954,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1225,
+        "thinking_tokens": 1559
+      },
+      "cost_usd_list": 0.066669,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/risk-register:judge",
+      "ms": 4790,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"March 15 is called a target, and the 2.5-week window is stated as an assumption.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"November 18 is a proposed escalation deadline, and the 2-week response window is stated as an assumption.\"}]}",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 158,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 905,
+        "thinking_tokens": 0
+      },
+      "cost_usd_list": 0.0105822,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/positioning:gen",
+      "ms": 79494,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Positioning Pallet Pilot\n\n## Executive Summary\n\nPallet Pilot is slotting software built for the specific operational reality of small, single-site third-party logistics warehouses (5,000–40,000 pallet spaces). Unlike enterprise slotting tools that require integration projects or WMS-native rules t",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 3134,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1247,
+        "thinking_tokens": 777
+      },
+      "cost_usd_list": 0.05450100000000001,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/north-star:gen",
+      "ms": 135022,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Shiftnest North Star\n\n## Executive Summary\n\nShiftnest's subscription model—billed per care home per month by headcount band—lives or dies on whether homes experience a clear, repeatable benefit before renewal. The PM's data identifies exactly where that threshold sits: homes that fill at least 70%",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 6683,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1180,
+        "thinking_tokens": 4519
+      },
+      "cost_usd_list": 0.107334,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/positioning:judge",
+      "ms": 5485,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"SKU 4421, top 10% and 30 days appear inside a hypothetical 'When a floor lead sees...' scenario. They illustrate how a suggested move is explained, not product facts.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"The 60 days is explicitly marked '(Target: co",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 294,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 913,
+        "thinking_tokens": 105
+      },
+      "cost_usd_list": 0.0133662,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/north-star:judge",
+      "ms": 9102,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 30-day window is a parameter in a proposed metric definition. It doesn't claim anything as fact.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"The 30-day window is a parameter in a proposed metric definition.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"The 2",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 699,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1256,
+        "thinking_tokens": 259
+      },
+      "cost_usd_list": 0.024210199999999998,
+      "num_turns": 2
+    },
+    {
+      "label": "specs/user-stories:gen",
+      "ms": 72616,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Shiftnest Open-Shift Offers\n\n## Executive Summary\n\nShiftnest's current open-shift workflow requires managers to call staff individually, creating delays and administrative burden when coverage is needed quickly. This document defines user stories for an in-app open-shift offer system that broadcas",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 3588,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1192,
+        "thinking_tokens": 685
+      },
+      "cost_usd_list": 0.060981,
+      "num_turns": 1
+    },
+    {
+      "label": "specs/user-stories:judge",
+      "ms": 6245,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 90 minutes is explicitly marked as a target and an assumption for the PM to confirm.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"30 minutes is the input's 2-hour approval window minus the 90-minute reminder point. That 90 minutes is labelled as an assu",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 391,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 802,
+        "thinking_tokens": 183
+      },
+      "cost_usd_list": 0.014418199999999999,
+      "num_turns": 2
+    },
+    {
+      "label": "strategy/swot:gen",
+      "ms": 120732,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pallet Pilot SWOT\n\n## Executive Summary\n\nPallet Pilot enters next year with 31 warehouses live, $744K ARR, and a technically differentiated nightly re-slotting engine — but faces an acute strategic inflection. Two large WMS vendors have announced built-in slotting in their next releases, threateni",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 6071,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1185,
+        "thinking_tokens": 3968
+      },
+      "cost_usd_list": 0.09818400000000001,
+      "num_turns": 1
+    },
+    {
+      "label": "analytics/ab-design:gen",
+      "ms": 188614,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Shelf-Label Price Test: A/B Test Design\n\n## Executive Summary\n\nCrumbline proposes to test whether adding a \"baked today\" timestamp to shelf labels increases the daily sell-through rate above the current 82% baseline. With 412 shops available as randomization units, the experiment is adequately pow",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 10455,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1289,
+        "thinking_tokens": 8006
+      },
+      "cost_usd_list": 0.16456800000000002,
+      "num_turns": 1
+    },
+    {
+      "label": "strategy/swot:judge",
+      "ms": 6519,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"INPUT\",\"reason\":\"$24K per warehouse is computed from the input: $744K ÷ 31 ≈ $24K.\"},{\"n\":2,\"verdict\":\"INPUT\",\"reason\":\"$744K ARR comes from the input, and $24K per warehouse is computed from $744K ÷ 31.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"The 6-week timeline is expli",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 527,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1093,
+        "thinking_tokens": 148
+      },
+      "cost_usd_list": 0.0194662,
+      "num_turns": 2
+    },
+    {
+      "label": "analytics/ab-design:judge",
+      "ms": 11062,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"+3 pp MDE is explicitly marked as a target; 85% = 82% + 3 pp from the input.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"80% power is explicitly labelled Assumption.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"4 weeks of historical data is a recommended plan p",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 954,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 1187,
+        "thinking_tokens": 230
+      },
+      "cost_usd_list": 0.028758199999999998,
+      "num_turns": 2
+    },
+    {
+      "label": "competitive/market-sizing:gen",
+      "ms": 129091,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Shiftnest Market Size\n\n## Executive Summary\n\nBased on the national care regulator's public register of **9,400 care homes** in the 15–60 staff band and Shiftnest's established price of **$310/home/month**, the total addressable market is **$35.0M ARR**. The immediately serviceable segment — an est",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 7284,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1193,
+        "thinking_tokens": 5002
+      },
+      "cost_usd_list": 0.11642699999999999,
+      "num_turns": 1
+    },
+    {
+      "label": "competitive/market-sizing:judge",
+      "ms": 15805,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"INPUT\",\"reason\":\"9,400 × $310 × 12 = $34.97M ≈ $35.0M\"},{\"n\":2,\"verdict\":\"INPUT\",\"reason\":\"9,400 × 3/5 = 5,640; × $3,720 ≈ $21.0M\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":\"Explicitly a target capture rate resting on assumed team size and close rates\"},{\"n\":4,\"verdict\":\"INPU",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 1765,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 2063,
+        "thinking_tokens": 679
+      },
+      "cost_usd_list": 0.051986199999999996,
+      "num_turns": 2
+    }
+  ]
+}
