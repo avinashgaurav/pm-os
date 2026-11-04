@@ -1,5 +1,5 @@
 import * as Sentry from '@sentry/nextjs';
-import { getModulePrompt } from './ai-prompts';
+import { getModulePrompt, OWN_STRUCTURE_MODULES } from './ai-prompts';
 import { AIError, parseRetryAfter, type AIErrorKind } from './providers/errors';
 import type { Usage } from './providers/usage';
 import { AIGenerateResponseSchema, ProvidersListResponseSchema, UsageSchema } from './schemas';
@@ -273,23 +273,11 @@ function aiErrorFromResponse(
 const FIGURES_RULE = `- Use only figures (numbers, percentages, prices, dates, counts) that appear in the PM's input or are computed directly from it, or figures you clearly label as an assumption, estimate, target or placeholder (for example "Assumption: ...", "Target: ...", "TBD")
 - Never cite outside sources, studies, surveys, analyst reports, market statistics or industry benchmarks unless the PM's input provided them. If a number is needed and missing, state it as an assumption to validate
 - This applies everywhere, including user needs, requirements, the executive summary and next steps. A time limit, threshold or goal you introduce is a target: label it, and keep it consistent with the same target elsewhere in the document
-- When you repeat a figure that rests on an assumption (for example in the executive summary), say so in that sentence; never present it as a settled or data-backed result`;
+- When you repeat a figure that rests on an assumption (for example in the executive summary), say so in that sentence; never present it as a settled or data-backed result
+- A figure you calculate from an assumed input is itself an estimate: name the assumed input in the same sentence. Do not call a cycle length, rate, ratio or rule of thumb "standard", "typical" or "industry" unless the PM's input says so
+- Never invent contact details or links: email addresses, phone numbers, URLs, web or postal addresses, social handles. Use only ones in the PM's input; otherwise write a placeholder such as [support email] or [link]`;
 
 const WORD_BUDGET = 'Keep the whole document under about 1,800 words so it fits in one response.';
-
-/** Modules whose prompt defines its own opening and ending, or whose output is user-facing, so no executive summary or Next Steps is added. */
-const OWN_STRUCTURE_MODULES = new Set([
-  'specs/one-pager',
-  'specs/api-docs',
-  'planning/daily',
-  'planning/weekly',
-  'communication/release-notes',
-  'communication/meeting-notes',
-  'communication/agenda',
-  'launch/announcement',
-  'launch/changelog',
-  'operations/meeting-templates',
-]);
 
 function formatRules(moduleId: string): string {
   if (OWN_STRUCTURE_MODULES.has(moduleId)) {
@@ -301,13 +289,25 @@ ${FIGURES_RULE}
 - ${WORD_BUDGET} If you are running long, shorten sections; never drop one the instructions above ask for`;
   }
   return `- Use markdown: # for title, ## for sections, ### for subsections, - for bullets, **bold** for emphasis
-- Start with a one-paragraph executive summary
+- Start with a one-paragraph executive summary under a "## Executive Summary" heading, directly after the title
 - Be specific and actionable — no filler or generic advice
 - End with prioritized next steps
 - Write as a ready-to-share professional deliverable
 ${FIGURES_RULE}
 - ${WORD_BUDGET} Required sections: the executive summary, every section the framework above asks for, and a final "## Next Steps" section. If you are running long, shorten other sections; never drop a required one
 - The last section is always "## Next Steps": a short prioritised list of what the PM should do next. It is separate from any priorities or top actions the framework asks for, which go before it`;
+}
+
+/**
+ * Last line of the user prompt. Own-structure modules (API docs, release notes, ...) are
+ * published as written, so they get no analysis or gaps section; missing details become
+ * inline placeholders instead (spot-check, EVALS.md).
+ */
+export function closingInstruction(moduleId: string): string {
+  if (OWN_STRUCTURE_MODULES.has(moduleId)) {
+    return 'Write only the document itself, ready to publish. Do not add an analysis, gaps or recommendations section. Where something needed is missing from the input, put a short placeholder such as [TBD: ...] in the place it belongs.';
+  }
+  return 'Add your expert analysis, identify gaps, and provide actionable recommendations beyond what was provided.';
 }
 
 export function buildModulePrompt(
@@ -318,11 +318,12 @@ export function buildModulePrompt(
   sections: { label: string; value: string }[]
 ): { system: string; user: string } {
   const modulePrompt = getModulePrompt(category, moduleSlug);
+  const moduleId = `${category}/${moduleSlug}`;
 
   const system = `${modulePrompt.system}
 
 Format rules:
-${formatRules(`${category}/${moduleSlug}`)}`;
+${formatRules(moduleId)}`;
 
   const filledSections = sections.filter((s) => s.value.trim());
   const sectionText = filledSections.map((s) => `### ${s.label}\n${s.value}`).join('\n\n');
@@ -333,7 +334,7 @@ Here is the information provided by the PM:
 
 ${sectionText}
 
-Produce a comprehensive ${outputName} in markdown. Add your expert analysis, identify gaps, and provide actionable recommendations beyond what was provided.`;
+Produce a comprehensive ${outputName} in markdown. ${closingInstruction(moduleId)}`;
 
   return { system, user };
 }

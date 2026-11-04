@@ -12,6 +12,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/lib/*.test.ts",
     "eval": "tsx scripts/eval-prompts.ts",
     "eval:check": "tsx scripts/eval-prompts.ts --check",
     "prepare": "husky"
