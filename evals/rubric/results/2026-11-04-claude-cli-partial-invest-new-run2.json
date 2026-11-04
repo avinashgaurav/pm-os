@@ -1,0 +1,174 @@
+{
+  "method": "Claude Code CLI (claude -p) with the app's own buildModulePrompt output; not the production API path",
+  "summary": {
+    "started": "2026-11-04T07:51:32.580Z",
+    "rubricSha256": "e280a38586424325ad3a354ac7db37808bf19b37be3030e9f9f1cfc429bb4960",
+    "fixturesFile": "rubric/fixtures-new-cases.json",
+    "wallMs": 133802,
+    "generationModel": "claude-sonnet-4-6",
+    "judgeModel": "claude-opus-5-5",
+    "modelsAnswered": ["claude-sonnet-4-6", "claude-opus-5-5"],
+    "cliCalls": 2,
+    "cliErrors": 0,
+    "generationLatencyMs": {
+      "n": 1,
+      "p50": 126103,
+      "p90": 126103,
+      "max": 126103
+    },
+    "judgeLatencyMs": {
+      "n": 1,
+      "p50": 7692,
+      "p90": 7692,
+      "max": 7692
+    },
+    "usageTotals": {
+      "input": 3075,
+      "output": 7888
+    },
+    "modules": 1,
+    "generated": 1,
+    "requiredSectionsAllPresent": 1,
+    "requiredSectionChecks": {
+      "passed": 6,
+      "total": 6
+    },
+    "frameworkFollowed": 1,
+    "frameworkChecks": {
+      "passed": 2,
+      "total": 2
+    },
+    "sentencesWithNewFigures": 6,
+    "judgeVerdicts": {
+      "LABELLED": 6
+    },
+    "modulesWithNoUnsourcedFacts": 1,
+    "modulesOverProdMaxTokens": [],
+    "errors": []
+  },
+  "results": [
+    {
+      "key": "specs/user-stories",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 126103,
+      "outputTokensVisible": 2936,
+      "chars": 10494,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "epics",
+          "ok": true
+        },
+        {
+          "label": "acceptance criteria",
+          "ok": true
+        },
+        {
+          "label": "INVEST check",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "3+ stories in 'As a ..., I want ..., so that ...' form",
+          "ok": true
+        },
+        {
+          "label": "3+ Given/When/Then criteria",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 6,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 30 seconds is explicitly marked as a target and an assumption for engineering to validate.",
+          "sentence": "And eligible workers receive a push notification within [Target: 30 seconds — assumption to validate with engineering]"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "The 40 hours/week is explicitly marked as an assumption and an example value.",
+          "sentence": "Given care worker A has a contracted maximum of 40 hours/week (Assumption: example value — actual limit per individual contract)"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "The 4-hour shift is a made-up value inside a Given/And test scenario. It describes a test setup, not a fact about the product.",
+          "sentence": "And the open shift is 4 hours"
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "The 55 minutes is a made-up elapsed time inside a Given test scenario, used to test the 2-hour approval window from the input.",
+          "sentence": "Given worker A claimed OS-99 and 55 minutes have elapsed"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "The 30 seconds is explicitly marked as a target and an assumption to validate.",
+          "sentence": "Then I receive a push notification within [Target: 30 seconds — assumption to validate] containing the shift date, time, and location"
+        },
+        {
+          "n": 6,
+          "verdict": "LABELLED",
+          "reason": "The 30 seconds is explicitly called a target and a placeholder that engineering needs to validate.",
+          "sentence": "A **Target of 30 seconds** is used as a placeholder; validate with engineering."
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Shiftnest Open-Shift Offers — User Stories\n\n## Executive Summary\n\nShiftnest currently relies on manual phone-round to fill open shifts, creating delays and administrative burden for managers. This document defines 8 user stories across 5 epics — Open Shift Publication, Shift Discovery & Claiming, Eligibility Enforcement, Claim Approval & Escalation, and Notifications — to replace that process with an in-app self-service flow. The system must enforce each worker's maximum weekly hours and mandatory training requirements, and re-offer any unclaimed shift if a manager does not approve within the 2-hour window specified in the PM brief. Seven gaps are identified — including unresolved approval-rights for shift leads, the data source for contracted hours, and certificate-expiry handling — with concrete recommendations for each before sprint commitment.\n\n---\n\n## Epic 1: Open Shift Publication\n\n### Story OS-01: Publish an Open Shift\n\n**As a** registered manager, **I want** to publish an open shift with role, date, time, location, and required training tags, **so that** eligible staff are notified instantly in the app and I no longer ring staff individually.\n\n```gherkin\nScenario: Manager publishes a fully specified open shift\n  Given I am logged in as a registered manager\n  And I navigate to \"Open Shifts > Create\"\n  When I enter shift date, start time, end time, location, role, and required training tags\n  And I tap \"Publish\"\n  Then the shift appears as \"Open\" in the eligible-workers' feed\n  And eligible workers receive a push notification within [Target: 30 seconds — assumption to validate with engineering]\n\nScenario: Publish blocked when required fields are missing\n  Given I am on the Create Open Shift form\n  When I leave \"Required Training\" empty and tap \"Publish\"\n  Then a validation error \"Required Training must be specified\" is shown\n  And the shift is not published\n```\n\n---\n\n## Epic 2: Shift Discovery & Claiming\n\n### Story OS-02: View Eligible Open Shifts\n\n**As a** care worker, **I want** to see only the open shifts I am eligible for, **so that** I can review and act on genuine opportunities without wading through roles I cannot take.\n\n```gherkin\nScenario: Feed shows only eligible shifts\n  Given I hold certificates [Manual Handling, Medication Administration]\n  And my contracted max weekly hours are stored in my profile (Assumption: data source TBD — see Gap G-4)\n  When I open the \"Open Shifts\" screen\n  Then I see only shifts whose training tags are a subset of my certificates\n  And I do not see any shift that would breach my weekly hours limit\n```\n\n### Story OS-03: Claim an Open Shift\n\n**As a** care worker or shift lead, **I want** to claim an open shift in one tap, **so that** I can secure it before another eligible colleague does.\n\n```gherkin\nScenario: First eligible worker claims a shift\n  Given open shift OS-99 is in \"Open\" status\n  And I am eligible for it\n  When I tap \"Claim Shift\"\n  Then my claim is recorded with a server-side timestamp\n  And OS-99 moves to \"Pending Approval\"\n  And OS-99 is removed from all other workers' feeds\n\nScenario: Worker attempts to claim an already-claimed shift\n  Given OS-99 has already been claimed by another worker\n  When I tap \"Claim Shift\" on OS-99\n  Then I see \"This shift has already been claimed\"\n  And no duplicate claim is created\n```\n\n---\n\n## Epic 3: Eligibility Enforcement\n\n### Story OS-04: Enforce Maximum Weekly Hours\n\n**As a** registered manager, **I want** the system to block any claim that would breach a worker's maximum weekly hours, **so that** employment-law compliance is enforced automatically without manual checking.\n\n```gherkin\nScenario: Claim blocked due to hours breach\n  Given care worker A has a contracted maximum of 40 hours/week (Assumption: example value — actual limit per individual contract)\n  And worker A has 38 scheduled hours this week\n  And the open shift is 4 hours\n  When worker A attempts to claim the shift\n  Then the claim is blocked\n  And worker A sees \"Claiming this shift would exceed your weekly hours limit\"\n```\n\n### Story OS-05: Enforce Mandatory Training Requirements\n\n**As a** registered manager, **I want** workers without the required training to be ineligible and unable to see or claim a shift, **so that** care quality and regulatory standards are maintained without auditing each claim.\n\n```gherkin\nScenario: Worker without required training is excluded\n  Given open shift OS-55 requires \"Dementia Awareness\" training\n  And care worker B does not hold a valid \"Dementia Awareness\" certificate\n  When the system evaluates worker B's eligibility\n  Then OS-55 does not appear in worker B's feed\n  And worker B cannot claim OS-55 by any direct URL or deep-link route\n```\n\n---\n\n## Epic 4: Claim Approval & Escalation\n\n### Story OS-06: Manager Approves or Rejects a Pending Claim\n\n**As a** registered manager, **I want** to approve or reject a pending shift claim within the app, **so that** the worker gets timely confirmation and the roster is updated without a separate call.\n\n```gherkin\nScenario: Manager approves within the 2-hour window\n  Given worker A claimed OS-99 and 55 minutes have elapsed\n  When I tap \"Approve\" on the pending-claim notification\n  Then OS-99 is assigned to worker A on the roster\n  And worker A receives a \"Shift Confirmed\" push notification\n  And OS-99 is removed from the open-shifts feed\n\nScenario: Manager rejects a claim\n  Given worker A claimed OS-99\n  When I tap \"Reject\" and optionally enter a reason\n  Then worker A receives a \"Claim Not Approved\" notification\n  And OS-99 returns to \"Open\" status in the eligible-workers' feed\n```\n\n### Story OS-07: Auto-Re-Offer on Approval Timeout\n\n**As a** care worker, **I want** my unchecked claim to be automatically released after 2 hours so that I am not left waiting indefinitely and the shift is re-offered to others.\n\n```gherkin\nScenario: Claim expires without manager action\n  Given worker A claimed OS-99 at 10:00\n  And no manager action has been taken\n  When the clock reaches 12:00 (2 hours after claim)\n  Then worker A's claim is released\n  And OS-99 returns to \"Open\" status in the eligible-workers' feed\n  And worker A receives a \"Claim Expired\" notification\n  And the manager receives \"Approval window expired — OS-99 re-offered\"\n```\n\n---\n\n## Epic 5: Notifications\n\n### Story OS-08a: Notify Eligible Workers on Shift Publication\n\n**As a** care worker or shift lead, **I want** a push notification when a new eligible open shift is published, **so that** I can act immediately and not miss the opportunity.\n\n```gherkin\nScenario: Eligible worker notified on publish\n  Given I am eligible for a shift published at 09:00 and have push notifications enabled\n  Then I receive a push notification within [Target: 30 seconds — assumption to validate] containing the shift date, time, and location\n  And tapping it opens the shift detail screen\n\nScenario: Ineligible worker is not notified\n  Given I do not hold the training required by a newly published shift\n  Then I do not receive a push notification for that shift\n```\n\n---\n\n## INVEST Check\n\n| Story | **I** | **N** | **V** | **E** | **S** | **T** | Verdict |\n|---|---|---|---|---|---|---|---|\n| OS-01 Publish Open Shift | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Pass** |\n| OS-02 View Eligible Feed | ✅ | ✅ | ✅ | ⚠️ | ✅ | ✅ | **Rework** — not estimable until eligibility data sources (G-4) are confirmed |\n| OS-03 Claim a Shift | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Pass** |\n| OS-04 Enforce Weekly Hours | ⚠️ | ✅ | ✅ | ⚠️ | ✅ | ✅ | **Rework** — dependent on OS-02 eligibility engine; run a spike first |\n| OS-05 Enforce Training | ⚠️ | ✅ | ✅ | ⚠️ | ✅ | ✅ | **Rework** — same coupling with OS-02; pair with a spike on eligibility rules |\n| OS-06 Approve/Reject Claim | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ | **Split** — separate \"Approve\" and \"Reject with reason\" to allow incremental delivery |\n| OS-07 Auto-Re-Offer | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Pass** |\n| OS-08a Notify Workers | ✅ | ✅ | ✅ | ⚠️ | ✅ | ✅ | **Rework** — delivery SLA (30-second target) must be validated with engineering before acceptance criteria are locked |\n\n**Stories requiring action before sprint commitment:** OS-02, OS-04, OS-05 (eligibility spike), OS-06 (split), OS-08a (SLA confirmation).\n\n---\n\n## Identified Gaps & Recommendations\n\n- **G-1 — Notification broadcast order:** Simultaneous broadcast is assumed. If a priority sequence (seniority, contracted hours, distance) is intended, define the rule before OS-08a is built.\n- **G-2 — Notification delivery SLA:** No latency target was specified by the PM. A **Target of 30 seconds** is used as a placeholder; validate with engineering.\n- **G-3 — Shift lead approval rights:** The PM lists shift leads as users but does not clarify whether they can approve claims. Confirm before writing role-based access controls for OS-06.\n- **G-4 — Weekly hours data source:** Where contracted max hours live (HR system, Shiftnest profile, manual entry) is unspecified. Identify the authoritative source before OS-04 is estimated.\n- **G-5 — Training certificate expiry:** Certificates lapse; expiry is not addressed in the brief. **Add a story:** \"As a manager, I want expired certificates to automatically render a worker ineligible, so that I do not audit certificates per shift.\"\n- **G-6 — Zero-claim escalation:** No fallback is defined if no worker claims the shift before its start time. **Add a story** covering a manager alert and manual-assignment path.\n- **G-7 — Simultaneous claim race condition:** \"First eligible person\" is stated, but the conflict-resolution mechanism under concurrent claims is unspecified. Confirm server-side timestamp locking is acceptable before engineering designs the claim endpoint.\n\n---\n\n## Next Steps\n\n1. **Confirm shift lead approval rights (G-3)** — PM to align with Operations lead; unblocks OS-06 split and role-based access design. **Target:** before next sprint planning.\n2. **Identify weekly-hours data source (G-4)** — Required to unblock OS-04 estimation and the eligibility spike.\n3. **Schedule an eligibility-engine spike** — Cover OS-02, OS-04, and OS-05 jointly; estimate complexity before committing to a sprint.\n4. **Split OS-06** into \"Approve Claim\" and \"Reject Claim with Reason\" as two independent stories.\n5. **Write backlog stories for G-5 (certificate expiry) and G-6 (zero-claim escalation)** before the backlog is considered shippable.\n6. **Validate the 30-second notification target (G-2)** with engineering and update OS-08a acceptance criteria with the agreed SLA."
+    }
+  ],
+  "calls": [
+    {
+      "label": "specs/user-stories:gen",
+      "ms": 126103,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Shiftnest Open-Shift Offers — User Stories\n\n## Executive Summary\n\nShiftnest currently relies on manual phone-round to fill open shifts, creating delays and administrative burden for managers. This document defines 8 user stories across 5 epics — Open Shift Publication, Shift Discovery & Claiming, ",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 7298,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1272,
+        "thinking_tokens": 4362
+      },
+      "cost_usd_list": 0.11711099999999999,
+      "num_turns": 1
+    },
+    {
+      "label": "specs/user-stories:judge",
+      "ms": 7692,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 30 seconds is explicitly marked as a target and an assumption for engineering to validate.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"The 40 hours/week is explicitly marked as an assumption and an example value.\"},{\"n\":3,\"verdict\":\"LABELLED\",\"reason\":",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 590,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 927,
+        "thinking_tokens": 202
+      },
+      "cost_usd_list": 0.0193982,
+      "num_turns": 2
+    }
+  ]
+}
