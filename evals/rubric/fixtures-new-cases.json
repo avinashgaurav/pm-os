@@ -1,0 +1,600 @@
+{
+  "note": "New cases written after the round 2 prompt fix and never used to tune any prompt. Fictional products, companies and people only (Crumbline by Oakhollow Software for bakeries; Shiftnest by Bramblegate for care homes; Pallet Pilot for small warehouses); none of the Pawpath wording is reused. The answer key is the required, framework and traps lists in this file, written and committed before any model call. required and framework are copied unchanged from fixtures.json so the checks are the same as the tuned set. traps are extra fixed text-pattern checks for the weak shapes EVALS.md reported (a cycle length called standard, an assumed design effect with no label, named outside sources, a penetration figure with no market size, invented contact details); a trap that matches is a miss.",
+  "common": {
+    "required": [
+      {
+        "label": "H1 title",
+        "re": "^# \\S"
+      },
+      {
+        "label": "executive summary",
+        "exec_summary": true,
+        "note": "Heading such as Executive Summary / Summary / TL;DR, OR (as the prompt literally asks for \"a one-paragraph executive summary\") a prose paragraph of 300+ characters between the H1 and the first ## heading. Widened after the one-module smoke run, which had the paragraph but no heading."
+      },
+      {
+        "label": "prioritised next steps",
+        "re": "next steps"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "key": "specs/prd",
+      "title": "Crumbline Standing Orders",
+      "sections": [
+        {
+          "label": "Problem Statement",
+          "value": "Bakeries on Crumbline take repeat wholesale orders (cafes, delis) by WhatsApp and re-key them every week. Owners told us re-keying takes most of Sunday evening. 1 in 9 wholesale orders last quarter had a wrong quantity."
+        },
+        {
+          "label": "Target Users",
+          "value": "Owners and shift leads at independent bakeries with one to three shops, plus their wholesale buyers. Buyers order between 9 pm and 5 am."
+        },
+        {
+          "label": "Goals & Success Metrics",
+          "value": "Cut wholesale order errors to under 1 in 40. Make weekly order entry feel quick for owners. Keep buyers off the phone."
+        },
+        {
+          "label": "Scope & Constraints",
+          "value": "In scope: a standing order a buyer can edit until a cut-off the bakery sets. Out of scope: invoicing and delivery routing. Must work offline on the shop tablet. Beta with 7 bakeries before the spring menu change in March."
+        }
+      ],
+      "required": [
+        {
+          "label": "problem statement",
+          "re": "problem"
+        },
+        {
+          "label": "target users / personas",
+          "re": "target users|personas?"
+        },
+        {
+          "label": "goals & success metrics",
+          "re": "success metrics|goals"
+        },
+        {
+          "label": "functional requirements",
+          "re": "functional requirements"
+        },
+        {
+          "label": "non-functional requirements",
+          "re": "non-functional"
+        },
+        {
+          "label": "user stories",
+          "re": "user stor"
+        },
+        {
+          "label": "acceptance criteria",
+          "re": "acceptance criteria"
+        },
+        {
+          "label": "scope in/out",
+          "re": "out of scope|in scope|scope"
+        },
+        {
+          "label": "technical considerations",
+          "re": "technical"
+        },
+        {
+          "label": "risks & mitigations",
+          "re": "risk"
+        },
+        {
+          "label": "timeline / milestones",
+          "re": "timeline|milestone"
+        }
+      ],
+      "framework": [
+        {
+          "label": "user stories in 'As a ... I want ... so' form",
+          "re": "as an? [^\\n]{2,80}?,?\\s*I want[\\s\\S]{2,200}?so (that|I)",
+          "note": "Allows the story to wrap across lines (widened after the run; the first version required one line)."
+        }
+      ],
+      "traps": [
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "strategy/okrs",
+      "title": "Crumbline Q1 Retention",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Oakhollow Software sells Crumbline to independent bakeries. 238 paying bakeries, $612K ARR. Net revenue retention last year was 94%. Bakeries that set up wholesale ordering in their first month stay far longer than those that do not."
+        },
+        {
+          "label": "Goals & Objectives",
+          "value": "Get new bakeries to wholesale ordering in their first month. Win back bakeries that downgraded to the free plan. Ship the offline tablet mode."
+        },
+        {
+          "label": "Constraints & Considerations",
+          "value": "The quarter runs 6 January to 28 March. Team: 5 engineers, 1 designer, 2 customer success leads. No new hires until April."
+        }
+      ],
+      "required": [
+        {
+          "label": "objectives",
+          "re": "objective"
+        },
+        {
+          "label": "key results",
+          "re": "key results?|\\bKR\\s?\\d"
+        }
+      ],
+      "framework": [
+        {
+          "label": "at least 2 objectives",
+          "count_re": "^#+ .*objective|^\\*\\*objective|objective \\d",
+          "min": 2
+        },
+        {
+          "label": "at least 6 key results",
+          "count_re": "\\bKR\\s?\\d",
+          "min": 6
+        },
+        {
+          "label": "KRs measurable (80% contain a number)",
+          "kr_measurable": true
+        },
+        {
+          "label": "outcomes vs outputs or sandbagging addressed",
+          "re": "outcome|sandbag|output"
+        }
+      ],
+      "traps": [
+        {
+          "label": "cycle length called standard/typical",
+          "re": "(standard|typical|usual|normal|conventional)[^.\\n]{0,40}\\d+[- ]week|\\d+[- ]week[^.\\n]{0,40}(standard|typical|norm)"
+        },
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "discovery/jtbd",
+      "title": "Why care homes adopt Shiftnest",
+      "sections": [
+        {
+          "label": "Key Inputs",
+          "value": "Ten calls with registered managers of small care homes who started using Shiftnest this year. What they said: 'I was filling gaps at midnight from my kitchen table', 'Agency staff cost us more than the building', 'The inspectors asked for the rota and I had three versions'. Seven of ten ran rotas in a spreadsheet emailed to staff each week."
+        },
+        {
+          "label": "Context & Background",
+          "value": "Shiftnest is rota and shift-swap software for care homes with 15 to 60 staff, made by the made-up company Bramblegate. The team is rewriting the website and the first-week setup checklist."
+        }
+      ],
+      "required": [
+        {
+          "label": "functional jobs",
+          "re": "functional"
+        },
+        {
+          "label": "emotional jobs",
+          "re": "emotional"
+        },
+        {
+          "label": "social jobs",
+          "re": "social"
+        },
+        {
+          "label": "hiring criteria",
+          "re": "hiring criteria|hire"
+        },
+        {
+          "label": "competing solutions",
+          "re": "competing|alternatives?"
+        },
+        {
+          "label": "switching triggers",
+          "re": "switching|trigger"
+        }
+      ],
+      "framework": [
+        {
+          "label": "job statements in 'When ..., I want to ..., so I can ...' form (3+)",
+          "count_re": "when [^\\n]{3,200}?I want to [^\\n]{3,200}?so (I|we|that)",
+          "min": 3
+        }
+      ],
+      "traps": [
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "strategy/risk-register",
+      "title": "Shiftnest payroll export launch risks",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Shiftnest will launch a payroll export that sends approved hours to three payroll providers on 1 April, the start of the new tax year. 126 care homes have asked for it. Hours worked feed directly into staff pay."
+        },
+        {
+          "label": "Key Inputs",
+          "value": "One of the three payroll providers has no test environment. Night shifts that cross midnight are split differently by each provider. Care homes are inspected by a regulator that checks staffing records. Personal data of care workers is involved."
+        },
+        {
+          "label": "Constraints & Considerations",
+          "value": "Date cannot move. Two engineers, one of them part-time. No dedicated QA."
+        }
+      ],
+      "required": [
+        {
+          "label": "severity",
+          "re": "severity|impact"
+        },
+        {
+          "label": "likelihood",
+          "re": "likelihood|probability|occurrence"
+        },
+        {
+          "label": "risk score",
+          "re": "score|rpn|rating"
+        },
+        {
+          "label": "mitigation",
+          "re": "mitigation"
+        },
+        {
+          "label": "owners",
+          "re": "owner"
+        },
+        {
+          "label": "missing risks / clusters",
+          "re": "missing|cluster|correlat"
+        }
+      ],
+      "framework": [
+        {
+          "label": "severity x likelihood scoring shown",
+          "re": "(severity|impact)[^\\n]{0,40}(x|×|\\*)[^\\n]{0,40}(likelihood|probability|occurrence)|rpn|risk score"
+        }
+      ],
+      "traps": [
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "strategy/north-star",
+      "title": "Shiftnest North Star",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Shiftnest charges per care home per month, by staff headcount band. Homes where at least 70% of open shifts are filled by their own staff through shift swaps rarely cancel. Today 41% of open shifts are filled through Shiftnest; the rest go to agencies or are covered by phone."
+        },
+        {
+          "label": "Goals & Objectives",
+          "value": "Choose one metric for the whole company and the inputs each team owns."
+        }
+      ],
+      "required": [
+        {
+          "label": "north star metric",
+          "re": "north star"
+        },
+        {
+          "label": "input metrics",
+          "re": "input metric"
+        },
+        {
+          "label": "counter metrics",
+          "re": "counter[- ]metric|guardrail"
+        },
+        {
+          "label": "targets",
+          "re": "target"
+        },
+        {
+          "label": "initiatives mapped",
+          "re": "initiative"
+        }
+      ],
+      "framework": [
+        {
+          "label": "single north star named",
+          "re": "north star metric"
+        }
+      ],
+      "traps": [
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "strategy/positioning",
+      "title": "Positioning Pallet Pilot",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Pallet Pilot is slotting software that tells small third-party warehouses (one site, 5,000 to 40,000 pallet spaces) where to put incoming stock. Today these warehouses use the slotting rules in their warehouse management system, a planner's spreadsheet, or the floor lead's memory."
+        },
+        {
+          "label": "Key Inputs",
+          "value": "Unique attributes: learns pick frequency from the existing WMS export with no integration project, re-slots in small nightly moves instead of a big weekend reshuffle, and shows the floor lead why each move is suggested. Customers say the nightly moves are why the floor accepts it."
+        }
+      ],
+      "required": [
+        {
+          "label": "competitive alternatives",
+          "re": "competitive alternatives?|alternatives"
+        },
+        {
+          "label": "unique attributes",
+          "re": "unique attributes?"
+        },
+        {
+          "label": "value",
+          "re": "value"
+        },
+        {
+          "label": "target customers",
+          "re": "target customers?|best-fit|ideal customer"
+        },
+        {
+          "label": "market category",
+          "re": "market category|category"
+        },
+        {
+          "label": "positioning statement",
+          "re": "positioning statement"
+        }
+      ],
+      "framework": [
+        {
+          "label": "five Dunford steps all present",
+          "all_re": ["alternative", "unique attribute", "value", "customer", "categor"]
+        }
+      ],
+      "traps": [
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "analytics/ab-design",
+      "title": "Shelf-label price test",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Crumbline lets bakeries print shelf labels. We want to test showing a 'baked today' time on the label against the current price-only label. The metric we care about is the share of each day's bake sold by closing. Today that share is 82% on average."
+        },
+        {
+          "label": "Key Inputs",
+          "value": "238 bakeries, 412 shops in total. Labels are printed per shop, so the test must be split by shop, not by customer. Shops range from 40 to 900 items baked a day."
+        }
+      ],
+      "required": [
+        {
+          "label": "hypothesis",
+          "re": "hypothesis"
+        },
+        {
+          "label": "primary metric",
+          "re": "primary metric"
+        },
+        {
+          "label": "guardrail metrics",
+          "re": "guardrail"
+        },
+        {
+          "label": "minimum detectable effect",
+          "re": "minimum detectable effect|\\bMDE\\b"
+        },
+        {
+          "label": "sample size",
+          "re": "sample size"
+        },
+        {
+          "label": "duration",
+          "re": "duration"
+        },
+        {
+          "label": "randomization unit",
+          "re": "randomi[sz]ation unit|unit of randomi[sz]ation|randomi[sz]e"
+        },
+        {
+          "label": "analysis plan",
+          "re": "analysis plan"
+        },
+        {
+          "label": "pitfalls",
+          "re": "novelty|simpson|pitfall"
+        }
+      ],
+      "framework": [
+        {
+          "label": "hypothesis in If/then/because form",
+          "re": "if [^\\n]{3,200}?then [^\\n]{3,200}?because"
+        }
+      ],
+      "traps": [
+        {
+          "label": "ICC or design effect given as a number without an assumption label in the same sentence",
+          "sentence_re": "(intra-?cluster|\\bICC\\b|design effect)[^.\\n]{0,80}\\d",
+          "unless_re": "assum|estimat|placeholder|TBD|to validate|illustrative|example"
+        },
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "specs/user-stories",
+      "title": "Shiftnest open-shift offers",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "When a shift opens, managers ring staff one by one. Shiftnest wants to offer open shifts to eligible staff in the app and let the first eligible person claim it."
+        },
+        {
+          "label": "Key Inputs",
+          "value": "Users: care workers, shift leads, registered managers. A claim must respect each worker's maximum weekly hours and required training. A claimed shift needs manager approval within 2 hours or it is offered again."
+        }
+      ],
+      "required": [
+        {
+          "label": "epics",
+          "re": "epic"
+        },
+        {
+          "label": "acceptance criteria",
+          "re": "acceptance criteria|given"
+        },
+        {
+          "label": "INVEST check",
+          "re": "invest"
+        }
+      ],
+      "framework": [
+        {
+          "label": "3+ stories in 'As a ..., I want ..., so that ...' form",
+          "count_re": "as an? [^\\n]{2,80}?,?\\s*I want[\\s\\S]{2,200}?so that",
+          "min": 3,
+          "note": "Allows the story to wrap across lines (widened after the run; the first version required one line)."
+        },
+        {
+          "label": "3+ Given/When/Then criteria",
+          "count_re": "given[^\\n]{2,200}",
+          "min": 3,
+          "also_re": "then"
+        }
+      ],
+      "traps": [
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "strategy/swot",
+      "title": "Pallet Pilot SWOT",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Pallet Pilot: 31 warehouses live, $744K ARR, team of 11, strong nightly re-slotting. No support for multi-site operators. Two large WMS vendors announced built-in slotting in their next releases."
+        },
+        {
+          "label": "Goals & Objectives",
+          "value": "Choose the two bets for next year."
+        }
+      ],
+      "required": [
+        {
+          "label": "strengths",
+          "re": "strengths"
+        },
+        {
+          "label": "weaknesses",
+          "re": "weaknesses"
+        },
+        {
+          "label": "opportunities",
+          "re": "opportunities"
+        },
+        {
+          "label": "threats",
+          "re": "threats"
+        }
+      ],
+      "framework": [
+        {
+          "label": "SO/WO/ST/WT strategies",
+          "all_re": [
+            "\\bSO\\b|S-O|strengths?[- /×x]+opportunit",
+            "\\bWO\\b|W-O|weakness(es)?[- /×x]+opportunit",
+            "\\bST\\b|S-T|strengths?[- /×x]+threat",
+            "\\bWT\\b|W-T|weakness(es)?[- /×x]+threat"
+          ]
+        },
+        {
+          "label": "top 3 strategic actions",
+          "re": "top 3|top three|three strategic|3 strategic"
+        }
+      ],
+      "traps": [
+        {
+          "label": "market share or penetration % with no market size in the input",
+          "re": "(penetrat|market share)[^.\\n]{0,60}\\d+(\\.\\d+)?\\s?%"
+        },
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    },
+    {
+      "key": "competitive/market-sizing",
+      "title": "Shiftnest market size",
+      "sections": [
+        {
+          "label": "Context & Background",
+          "value": "Shiftnest sells to care homes with 15 to 60 staff in one country. Average price is $310 per home per month. The national care regulator's public register lists 9,400 homes in that size band. In our sales calls, about 3 in 5 homes still run rotas in spreadsheets."
+        },
+        {
+          "label": "Goals & Objectives",
+          "value": "Size the opportunity for an investor update. Show every assumption."
+        }
+      ],
+      "required": [
+        {
+          "label": "TAM",
+          "re": "\\bTAM\\b"
+        },
+        {
+          "label": "SAM",
+          "re": "\\bSAM\\b"
+        },
+        {
+          "label": "SOM",
+          "re": "\\bSOM\\b"
+        },
+        {
+          "label": "assumptions",
+          "re": "assumption"
+        },
+        {
+          "label": "growth drivers",
+          "re": "growth driver|drivers"
+        },
+        {
+          "label": "market timing",
+          "re": "timing|why now"
+        }
+      ],
+      "framework": [
+        {
+          "label": "top-down and bottom-up both used",
+          "all_re": ["top-down|top down", "bottom-up|bottom up"]
+        }
+      ],
+      "traps": [
+        {
+          "label": "named outside source or report",
+          "re": "according to (?!(the |our )?(national |care |public )*(regulator|register|sales|CRM|input))|reports? (by|from)|\\bsurvey (by|from)|\\bstudy (by|from)|IBISWorld|Statista|Grand View|Gartner|Forrester|McKinsey|Mordor|industry report"
+        },
+        {
+          "label": "invented contact detail (email, phone or URL not in the input)",
+          "re": "[\\w.+-]+@[\\w-]+\\.[\\w.]+|https?://|www\\.|\\+?\\d[\\d -]{8,}\\d"
+        }
+      ]
+    }
+  ]
+}
