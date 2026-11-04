@@ -22,8 +22,15 @@ export function trapHits(output: string, inputText: string, traps: any[]) {
       for (const s of sentences(text)) {
         const m = s.match(new RegExp(t.re, 'i'));
         // A match that is copied from the input is not a miss.
+        // The phone pattern in the answer key also matches ISO dates (2026-11-21). The key is left
+        // as committed; date-shaped matches are counted separately and reported as a key flaw.
         if (m && !inputText.includes(m[0]))
-          hits.push({ trap: t.label, match: m[0], sentence: s.trim().slice(0, 300) });
+          hits.push({
+            trap: t.label,
+            match: m[0],
+            isoDate: /^\d{4}-\d{2}-\d{2}$/.test(m[0].trim()),
+            sentence: s.trim().slice(0, 300),
+          });
       }
     }
     if (t.sentence_re) {
@@ -49,10 +56,16 @@ for (const f of files) {
   all[f.split('/').pop()] = perFile;
 }
 for (const [f, per] of Object.entries(all)) {
-  const n = Object.values(per as any).reduce((a: number, h: any) => a + h.length, 0);
-  const mods = Object.values(per as any).filter((h: any) => h.length === 0).length;
-  console.log(`${f}: ${n} trap hits; ${mods}/${Object.keys(per as any).length} modules with none`);
+  const lists = Object.values(per as any) as any[][];
+  const real = (h: any[]) => h.filter((x) => !x.isoDate);
+  const total = lists.length;
+  console.log(
+    `${f}: ${lists.flat().length} trap hits as keyed (${lists.filter((h) => h.length === 0).length}/${total} modules with none); ` +
+      `${real(lists.flat()).length} after leaving out ISO dates (${lists.filter((h) => real(h).length === 0).length}/${total} modules with none)`
+  );
   for (const [k, hits] of Object.entries(per as any))
     for (const h of hits as any[])
-      console.log(`  ${k} [${h.trap}] ${h.match ?? ''} :: ${h.sentence}`);
+      console.log(
+        `  ${k} [${h.trap}]${h.isoDate ? ' (ISO date)' : ''} ${h.match ?? ''} :: ${h.sentence}`
+      );
 }
