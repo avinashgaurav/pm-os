@@ -233,6 +233,58 @@ CLI-reported cost for these two runs: $1.04 (rerun) + $0.26 (spot-check).
 - The shared prompt changes apply to all 81 module prompts. They were tried on only 10 modules (the graded set) plus 5 spot-checks run once each. The other 66 modules were not run at all.
 - The no-model test checks that each module gets the right prompt text, not that the model follows it.
 
+## Results on new cases (2026-11-04)
+
+Every number above comes from the same 10 Pawpath inputs I looked at while fixing the prompts. A prompt tuned on its test can look better than it is. So I wrote 10 new inputs the prompts were never tuned on and ran the same test on them.
+
+**The new set.** `evals/rubric/fixtures-new-cases.json`: the same 10 modules, with three new made-up products and companies. Crumbline (ordering software for independent bakeries, by Oakhollow Software), Shiftnest (rotas for small care homes, by Bramblegate) and Pallet Pilot (slotting software for small warehouses). No Pawpath wording is reused. Several inputs are built to tempt the weak spots found above:
+
+- an OKR quarter with exact dates (6 January to 28 March), where a model might call a cycle length "standard"
+- an A/B test that must be split by shop, with no clustering figure given
+- a market size with no outside data, inviting cited reports
+- a SWOT with no market size, inviting a market-share figure
+
+**Answers written first.** The required sections and framework checks are copied unchanged from `fixtures.json`, so they are the same 88 + 15 checks. I also added "traps": fixed text-pattern checks, same result every time, for the weak spots above and for invented emails, phone numbers or links. A trap that matches is a miss. All of this was committed in "Add new test cases and answer key, before any model call", written at 07:16 UTC. The first model call came at 07:21 UTC. (The commit was later rebased onto the #97 branch, which changed its id but not its author time.)
+
+**How it was run.** Prompts as in the issue #97 fix above; nothing in the app changed for this test. Same CLI path, same writing model (`claude-sonnet-4-6`). The figures were graded by the same AI grader (`claude-opus-5-5`), another AI model, not a person. I ran the set 3 times: 59 CLI calls (one run had a module with no new figures, so no grader call), CLI-reported cost $3.46. Results: `evals/rubric/results/2026-11-04-claude-cli-new-cases-run1.json` to `-run3.json`. Traps: `bun --no-install evals/rubric/harness/trap-check.ts evals/rubric/fixtures-new-cases.json <results files>`.
+
+| What was measured                                     | Tuned inputs, round 2 (1 run) | Tuned inputs, after #97 (1 run) | New inputs, 3 runs              |
+| ----------------------------------------------------- | ----------------------------- | ------------------------------- | ------------------------------- |
+| Required-section checks passed                        | 87 / 88                       | 87 / 88                         | 87, 87, 87 / 88                 |
+| Modules with every required section (automatic check) | 9 / 10                        | 9 / 10                          | 9, 9, 9 / 10                    |
+| Framework checks passed                               | 14 / 15                       | 15 / 15                         | 15, 15, 15 / 15                 |
+| Sentences with a figure not in the input              | 82                            | 90                              | 83, 70, 80                      |
+| **Figures stated as fact with no source** (AI grader) | **2**                         | **3**                           | **0, 3, 2** (5 in 30 documents) |
+| **Modules with no such figure**                       | **8 / 10**                    | **9 / 10**                      | **10, 8, 8 / 10**               |
+| **Outputs longer than the 4,000-token limit**         | **0 / 10**                    | **0 / 10**                      | **0, 0, 0 / 10**                |
+| Visible output tokens, shortest to longest            | 2,123 to 2,852                | 2,187 to 2,938                  | 2,103 to 2,903                  |
+| Last heading is Next Steps                            | 10 / 10                       | 10 / 10                         | 10, 10, 10 / 10                 |
+| Trap matches (new set only)                           | n/a                           | n/a                             | 0, 0, 0 (see below)             |
+
+On new inputs the results hold up: about the same rate of unsourced figures (5 in 30 documents, against 5 in 20 on the tuned inputs across round 2 and the #97 rerun), nothing over the length limit, and every framework followed. The one missing section is the same in every run.
+
+**Misses on the new inputs:**
+
+1. **User stories never mention INVEST (3 of 3 runs).** The "INVEST check" section check fails every time. Epics, stories and Given/When/Then criteria are all there. The same miss appeared on the tuned inputs after the #97 fix, and not in round 2, so the #97 prompt change may have caused it. Not fixed here: this branch does not change prompts.
+2. **Figures stated as fact (5 sentences across 3 runs):**
+   - OKRs, run 3: the summary calls the input's 94% net revenue retention "a meaningful gap from the 100%+ NRR that signals true expansion-led growth". A rule of thumb stated as fact, the same kind of miss as the old "standard 13-week cycle"; the new rule names "standard", "typical" and "industry", and this sentence uses none of them.
+   - Risk register, run 3: "Night shifts on the last Sunday of March will be 23 hours long." Made up: the input never mentions the clock change.
+   - User stories, run 2: "all currently eligible workers receive an in-app notification within 60 seconds", a time limit with no target label.
+   - Market sizing, run 2 (2 sentences): "New ARR added/month: 6 × $3,720" and the year-one total built on it. A close call: the line just above says "Assumption: 40 demos/month; 15% close rate (both illustrative)", and 40 × 15% = 6. The grader sees each line on its own. The AI agent that ran this test flagged this; it is for the author to confirm, not a human read.
+3. **Traps: no real match in any run.** No cycle length called standard, no unlabelled clustering figure in the A/B design, no named outside source in market sizing, no market-share figure in the SWOT, no invented email, phone or link. One flaw in the answer key: its phone-number pattern also matches dates written as 2026-11-21. The PRD used such dates in every run (8, 12 and 9 matches). I left the key as committed. `trap-check.ts` counts date matches separately, and none of the matches was a phone number.
+
+**Other notes, outside the checklist:**
+
+- The JTBD named a real regulator that was not in the input in 2 of 3 runs. The input says only "a regulator".
+- Some documents used the date the CLI passes to the model (for example "Assumption: today is 4 November 2026"). The live app does not send a date. Unlike the tuned risk register, none of these was graded as an unsourced fact.
+
+**Limits.**
+
+- 3 runs on new inputs, and 1 run for each tuned column, so differences of 1 or 2 figures are within run-to-run noise. The new set ranged from 0 to 3 across its runs.
+- The figures were graded by an AI, not a person.
+- The same AI agent wrote the #97 prompt fix and these new inputs, so they may share blind spots.
+- Still the CLI path, not the live app's API path with `maxTokens: 4000` and temperature.
+
 ## Speed and usage (first run)
 
 |                               | Calls | p50 (median) | p90 (near slowest) | Slowest |
