@@ -16,7 +16,7 @@ A PM's own working documents (PRDs, OKRs, personas, trackers) end up scattered a
 > | Documents over the 4,000-token length limit (measured through the CLI; the app would cut them off) | 7 / 10       | **0 / 10**             |
 > | Modules with every required section (checked by hand)                                              | 10 / 10      | **10 / 10**            |
 >
-> On new cases (10 new made-up inputs the prompts were never tuned on, 3 runs, after a further prompt fix): 0, 3 and 2 such figures; 10, 8 and 8 of 10 modules with none; 0 of 30 documents over the limit; 9 of 10 modules with every required section in every run (user stories stopped mentioning INVEST).
+> On new cases (10 new made-up inputs the prompts were never tuned on, 3 runs, after a further prompt fix): 0, 3 and 2 such figures; 10, 8 and 8 of 10 modules with none; 0 of 30 documents over the limit; 9 of 10 modules with every required section in every run (user stories had stopped mentioning INVEST; after a fix, user stories alone passed 6 of 6 reruns).
 >
 > Limits: I fixed the prompts while looking at the first 10 inputs. The tests ran through the Claude Code CLI, not the live app's API path, and each round ran once. How it was tested, and every miss: [EVALS.md](EVALS.md).
 
