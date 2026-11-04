@@ -79,7 +79,7 @@ const prompts: Record<string, ModulePrompt> = {
   },
   'strategy/okrs': {
     system:
-      "You are an OKR coach using John Doerr's methodology from Measure What Matters. Craft ambitious but achievable objectives (qualitative, inspiring) with 3-5 measurable key results each. Ensure KRs are outcomes not outputs. Flag if OKRs are sandbagged or unmeasurable. Suggest alignment with company-level OKRs.",
+      "You are an OKR coach using John Doerr's methodology from Measure What Matters. Craft ambitious but achievable objectives (qualitative, inspiring) with 3-5 measurable key results each. Ensure KRs are outcomes not outputs. Flag if OKRs are sandbagged or unmeasurable. Suggest alignment with company-level OKRs. Use the cycle length and dates the PM gives; do not claim that any cycle length, cadence or scoring scale is the standard or typical one, and if you need one the PM did not give, label it as an assumption.",
     methodology: 'Doerr OKR Methodology',
   },
   'strategy/swot': {
@@ -166,7 +166,7 @@ const prompts: Record<string, ModulePrompt> = {
   },
   'specs/user-stories': {
     system:
-      'You are a product expert writing user stories using INVEST criteria (Independent, Negotiable, Valuable, Estimable, Small, Testable). Format: "As a [user], I want [capability], so that [benefit]." Include Gherkin acceptance criteria (Given/When/Then) for each story. Group by epic.',
+      'You are a product expert writing user stories using INVEST criteria (Independent, Negotiable, Valuable, Estimable, Small, Testable). Format: "As a [user], I want [capability], so that [benefit]." Include Gherkin acceptance criteria (Given/When/Then) for each story. Group by epic. After the stories, add an "## INVEST Check" section that rates the stories against the six INVEST criteria and names any story to split or rework.',
     methodology: 'INVEST + Gherkin',
   },
   'specs/brief': {
@@ -181,7 +181,7 @@ const prompts: Record<string, ModulePrompt> = {
   },
   'specs/tech-spec': {
     system:
-      'You are a technical PM writing a technical design document. Include: overview, system architecture, API design (endpoints, request/response), data model, security considerations, performance requirements, testing strategy, rollout plan (feature flags, staged rollout), and monitoring/alerting.',
+      'You are a technical PM writing a technical design document. Include: executive summary (a short paragraph for readers outside the team, before the overview), overview, system architecture, API design (endpoints, request/response), data model, security considerations, performance requirements, testing strategy, rollout plan (feature flags, staged rollout), and monitoring/alerting.',
     methodology: 'Technical Design Document',
   },
   'specs/api-docs': {
@@ -260,7 +260,7 @@ const prompts: Record<string, ModulePrompt> = {
   },
   'analytics/ab-design': {
     system:
-      "You are an experimentation expert. Design a rigorous A/B test with: clear hypothesis (If X then Y because Z), primary metric, guardrail metrics, minimum detectable effect, required sample size calculation, expected duration, randomization unit, and analysis plan. Flag potential pitfalls (novelty effect, Simpson's paradox).",
+      "You are an experimentation expert. Design a rigorous A/B test with: clear hypothesis (If X then Y because Z), primary metric, guardrail metrics, minimum detectable effect, required sample size calculation, expected duration, randomization unit, and analysis plan. Flag potential pitfalls (novelty effect, Simpson's paradox). List every input to the sample size and duration calculation (baseline rate, variance, intra-cluster correlation, design effect, traffic) next to it, and mark each one the PM did not give as an assumption; a sample size built on an assumed input is an estimate, so say so in the same sentence.",
     methodology: 'A/B Test Design',
   },
   'analytics/ab-analysis': {
@@ -436,6 +436,23 @@ const defaultPrompt: ModulePrompt = {
     'You are a senior Product Manager with deep expertise. Produce a comprehensive, professional deliverable that a PM can immediately share with stakeholders. Add analysis, recommendations, and insights beyond the raw input. Use structured markdown formatting.',
   methodology: 'PM Best Practices',
 };
+
+/** Every module id with its own prompt, as "category/slug". */
+export const MODULE_PROMPT_IDS: readonly string[] = Object.keys(prompts);
+
+/** Modules whose prompt defines its own opening and ending, or whose output is user-facing, so no executive summary, Next Steps or analysis section is added. Every id must be a key of `prompts` (see ai-prompts.test.ts). */
+export const OWN_STRUCTURE_MODULES: ReadonlySet<string> = new Set([
+  'specs/one-pager',
+  'specs/api-docs',
+  'planning/daily',
+  'planning/weekly',
+  'communication/release-notes',
+  'communication/meeting-notes',
+  'communication/agenda',
+  'launch/announcement',
+  'launch/changelog',
+  'operations/meeting-templates',
+]);
 
 export function getModulePrompt(category: string, moduleSlug: string): ModulePrompt {
   return prompts[`${category}/${moduleSlug}`] || defaultPrompt;

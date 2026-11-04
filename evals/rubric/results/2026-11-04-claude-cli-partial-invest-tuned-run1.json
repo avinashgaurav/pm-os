@@ -1,0 +1,153 @@
+{
+  "method": "Claude Code CLI (claude -p) with the app's own buildModulePrompt output; not the production API path",
+  "summary": {
+    "started": "2026-11-04T07:51:32.563Z",
+    "rubricSha256": "8d0e1374721265377fb9eb692201236ac4a2adb072cc17bdfd4fad2353bf6f73",
+    "fixturesFile": "rubric/fixtures.json",
+    "wallMs": 98301,
+    "generationModel": "claude-sonnet-4-6",
+    "judgeModel": "claude-opus-5-5",
+    "modelsAnswered": [
+      "claude-sonnet-4-6",
+      "claude-opus-5-5"
+    ],
+    "cliCalls": 2,
+    "cliErrors": 0,
+    "generationLatencyMs": {
+      "n": 1,
+      "p50": 94531,
+      "p90": 94531,
+      "max": 94531
+    },
+    "judgeLatencyMs": {
+      "n": 1,
+      "p50": 3766,
+      "p90": 3766,
+      "max": 3766
+    },
+    "usageTotals": {
+      "input": 2886,
+      "output": 5280
+    },
+    "modules": 1,
+    "generated": 1,
+    "requiredSectionsAllPresent": 1,
+    "requiredSectionChecks": {
+      "passed": 6,
+      "total": 6
+    },
+    "frameworkFollowed": 1,
+    "frameworkChecks": {
+      "passed": 2,
+      "total": 2
+    },
+    "sentencesWithNewFigures": 1,
+    "judgeVerdicts": {
+      "LABELLED": 1
+    },
+    "modulesWithNoUnsourcedFacts": 1,
+    "modulesOverProdMaxTokens": [],
+    "errors": []
+  },
+  "results": [
+    {
+      "key": "specs/user-stories",
+      "model": [
+        "claude-sonnet-4-6"
+      ],
+      "ms": 94531,
+      "outputTokensVisible": 2732,
+      "chars": 9560,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "epics",
+          "ok": true
+        },
+        {
+          "label": "acceptance criteria",
+          "ok": true
+        },
+        {
+          "label": "INVEST check",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "3+ stories in 'As a ..., I want ..., so that ...' form",
+          "ok": true
+        },
+        {
+          "label": "3+ Given/When/Then criteria",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 1,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 30-second figure is explicitly marked as '[Target: ≤30 seconds]', which presents it as a proposed performance target, not an established fact.",
+          "sentence": "Then the system queries the waitlist within [Target: ≤30 seconds] for the top-ranked owner"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Pawpath Waitlist — User Stories\n\n## Executive Summary\n\nPawpath is replacing a manual, phone-based paper waitlist with an automated SMS offer system for veterinary clinic appointments. When a slot is cancelled, the system identifies the first matching pet owner, sends an SMS offer, and holds the slot exclusively for **15 minutes** (as specified by the PM). Three user groups are in scope: pet owners, front-desk staff, and clinic managers. This document provides eight user stories across five epics, includes expert gap analysis, and flags two stories that need PM input before they can be estimated reliably.\n\n---\n\n## Expert Gap Analysis\n\nBefore estimation, the PM should resolve these open questions:\n\n- **Matching criteria undefined:** \"First matching owner\" is not specified. Does matching filter on appointment type (wellness vs. urgent), species, preferred provider, or day-of-week? This blocks Stories 2.1 and 2.2.\n- **Waitlist ranking algorithm:** Is ranking strictly FIFO by enrollment time, or is there a priority score (e.g., longest wait, medical urgency)?\n- **Owner enrollment channel:** How do owners join the waitlist — in-clinic, via web booking, SMS keyword, or all three?\n- **Non-responder policy:** What happens to owners who repeatedly let the 15-minute hold expire? Assumption: flag for staff review (see Story 3.3) — PM to confirm.\n- **SMS compliance:** TCPA opt-in consent flow is not described. This is a legal prerequisite and must be scoped as a separate story.\n- **Time-of-day restrictions:** Assumption: SMS offers are only sent between [Target: 8 AM–8 PM] local clinic time — PM to confirm.\n- **Multi-pet households:** An owner with two pets may have different preferences per pet. Story 1.1 must account for this.\n- **No-match scenario:** If a freed slot has no waitlist match, the system must surface the slot to front-desk staff. Confirm fallback behavior.\n\n---\n\n## Epic 1: Waitlist Enrollment\n\n### Story 1.1 — Owner Self-Enrollment\n\n**As a pet owner,** I want to join a digital waitlist for an earlier appointment, **so that** I can get a sooner slot without repeatedly calling the clinic.\n\n```gherkin\nGiven I have a confirmed future appointment at a Pawpath clinic\nWhen I request to join the waitlist and provide my SMS-consented phone number and preferences\n  (appointment type, pet name, acceptable date/time window)\nThen I am added to the waitlist ranked by enrollment timestamp\nAnd I receive an SMS confirming my position and listed preferences\nAnd I can reply STOP at any time to opt out\n```\n\n### Story 1.2 — Front-Desk Enrollment on Owner's Behalf\n\n**As a front-desk staff member,** I want to add a pet owner to the waitlist manually, **so that** owners who call in are captured without needing a digital account.\n\n```gherkin\nGiven a pet owner calls requesting an earlier slot\nWhen I look up their record and select \"Add to Waitlist\" with their preferences\nThen they are added and ranked after any existing same-timestamp entries\nAnd an SMS is sent to the owner confirming their enrollment and opt-out instructions\n```\n\n---\n\n## Epic 2: Automated Slot Matching & Offer\n\n### Story 2.1 — Cancellation Trigger & Match\n\n**As a front-desk staff member,** I want the system to automatically find the first matching waitlist owner when I cancel an appointment, **so that** I never have to search the paper list.\n\n```gherkin\nGiven an appointment is marked Cancelled in Pawpath\nWhen the cancellation is saved\nThen the system queries the waitlist within [Target: ≤30 seconds] for the top-ranked owner\n  whose preferences match the freed slot's date, time window, appointment type, and species\nAnd the matched owner's record is flagged as \"Offer Pending\"\nAnd if no match exists, front-desk staff receive an alert to handle the slot manually\n```\n\n> **Note:** Matching logic (Story 2.1) cannot be estimated until the PM defines matching criteria — see Gap Analysis.\n\n### Story 2.2 — 15-Minute SMS Slot Offer\n\n**As a pet owner on the waitlist,** I want to receive an SMS when a matching slot opens, **so that** I can claim it instantly without calling the clinic.\n\n```gherkin\nGiven a freed slot has been matched to me\nWhen the system sends the offer SMS\nThen the SMS includes: clinic name, appointment date, time, pet name, and reply instructions (YES to accept / NO to decline)\nAnd the slot is held exclusively for me for exactly 15 minutes from SMS send timestamp\nAnd if 15 minutes pass with no reply, the hold is released and the cascade begins (see Story 3.3)\n```\n\n---\n\n## Epic 3: Slot Acceptance & Cascade\n\n### Story 3.1 — Accept via SMS Reply\n\n**As a pet owner,** I want to accept a slot by replying YES to the SMS, **so that** my booking is confirmed without navigating an app.\n\n```gherkin\nGiven I receive a slot offer SMS and the 15-minute hold is active\nWhen I reply YES\nThen a confirmed appointment is created (or my existing appointment updated)\nAnd I receive a confirmation SMS with full appointment details\nAnd front-desk staff receive an in-system notification that the slot was auto-filled\nAnd the slot is removed from the available pool\n```\n\n### Story 3.2 — Decline Without Losing Waitlist Position\n\n**As a pet owner,** I want to decline a slot offer and remain on the waitlist, **so that** an unsuitable time does not cost me future opportunities.\n\n```gherkin\nGiven I receive a slot offer SMS\nWhen I reply NO within 15 minutes\nThen my waitlist position is preserved\nAnd I receive an SMS confirming I remain on the list\nAnd the system immediately proceeds to the next matching owner\n```\n\n### Story 3.3 — Hold Expiry & Automated Cascade\n\n**As a front-desk staff member,** I want the system to cascade to the next matching owner automatically when a hold expires, **so that** no freed slot sits idle.\n\n```gherkin\nGiven a slot offer SMS was sent and 15 minutes have elapsed with no reply\nWhen the hold expires\nThen the slot is released\nAnd the next matching waitlist owner receives a fresh SMS offer with a new 15-minute hold\nAnd the non-responding owner's record is flagged for staff review\n  (Assumption: PM to confirm whether repeated non-response triggers automatic removal)\n```\n\n---\n\n## Epic 4: Front-Desk Waitlist Management\n\n### Story 4.1 — Real-Time Waitlist Dashboard\n\n**As a front-desk staff member,** I want to view and manage the waitlist in real time, **so that** I can override automated decisions for urgent clinical cases.\n\n```gherkin\nGiven I am logged into the Pawpath staff portal\nWhen I open the Waitlist screen\nThen I see a ranked list with: owner name, pet name, enrollment time, preferences, and status\n  (Waiting / Offer Sent / Filled / Expired)\nAnd I can promote, remove, or pause any entry, with each action logged under my staff ID\n```\n\n---\n\n## Epic 5: Clinic Manager Oversight\n\n### Story 5.1 — Waitlist Fill-Rate Report\n\n**As a clinic manager,** I want a report on waitlist fill rates over a chosen date range, **so that** I can measure how effectively the system is recapturing cancelled slots.\n\n```gherkin\nGiven I am in the Pawpath manager portal\nWhen I select a date range and run the Waitlist Report\nThen I see: total cancelled slots, slots matched, SMS offers sent, accepted, cascaded, and unfilled\nAnd I can export results as CSV\n```\n\n---\n\n## INVEST Check\n\n| Story | I | N | V | E | S | T | Rating | Action |\n|---|---|---|---|---|---|---|---|---|\n| 1.1 Owner Enrollment | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ | **Good** | Multi-pet handling may need a child story |\n| 1.2 Front-Desk Enrollment | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Strong** | — |\n| 2.1 Cancellation Trigger | ⚠️ | ✅ | ✅ | ❌ | ⚠️ | ⚠️ | **Rework** | **Cannot estimate** without defined matching criteria; split matching logic into its own story |\n| 2.2 SMS Offer | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Strong** | — |\n| 3.1 Accept via SMS | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Strong** | — |\n| 3.2 Decline Without Penalty | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Strong** | — |\n| 3.3 Hold Expiry & Cascade | ✅ | ✅ | ✅ | ⚠️ | ✅ | ⚠️ | **Split** | Non-responder removal policy is a separate, negotiable story |\n| 4.1 Waitlist Dashboard | ✅ | ✅ | ✅ | ⚠️ | ⚠️ | ✅ | **Split** | Manual override and display are independently shippable; split into 4.1a (view) and 4.1b (override) |\n| 5.1 Fill-Rate Report | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Strong** | — |\n\n**Stories requiring immediate action before sprint planning:**\n- **Story 2.1** — Rework after PM defines matching criteria; create a dedicated \"Matching Algorithm\" story.\n- **Story 3.3** — Extract non-responder removal policy into a separate story with its own acceptance criteria.\n- **Story 4.1** — Split into view-only (4.1a) and manual-override (4.1b) for independent delivery.\n- **Missing story** — Add an **SMS Opt-In Consent** story (legal prerequisite for all SMS epics).\n\n---\n\n## Next Steps\n\n1. **Define matching criteria** (appointment type, species, provider, time window) — blocks Story 2.1 estimation; schedule a 30-minute PM + clinical lead session this week.\n2. **Add SMS Opt-In Consent story** — required before any SMS epic can be built; involves legal review of consent language.\n3. **Confirm non-responder policy** — PM to decide: how many missed holds before auto-removal? Update Story 3.3 accordingly.\n4. **Split Stories 2.1, 3.3, and 4.1** as flagged above, then re-point in backlog refinement.\n5. **Validate 15-minute hold duration** with front-desk staff — this is PM-specified but should be tested in a usability session before engineering commits to it.\n6. **Scope multi-clinic and multi-pet scenarios** — confirm whether v1 covers single-clinic, single-pet only to keep the initial release small and testable."
+    }
+  ],
+  "calls": [
+    {
+      "label": "specs/user-stories:gen",
+      "ms": 94531,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Pawpath Waitlist — User Stories\n\n## Executive Summary\n\nPawpath is replacing a manual, phone-based paper waitlist with an automated SMS offer system for veterinary clinic appointments. When a slot is cancelled, the system identifies the first matching pet owner, sends an SMS offer, and holds the sl",
+      "models": [
+        "claude-sonnet-4-6"
+      ],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 5156,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1258,
+        "thinking_tokens": 2424
+      },
+      "cost_usd_list": 0.084897,
+      "num_turns": 1
+    },
+    {
+      "label": "specs/user-stories:judge",
+      "ms": 3766,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 30-second figure is explicitly marked as '[Target: ≤30 seconds]', which presents it as a proposed performance target, not an established fact.\"}]}",
+      "models": [
+        "claude-opus-5-5"
+      ],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 124,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 752,
+        "thinking_tokens": 0
+      },
+      "cost_usd_list": 0.0086782,
+      "num_turns": 2
+    }
+  ]
+}
