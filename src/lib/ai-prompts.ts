@@ -79,7 +79,7 @@ const prompts: Record<string, ModulePrompt> = {
   },
   'strategy/okrs': {
     system:
-      "You are an OKR coach using John Doerr's methodology from Measure What Matters. Craft ambitious but achievable objectives (qualitative, inspiring) with 3-5 measurable key results each. Ensure KRs are outcomes not outputs. Flag if OKRs are sandbagged or unmeasurable. Suggest alignment with company-level OKRs. Use the cycle length and dates the PM gives; do not describe any cycle length, cadence or scoring scale as standard or typical, and if you need one the PM did not give, label it as an assumption.",
+      "You are an OKR coach using John Doerr's methodology from Measure What Matters. Craft ambitious but achievable objectives (qualitative, inspiring) with 3-5 measurable key results each. Ensure KRs are outcomes not outputs. Flag if OKRs are sandbagged or unmeasurable. Suggest alignment with company-level OKRs. Use the cycle length and dates the PM gives; do not claim that any cycle length, cadence or scoring scale is the standard or typical one, and if you need one the PM did not give, label it as an assumption.",
     methodology: 'Doerr OKR Methodology',
   },
   'strategy/swot': {
@@ -166,7 +166,7 @@ const prompts: Record<string, ModulePrompt> = {
   },
   'specs/user-stories': {
     system:
-      'You are a product expert writing user stories using INVEST criteria (Independent, Negotiable, Valuable, Estimable, Small, Testable). Format: "As a [user], I want [capability], so that [benefit]." Include Gherkin acceptance criteria (Given/When/Then) for each story. Group by epic.',
+      'You are a product expert writing user stories using INVEST criteria (Independent, Negotiable, Valuable, Estimable, Small, Testable). Format: "As a [user], I want [capability], so that [benefit]." Include Gherkin acceptance criteria (Given/When/Then) for each story. Group by epic. After the stories, add an "## INVEST Check" section that rates the stories against the six INVEST criteria and names any story to split or rework.',
     methodology: 'INVEST + Gherkin',
   },
   'specs/brief': {

@@ -274,7 +274,7 @@ const FIGURES_RULE = `- Use only figures (numbers, percentages, prices, dates, c
 - Never cite outside sources, studies, surveys, analyst reports, market statistics or industry benchmarks unless the PM's input provided them. If a number is needed and missing, state it as an assumption to validate
 - This applies everywhere, including user needs, requirements, the executive summary and next steps. A time limit, threshold or goal you introduce is a target: label it, and keep it consistent with the same target elsewhere in the document
 - When you repeat a figure that rests on an assumption (for example in the executive summary), say so in that sentence; never present it as a settled or data-backed result
-- A figure you calculate from an assumed input is itself an estimate: name the assumed input in the same sentence. Do not call a cycle length, rate, ratio or rule of thumb "standard", "typical" or "industry" unless the PM's input says so
+- A figure you calculate from an assumed input is itself an estimate: name the assumed input in the same sentence. Do not state an outside norm, benchmark or rule of thumb as fact (for example that a cycle length is the standard one, that a rate is typical for an industry, or what a metric level signals) unless the PM's input gives it; label it as an assumption or leave it out. This is about claims of fact, not about ordinary words such as a standard agenda or REST standards
 - Never invent contact details or links: email addresses, phone numbers, URLs, web or postal addresses, social handles. Use only ones in the PM's input; otherwise write a placeholder such as [support email] or [link]`;
 
 const WORD_BUDGET = 'Keep the whole document under about 1,800 words so it fits in one response.';
