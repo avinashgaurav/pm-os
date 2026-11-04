@@ -246,26 +246,26 @@ Every number above comes from the same 10 Pawpath inputs I looked at while fixin
 
 **Answers written first.** The required sections and framework checks are copied unchanged from `fixtures.json`, so they are the same 88 + 15 checks. I also added "traps": fixed text-pattern checks, same result every time, for the weak spots above and for invented emails, phone numbers or links. A trap that matches is a miss. All of this was committed in "Add new test cases and answer key, before any model call", written at 07:16 UTC. The first model call came at 07:21 UTC. (The commit was later rebased onto the #97 branch, which changed its id but not its author time.)
 
-**How it was run.** Prompts as in the issue #97 fix above; nothing in the app changed for this test. Same CLI path, same writing model (`claude-sonnet-4-6`). The figures were graded by the same AI grader (`claude-opus-5-5`), another AI model, not a person. I ran the set 3 times: 59 CLI calls (one run had a module with no new figures, so no grader call), CLI-reported cost $3.46. Results: `evals/rubric/results/2026-11-04-claude-cli-new-cases-run1.json` to `-run3.json`. Traps: `bun --no-install evals/rubric/harness/trap-check.ts evals/rubric/fixtures-new-cases.json <results files>`.
+**How it was run.** Measured with the #97 prompt before the INVEST and "standard" rewording (the first #97 commit). The later INVEST fix was checked on user stories only; see the end of this section. Nothing in the app changed for this test. Same CLI path, same writing model (`claude-sonnet-4-6`). The figures were graded by the same AI grader (`claude-opus-5-5`), another AI model, not a person. I ran the set 3 times: 59 CLI calls (one run had a module with no new figures, so no grader call), CLI-reported cost $3.46. Results: `evals/rubric/results/2026-11-04-claude-cli-new-cases-run1.json` to `-run3.json`. Traps: `bun --no-install evals/rubric/harness/trap-check.ts evals/rubric/fixtures-new-cases.json <results files>`.
 
-| What was measured                                     | Tuned inputs, round 2 (1 run) | Tuned inputs, after #97 (1 run) | New inputs, 3 runs              |
-| ----------------------------------------------------- | ----------------------------- | ------------------------------- | ------------------------------- |
-| Required-section checks passed                        | 87 / 88                       | 87 / 88                         | 87, 87, 87 / 88                 |
-| Modules with every required section (automatic check) | 9 / 10                        | 9 / 10                          | 9, 9, 9 / 10                    |
-| Framework checks passed                               | 14 / 15                       | 15 / 15                         | 15, 15, 15 / 15                 |
-| Sentences with a figure not in the input              | 82                            | 90                              | 83, 70, 80                      |
-| **Figures stated as fact with no source** (AI grader) | **2**                         | **3**                           | **0, 3, 2** (5 in 30 documents) |
-| **Modules with no such figure**                       | **8 / 10**                    | **9 / 10**                      | **10, 8, 8 / 10**               |
-| **Outputs longer than the 4,000-token limit**         | **0 / 10**                    | **0 / 10**                      | **0, 0, 0 / 10**                |
-| Visible output tokens, shortest to longest            | 2,123 to 2,852                | 2,187 to 2,938                  | 2,103 to 2,903                  |
-| Last heading is Next Steps                            | 10 / 10                       | 10 / 10                         | 10, 10, 10 / 10                 |
-| Trap matches (new set only)                           | n/a                           | n/a                             | 0, 0, 0 (see below)             |
+| What was measured                                     | Tuned inputs, round 2 (1 run) | Tuned inputs, after #97 (1 run) | New inputs, 3 runs                                                                          |
+| ----------------------------------------------------- | ----------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------- |
+| Required-section checks passed                        | 87 / 88                       | 87 / 88                         | 87, 87, 87 / 88                                                                             |
+| Modules with every required section (automatic check) | 9 / 10                        | 9 / 10                          | 9, 9, 9 / 10                                                                                |
+| Framework checks passed                               | 14 / 15                       | 15 / 15                         | 15, 15, 15 / 15                                                                             |
+| Sentences with a figure not in the input              | 82                            | 90                              | 83, 70, 80                                                                                  |
+| **Figures stated as fact with no source** (AI grader) | **2**                         | **3**                           | **0, 3, 2** (5 in 30 documents)                                                             |
+| **Modules with no such figure**                       | **8 / 10**                    | **9 / 10**                      | **10, 8, 8 / 10**                                                                           |
+| **Outputs longer than the 4,000-token limit**         | **0 / 10**                    | **0 / 10**                      | **0, 0, 0 / 10**                                                                            |
+| Visible output tokens, shortest to longest            | 2,123 to 2,852                | 2,187 to 2,938                  | 2,103 to 2,903                                                                              |
+| Last heading is Next Steps                            | 10 / 10                       | 10 / 10                         | 10, 10, 10 / 10                                                                             |
+| Trap matches (new set only)                           | n/a                           | n/a                             | 0 after excluding ISO-date matches (8, 12 and 9 as keyed; date filter added after the runs) |
 
 On new inputs the results hold up: about the same rate of unsourced figures (5 in 30 documents, against 5 in 20 on the tuned inputs across round 2 and the #97 rerun), nothing over the length limit, and every framework followed. The one missing section is the same in every run.
 
 **Misses on the new inputs:**
 
-1. **User stories never mention INVEST (3 of 3 runs).** The "INVEST check" section check fails every time. Epics, stories and Given/When/Then criteria are all there. The same miss appeared on the tuned inputs after the #97 fix, and not in round 2, so the #97 prompt change may have caused it. Not fixed here: this branch does not change prompts.
+1. **User stories never mention INVEST (3 of 3 runs).** The "INVEST check" section check fails every time. Epics, stories and Given/When/Then criteria are all there. The same miss appeared on the tuned inputs after the #97 fix, and not in round 2, so the #97 prompt change most likely caused it. It is fixed in #108 by asking for a closing "## INVEST Check" section. After that fix I reran user stories alone, 3 times on this new input: the INVEST check passed 3 of 3 (and 3 of 3 on the tuned input). Results: `evals/rubric/results/2026-11-04-claude-cli-partial-invest-new-run1.json` to `-run3.json`.
 2. **Figures stated as fact (5 sentences across 3 runs):**
    - OKRs, run 3: the summary calls the input's 94% net revenue retention "a meaningful gap from the 100%+ NRR that signals true expansion-led growth". A rule of thumb stated as fact, the same kind of miss as the old "standard 13-week cycle"; the new rule names "standard", "typical" and "industry", and this sentence uses none of them.
    - Risk register, run 3: "Night shifts on the last Sunday of March will be 23 hours long." Made up: the input never mentions the clock change.
@@ -281,7 +281,8 @@ On new inputs the results hold up: about the same rate of unsourced figures (5 i
 **Limits.**
 
 - 3 runs on new inputs, and 1 run for each tuned column, so differences of 1 or 2 figures are within run-to-run noise. The new set ranged from 0 to 3 across its runs.
-- The figures were graded by an AI, not a person.
+- The figures were graded by an AI, not a person. The 5 unsourced-figure judgements come from that one AI grader, with no human spot-check.
+- These numbers are for the first #97 prompt. The INVEST and "standard" rewording came after; only user stories were rerun on it.
 - The same AI agent wrote the #97 prompt fix and these new inputs, so they may share blind spots.
 - Still the CLI path, not the live app's API path with `maxTokens: 4000` and temperature.
 
