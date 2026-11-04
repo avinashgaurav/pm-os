@@ -1,0 +1,144 @@
+{
+  "method": "Claude Code CLI (claude -p) with the app's own buildModulePrompt output; not the production API path",
+  "summary": {
+    "started": "2026-11-04T07:51:32.582Z",
+    "rubricSha256": "e280a38586424325ad3a354ac7db37808bf19b37be3030e9f9f1cfc429bb4960",
+    "fixturesFile": "rubric/fixtures-new-cases.json",
+    "wallMs": 123963,
+    "generationModel": "claude-sonnet-4-6",
+    "judgeModel": "claude-opus-5-5",
+    "modelsAnswered": ["claude-sonnet-4-6", "claude-opus-5-5"],
+    "cliCalls": 2,
+    "cliErrors": 0,
+    "generationLatencyMs": {
+      "n": 1,
+      "p50": 120447,
+      "p90": 120447,
+      "max": 120447
+    },
+    "judgeLatencyMs": {
+      "n": 1,
+      "p50": 3509,
+      "p90": 3509,
+      "max": 3509
+    },
+    "usageTotals": {
+      "input": 2911,
+      "output": 6919
+    },
+    "modules": 1,
+    "generated": 1,
+    "requiredSectionsAllPresent": 1,
+    "requiredSectionChecks": {
+      "passed": 6,
+      "total": 6
+    },
+    "frameworkFollowed": 1,
+    "frameworkChecks": {
+      "passed": 2,
+      "total": 2
+    },
+    "sentencesWithNewFigures": 1,
+    "judgeVerdicts": {
+      "LABELLED": 1
+    },
+    "modulesWithNoUnsourcedFacts": 1,
+    "modulesOverProdMaxTokens": [],
+    "errors": []
+  },
+  "results": [
+    {
+      "key": "specs/user-stories",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 120447,
+      "outputTokensVisible": 2704,
+      "chars": 10048,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "epics",
+          "ok": true
+        },
+        {
+          "label": "acceptance criteria",
+          "ok": true
+        },
+        {
+          "label": "INVEST check",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "3+ stories in 'As a ..., I want ..., so that ...' form",
+          "ok": true
+        },
+        {
+          "label": "3+ Given/When/Then criteria",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 1,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 60-second figure is explicitly marked as a target and an assumption to validate.",
+          "sentence": "Receive an in-app push notification within [Target: 60 seconds — assumption to validate]"
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Shiftnest Open-Shift Offers\n\n## Executive Summary\n\nShiftnest's current process requires managers to telephone staff individually to fill open shifts — a time-consuming, error-prone approach that delays coverage and burdens managers. This document defines seven user stories across four epics to replace that workflow with an in-app open-shift offer system: eligible workers receive instant notifications, the first to claim secures the shift, and the assigned manager must approve within **2 hours** (as specified by the PM) or the shift is automatically re-offered. Eligibility is enforced at claim time against each worker's maximum weekly hours and required training certifications. Stories meet the INVEST standard with Gherkin acceptance criteria and are ready for sprint backlog refinement.\n\n---\n\n## Epic 1: Open Shift Broadcasting\n\n### Story 1.1 — Publish an Open Shift\n\n**As a registered manager**, I want to publish an unfilled shift as an open offer to all eligible staff, **so that** I no longer need to call workers one by one.\n\n```gherkin\nGiven a shift has no assigned worker\nAnd the manager selects \"Offer as open shift\"\nWhen the manager confirms the offer\nThen all workers who meet the shift's training requirements\n  And whose confirmed hours for that week are below their maximum weekly hours\n  Receive an in-app push notification within [Target: 60 seconds — assumption to validate]\nAnd the shift status changes to \"Open – Accepting Claims\"\n```\n\n---\n\n### Story 1.2 — View Eligible Open Shifts\n\n**As a care worker**, I want to see only the open shifts I am eligible for, **so that** I can review the details before deciding to claim.\n\n```gherkin\nGiven I am logged in as a care worker\nWhen I navigate to \"Open Shifts\"\nThen I see only shifts for which I hold the required training certifications\n  And for which claiming would not exceed my maximum weekly hours\nAnd each listing displays date, start time, end time, location, and care type\nAnd shifts for which I am ineligible are hidden entirely\n```\n\n---\n\n## Epic 2: Shift Claiming\n\n### Story 2.1a — Claim an Open Shift (Happy Path)\n\n**As a care worker**, I want to claim an available open shift with a single tap, **so that** I can secure the work before another eligible colleague does.\n\n```gherkin\nGiven an open shift appears in my eligible shifts list\nAnd the shift has not been claimed by anyone else\nWhen I tap \"Claim Shift\" and confirm\nThen my claim is recorded with a server-side timestamp\nAnd the shift status changes to \"Claimed – Pending Approval\"\nAnd no other worker can claim this shift\nAnd I receive a confirmation notification stating my claim awaits manager approval\n```\n\n---\n\n### Story 2.1b — Simultaneous Claim Race Condition\n\n**As a care worker**, I want to receive immediate feedback if someone else claims a shift at the same time I do, **so that** I understand why my claim was not accepted.\n\n```gherkin\nGiven two workers submit a claim for the same open shift within milliseconds of each other\nWhen both requests reach the server\nThen only the request with the earlier server timestamp is accepted\nAnd the second worker receives a notification: \"This shift was just claimed by a colleague\"\nAnd the shift remains in \"Claimed – Pending Approval\" status\n```\n\n---\n\n### Story 2.2 — Withdraw a Pending Claim\n\n**As a care worker**, I want to withdraw my pending claim before a manager acts on it, **so that** the shift returns to the pool if my circumstances change.\n\n```gherkin\nGiven I have a claim in \"Pending Approval\" status\nAnd the manager has not yet approved or rejected it\nWhen I tap \"Withdraw Claim\"\nThen my claim is cancelled\nAnd the shift status returns to \"Open – Accepting Claims\"\nAnd eligible workers receive a new offer notification\n```\n\n---\n\n## Epic 3: Manager Approval & Re-Offer\n\n### Story 3.1 — Approve or Reject a Claimed Shift\n\n**As a registered manager**, I want to approve or reject a claimed shift within 2 hours, **so that** staffing is confirmed promptly and the worker knows their schedule.\n\n```gherkin\nGiven a shift is in \"Claimed – Pending Approval\"\nWhen I open the pending claim in the app\nThen I see the claimant's name, held certifications, and their confirmed hours for the current week\nAnd I can tap \"Approve\" or \"Reject\" (rejection requires a mandatory reason)\n\nGiven I tap \"Approve\"\nThen the shift status changes to \"Confirmed\"\nAnd the care worker receives a confirmation notification\nAnd the shift is removed from the open-shift pool\n\nGiven I tap \"Reject\"\nThen the shift returns to \"Open – Accepting Claims\"\nAnd the original claimant is notified of the rejection with the stated reason\nAnd all eligible workers receive a new offer notification\n```\n\n---\n\n### Story 3.2 — Automatic Re-Offer on Approval Timeout\n\n**As a registered manager**, I want the system to automatically re-offer an unapproved claim after exactly 2 hours, **so that** a manager's inaction does not leave a shift unstaffed.\n\n```gherkin\nGiven a shift is in \"Claimed – Pending Approval\"\nAnd exactly 2 hours have elapsed since the claim timestamp\nAnd no manager has approved or rejected the claim\nWhen the system timeout triggers\nThen the claim is released\nAnd the shift status returns to \"Open – Accepting Claims\"\nAnd the original claimant receives a notification that their claim has lapsed\nAnd all eligible workers receive a new offer notification\nAnd the manager receives an urgent alert that the approval window expired\n```\n\n---\n\n## Epic 4: Eligibility Enforcement\n\n### Story 4.1 — Block Claims That Breach Maximum Weekly Hours\n\n**As a registered manager**, I want the system to automatically prevent claims that would exceed a worker's maximum weekly hours, **so that** contractual and regulatory hour limits are respected without manual checks.\n\n```gherkin\nGiven a care worker's confirmed hours for the current week would be exceeded by this shift\nWhen an open shift is published\nThen that shift does not appear in their eligible shift list\nAnd they cannot claim it via any route (direct link, deep link, or list)\n\nGiven a worker's total hours are below their maximum\nBut claiming this specific shift would exceed the limit\nWhen they attempt to claim\nThen the claim is blocked\nAnd they receive a message explaining the reason\n```\n\n---\n\n## INVEST Check\n\n| Story | **I**ndep. | **N**eg. | **V**al. | **E**stim. | **S**mall | **T**est. | Verdict |\n|---|:---:|:---:|:---:|:---:|:---:|:---:|---|\n| 1.1 Publish open shift | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Pass** |\n| 1.2 View eligible shifts | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Pass** |\n| 2.1a Claim (happy path) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Pass** |\n| 2.1b Race condition | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | **Soft dep. on 2.1a** |\n| 2.2 Withdraw claim | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Pass** |\n| 3.1 Approve / Reject | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | **Pass** |\n| 3.2 Auto re-offer timeout | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | **Rework — see below** |\n| 4.1 Block hour breach | ✅ | ✅ | ✅ | ⚠️ | ✅ | ✅ | **Estimability risk** |\n\n**Stories requiring action:**\n\n- **Story 2.1b** — Soft dependency on 2.1a; schedule in the same sprint. Mark this explicitly in the sprint board.\n- **Story 3.2** — Depends on Story 3.1's \"Pending Approval\" status existing before the timer can fire. Sequence 3.2 directly after 3.1 in sprint planning; do not place in separate sprints.\n- **Story 4.1** — Estimability is at risk until the source of certification and hours data is confirmed (see Gap 5 below). Do not point this story until the data integration question is resolved.\n\n---\n\n## Gaps & Recommendations\n\nThe following are **blockers or risks** before development begins:\n\n1. **Offer ordering** — The brief states \"first eligible person\" wins but does not define whether notifications broadcast simultaneously (first-come, first-served) or sequentially by seniority or availability. **Recommendation:** simultaneous broadcast is simpler and faster; sequential adds latency and complexity. Decide before Story 1.1 is estimated.\n\n2. **Escalation after repeated no-claims** — No path is defined when a shift cycles through multiple re-offers with no takers. **Recommendation:** define a maximum re-offer round count (Assumption: [TBD]) after which the system escalates to the manager with a mandatory manual assignment prompt.\n\n3. **Shift lead permissions** — Shift leads are listed as users but have no story. **Recommendation:** confirm whether they can approve claims, view only, or take no action. Add a story if approval rights apply.\n\n4. **Manager delegation** — If the approving manager is off-shift, the 2-hour window may expire through absence alone. **Recommendation:** define a delegate-approval rule or secondary-manager escalation trigger.\n\n5. **Training certification data source** — Eligibility checks require certification records, but no system of record is identified. **Recommendation:** confirm whether Shiftnest holds this data internally or must integrate with an external HR or LMS platform; this is a prerequisite for Story 4.1.\n\n6. **Notification fallback** — Push-only is assumed (Target: 60-second delivery — assumption to validate). Confirm whether SMS or email fallback is required for workers with low app engagement.\n\n---\n\n## Next Steps\n\n1. **(This week — PM decision)** Resolve simultaneous vs. sequential offer broadcasting — unblocks Story 1.1 estimation and sprint sizing.\n2. **(This week — data audit)** Confirm the source of truth for maximum weekly hours and training certifications; identify any integration work before Story 4.1 is pointed.\n3. **(Before next refinement)** Confirm shift lead permissions and add or formally close a story covering their role.\n4. **(Before next refinement)** Define the maximum re-offer cycle count and the escalation trigger for persistently unstaffed shifts.\n5. **(Before Story 1.1 goes to dev)** Confirm push-only or push + SMS/email fallback and set a measurable delivery SLA (currently a 60-second target — assumption to validate).\n6. **(Before Story 3.1 goes to dev)** Define the manager delegation or secondary-approval rule to prevent 2-hour timeouts caused purely by manager unavailability."
+    }
+  ],
+  "calls": [
+    {
+      "label": "specs/user-stories:gen",
+      "ms": 120447,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Shiftnest Open-Shift Offers\n\n## Executive Summary\n\nShiftnest's current process requires managers to telephone staff individually to fill open shifts — a time-consuming, error-prone approach that delays coverage and burdens managers. This document defines seven user stories across four epics to rep",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 6818,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1273,
+        "thinking_tokens": 4114
+      },
+      "cost_usd_list": 0.109917,
+      "num_turns": 1
+    },
+    {
+      "label": "specs/user-stories:judge",
+      "ms": 3509,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 60-second figure is explicitly marked as a target and an assumption to validate.\"}]}",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 101,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 762,
+        "thinking_tokens": 0
+      },
+      "cost_usd_list": 0.0082982,
+      "num_turns": 2
+    }
+  ]
+}

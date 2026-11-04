@@ -1,0 +1,168 @@
+{
+  "method": "Claude Code CLI (claude -p) with the app's own buildModulePrompt output; not the production API path",
+  "summary": {
+    "started": "2026-11-04T07:51:32.580Z",
+    "rubricSha256": "e280a38586424325ad3a354ac7db37808bf19b37be3030e9f9f1cfc429bb4960",
+    "fixturesFile": "rubric/fixtures-new-cases.json",
+    "wallMs": 129549,
+    "generationModel": "claude-sonnet-4-6",
+    "judgeModel": "claude-opus-5-5",
+    "modelsAnswered": ["claude-sonnet-4-6", "claude-opus-5-5"],
+    "cliCalls": 2,
+    "cliErrors": 0,
+    "generationLatencyMs": {
+      "n": 1,
+      "p50": 121305,
+      "p90": 121305,
+      "max": 121305
+    },
+    "judgeLatencyMs": {
+      "n": 1,
+      "p50": 8241,
+      "p90": 8241,
+      "max": 8241
+    },
+    "usageTotals": {
+      "input": 3092,
+      "output": 7890
+    },
+    "modules": 1,
+    "generated": 1,
+    "requiredSectionsAllPresent": 1,
+    "requiredSectionChecks": {
+      "passed": 6,
+      "total": 6
+    },
+    "frameworkFollowed": 1,
+    "frameworkChecks": {
+      "passed": 2,
+      "total": 2
+    },
+    "sentencesWithNewFigures": 5,
+    "judgeVerdicts": {
+      "LABELLED": 5
+    },
+    "modulesWithNoUnsourcedFacts": 1,
+    "modulesOverProdMaxTokens": [],
+    "errors": []
+  },
+  "results": [
+    {
+      "key": "specs/user-stories",
+      "model": ["claude-sonnet-4-6"],
+      "ms": 121305,
+      "outputTokensVisible": 3106,
+      "chars": 11500,
+      "wouldExceedProdMaxTokens": false,
+      "required": [
+        {
+          "label": "H1 title",
+          "ok": true
+        },
+        {
+          "label": "executive summary",
+          "ok": true
+        },
+        {
+          "label": "prioritised next steps",
+          "ok": true
+        },
+        {
+          "label": "epics",
+          "ok": true
+        },
+        {
+          "label": "acceptance criteria",
+          "ok": true
+        },
+        {
+          "label": "INVEST check",
+          "ok": true
+        }
+      ],
+      "requiredPass": true,
+      "framework": [
+        {
+          "label": "3+ stories in 'As a ..., I want ..., so that ...' form",
+          "ok": true
+        },
+        {
+          "label": "3+ Given/When/Then criteria",
+          "ok": true
+        }
+      ],
+      "frameworkPass": true,
+      "newMetricSentences": 5,
+      "judged": [
+        {
+          "n": 1,
+          "verdict": "LABELLED",
+          "reason": "The 60-second notification time is explicitly marked as a target and an assumption to validate.",
+          "sentence": "And all eligible workers receive an in-app notification within [Target: 60 seconds — assumption to validate]"
+        },
+        {
+          "n": 2,
+          "verdict": "LABELLED",
+          "reason": "The 60-second push notification time is explicitly marked as a target and an assumption to validate.",
+          "sentence": "Then I receive a push notification within [Target: 60 seconds — assumption to validate]"
+        },
+        {
+          "n": 3,
+          "verdict": "LABELLED",
+          "reason": "The 30-minute reminder is explicitly marked as a target and an assumption to validate. The 2-hour window comes from the input.",
+          "sentence": "**As a** registered manager, **I want** a reminder [Target: 30 minutes before the 2-hour window closes — assumption to validate] when a pending claim needs action, **so that** I do not accidentally let the window expire."
+        },
+        {
+          "n": 4,
+          "verdict": "LABELLED",
+          "reason": "90 minutes is the input's 2-hour window minus the proposed 30-minute reminder, and the sentence marks it as an assumption to validate.",
+          "sentence": "And 90 minutes have elapsed since the claim (30 minutes remain — assumption to validate)"
+        },
+        {
+          "n": 5,
+          "verdict": "LABELLED",
+          "reason": "The 30 minutes in the notification text is the same reminder time labelled as a target or assumption in the story and scenario. It describes how the product should behave, not an established fact.",
+          "sentence": "Then I receive a push notification: \"Action needed: shift claim expires in 30 minutes\""
+        }
+      ],
+      "unsourcedFacts": 0,
+      "output": "# Shiftnest Open-Shift Offers — User Stories\n\n## Executive Summary\n\nShiftnest's current process of calling staff individually to fill open shifts is slow, error-prone, and places an unnecessary coordination burden on managers. This document defines eight user stories across five epics — Open Shift Publication, Shift Discovery & Claiming, Eligibility Enforcement, Manager Approval Workflow, and Notifications & Escalation — that together automate the in-app offer-and-claim lifecycle. Eligibility is enforced against each worker's maximum weekly hours (Assumption: threshold stored per worker contract record; exact value TBD) and required training tags. A 2-hour manager approval window ensures timely confirmation; unclaimed or unapproved shifts are automatically re-offered. Six identified gaps — including offer sequencing logic, re-offer escalation limits, and training data ownership — are flagged with actionable recommendations and must be resolved before sprint planning begins.\n\n---\n\n## Epic 1: Open Shift Publication\n\n### Story 1.1 — Publish an Open Shift\n\n**As a** registered manager, **I want** to create and publish an open shift with a date, time, location, and required training tags, **so that** only qualified, eligible workers are notified and coverage gaps are filled without manual phone calls.\n\n```gherkin\nGiven I am logged in as a registered manager\nWhen I submit a new shift with date, start time, end time, location, and ≥1 training tag\nThen the shift is saved with status \"Open\"\nAnd all eligible workers receive an in-app notification within [Target: 60 seconds — assumption to validate]\n\nGiven I attempt to submit a shift with no training tag selected\nWhen I tap \"Publish\"\nThen the system displays a validation error: \"At least one required training tag must be added\"\nAnd the shift is not published\n```\n\n---\n\n### Story 1.2 — Cancel an Open or Pending Shift\n\n**As a** registered manager, **I want** to cancel an open or pending shift, **so that** workers are not pursuing a shift that is no longer needed.\n\n```gherkin\nGiven a shift has status \"Open\" with no active claim\nWhen I cancel the shift\nThen the shift status changes to \"Cancelled\"\nAnd all previously notified workers receive a cancellation alert\n\nGiven a shift has status \"Pending Approval\"\nWhen I attempt to cancel it\nThen the system warns me a claim is active and requires a second confirmation tap\nAnd upon confirmation the claim is voided, the claimant is notified, and the shift is cancelled\n```\n\n---\n\n## Epic 2: Shift Discovery & Claiming\n\n### Story 2.1 — View Eligible Open Shifts\n\n**As a** care worker or shift lead, **I want** to browse a filtered list of open shifts I am eligible for, **so that** I can quickly identify coverage opportunities without seeing irrelevant shifts.\n\n```gherkin\nGiven I am logged in as a care worker\nAnd ≥1 open shift matches my training profile and would not breach my weekly hours cap\nWhen I navigate to \"Available Shifts\"\nThen I see only those shifts, each showing date, time, location, and required training tags\n\nGiven no eligible shift exists for me\nWhen I navigate to \"Available Shifts\"\nThen I see the message: \"No shifts available for you right now\"\n```\n\n---\n\n### Story 2.2 — Claim an Open Shift\n\n**As a** care worker or shift lead, **I want** to claim an open shift with a single action, **so that** the first eligible person to respond secures the slot without manager intervention.\n\n```gherkin\nGiven I am viewing a shift with status \"Open\" and I am eligible\nWhen I tap \"Claim Shift\" and confirm\nThen the shift status changes to \"Pending Approval\"\nAnd I receive an in-app confirmation with the approval deadline displayed\nAnd the shift is no longer claimable by other workers\nAnd the assigned manager receives an approval request notification\n\nGiven another worker has just claimed the same shift\nWhen I tap \"Claim Shift\"\nThen the system displays: \"This shift has just been claimed\" and I am returned to the list\n```\n\n---\n\n## Epic 3: Eligibility Enforcement\n\n### Story 3.1 — Enforce Weekly Hours and Training Eligibility\n\n**As a** care worker, **I want** the system to automatically block me from claiming or seeing shifts I am ineligible for, **so that** I remain compliant with my hours cap and training requirements without relying on manual checks.\n\n```gherkin\nGiven claiming a shift would cause my scheduled hours this week to exceed my maximum (Assumption: cap stored per worker profile; value TBD per contract)\nWhen eligibility is evaluated\nThen that shift does not appear in my available list\nAnd if I somehow access it directly, the \"Claim\" button is disabled with the message: \"This shift would exceed your weekly hours limit\"\n\nGiven I lack a training certificate required by the shift\nWhen eligibility is evaluated\nThen the shift is excluded from my available list entirely\n\nGiven a required training certificate on my profile has an expiry date before the shift date\nWhen eligibility is evaluated\nThen I am treated as ineligible for that shift\n```\n\n---\n\n## Epic 4: Manager Approval Workflow\n\n### Story 4.1 — Approve or Reject a Claimed Shift\n\n**As a** registered manager, **I want** to approve or reject a pending claim within 2 hours, **so that** the worker has a confirmed assignment and the roster is resolved promptly.\n\n```gherkin\nGiven a shift has status \"Pending Approval\" and < 2 hours have elapsed since the claim\nWhen I open the claim and tap \"Approve\"\nThen the shift status changes to \"Confirmed\"\nAnd the claimant receives an in-app confirmation with shift details\n\nGiven I tap \"Reject\" and enter a rejection reason\nThen the shift status returns to \"Open\"\nAnd the rejected claimant is notified with the stated reason\nAnd all eligible workers are re-notified of the open shift\n```\n\n---\n\n### Story 4.2 — Automatic Re-Offer on Approval Timeout\n\n**As a** registered manager, **I want** the system to re-offer a shift automatically when the 2-hour window expires without action, **so that** no shift is silently stranded in a pending state.\n\n```gherkin\nGiven a shift has status \"Pending Approval\"\nAnd exactly 2 hours have elapsed since the claim with no manager action\nWhen the timer expires\nThen the shift status returns to \"Open\"\nAnd the original claimant is notified that the shift has been re-offered\nAnd all eligible workers are re-notified\nAnd an escalation alert is sent to the registered manager\n```\n\n---\n\n## Epic 5: Notifications & Escalation\n\n### Story 5.1 — Push Notification for New Open Shifts\n\n**As a** care worker or shift lead, **I want** to receive a push notification the moment an eligible open shift is published, **so that** I can claim it before others.\n\n```gherkin\nGiven I have push notifications enabled and I am eligible for a newly published shift\nWhen the shift is published\nThen I receive a push notification within [Target: 60 seconds — assumption to validate]\nAnd the notification deep-links to the shift detail and claim screen\n\nGiven I have push notifications disabled\nWhen the shift is published\nThen an in-app badge and inbox message are created so I see the shift on next login\n```\n\n---\n\n### Story 5.2 — Manager Approval Deadline Reminder\n\n**As a** registered manager, **I want** a reminder [Target: 30 minutes before the 2-hour window closes — assumption to validate] when a pending claim needs action, **so that** I do not accidentally let the window expire.\n\n```gherkin\nGiven a shift is in \"Pending Approval\" status\nAnd 90 minutes have elapsed since the claim (30 minutes remain — assumption to validate)\nWhen the reminder threshold is reached\nThen I receive a push notification: \"Action needed: shift claim expires in 30 minutes\"\nAnd the notification deep-links to the approval screen\n\nGiven I have already approved or rejected the claim before the threshold\nWhen the reminder would fire\nThen no reminder is sent\n```\n\n---\n\n## Identified Gaps & Recommendations\n\n| # | Gap | Recommendation |\n|---|-----|----------------|\n| 1 | **Offer sequencing** — \"first eligible person\" is ambiguous between simultaneous broadcast and sequential one-at-a-time offer | Confirm broadcast (race-to-claim) vs. sequential before Story 2.2 is built; this is the most consequential architectural decision |\n| 2 | **Escalation ceiling** — no limit on re-offer cycles; a shift could loop indefinitely | Define a maximum cycle count (Assumption: 3 — to validate) after which the shift escalates to the manager as \"Unfilled\" |\n| 3 | **Training data ownership** — unclear who creates/maintains certificates and expiry dates | Confirm whether admin uploads or workers self-certify; add an admin story to Epic 1 if the former |\n| 4 | **Shift lead approval rights** — input is silent on whether shift leads can approve claims | Define a role-permissions matrix before Story 4.1 moves to development |\n| 5 | **Worker withdrawal** — no behaviour defined if a claimant wants to cancel before approval | Decide if withdrawal immediately re-opens the shift; add a story if yes |\n| 6 | **Notification fallback** — workers who disable push will miss shifts; SMS/email fallback not defined | Agree per-role fallback channel; update Story 5.1 acceptance criteria accordingly |\n\n---\n\n## INVEST Check\n\n| Story | **I** | **N** | **V** | **E** | **S** | **T** | Verdict |\n|-------|:---:|:---:|:---:|:---:|:---:|:---:|---------|\n| 1.1 Publish Open Shift | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pass |\n| 1.2 Cancel Shift | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pass |\n| 2.1 View Eligible Shifts | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pass |\n| 2.2 Claim a Shift | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | Rework |\n| 3.1 Eligibility Enforcement | ⚠️ | ✅ | ✅ | ✅ | ⚠️ | ✅ | Split |\n| 4.1 Approve/Reject Claim | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pass |\n| 4.2 Auto Re-Offer on Timeout | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pass |\n| 5.1 Push Notification | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pass |\n| 5.2 Deadline Reminder | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | Pass |\n\n**Stories requiring action:**\n\n- **Story 2.2 — Rework:** The concurrency scenario (two workers claiming simultaneously) introduces a race condition whose resolution depends on Gap 1 (broadcast vs. sequential). Rework after sequencing is confirmed to ensure the story is independently testable and fully estimable.\n- **Story 3.1 — Split:** Bundles weekly hours enforcement, training tag enforcement, and certificate expiry into one story. **Split into** \"Enforce weekly hours cap on claiming\" and \"Enforce training and certification eligibility.\" Each has a distinct data source, separate test surface, and hours enforcement can ship a sprint earlier than the certificate-expiry logic.\n\n---\n\n## Next Steps\n\n1. **Resolve Gap 1 (offer sequencing)** — book a 30-minute decision session with the PM and engineering lead this week; this unblocks Story 2.2 rework and the concurrency design.\n2. **Split Story 3.1** — rewrite as two stories and re-estimate before the next sprint planning; this is the highest complexity item in the backlog.\n3. **Confirm training data ownership (Gap 3)** — align with HR/ops to determine whether a separate admin story is needed; without this, Story 3.1's split cannot be fully specified.\n4. **Define notification fallback channel (Gap 6)** — agree push vs. SMS/email policy with the product owner and update Story 5.1 acceptance criteria.\n5. **Set escalation ceiling and unfilled-shift behaviour (Gap 2)** — add the maximum re-offer count as a configurable system parameter and extend Story 4.2 accordingly.\n6. **Produce a role-permissions matrix (Gap 4)** — clarify shift lead approval rights before Story 4.1 enters development to avoid a last-minute scope change."
+    }
+  ],
+  "calls": [
+    {
+      "label": "specs/user-stories:gen",
+      "ms": 121305,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "# Shiftnest Open-Shift Offers — User Stories\n\n## Executive Summary\n\nShiftnest's current process of calling staff individually to fill open shifts is slow, error-prone, and places an unnecessary coordination burden on managers. This document defines eight user stories across five epics — Open Shift P",
+      "models": ["claude-sonnet-4-6"],
+      "usage": {
+        "input_tokens": 3,
+        "output_tokens": 7304,
+        "cache_read_input_tokens": 0,
+        "cache_creation_input_tokens": 1274,
+        "thinking_tokens": 4198
+      },
+      "cost_usd_list": 0.11721299999999998,
+      "num_turns": 1
+    },
+    {
+      "label": "specs/user-stories:judge",
+      "ms": 8241,
+      "exit": 0,
+      "is_error": false,
+      "result_head": "{\"items\":[{\"n\":1,\"verdict\":\"LABELLED\",\"reason\":\"The 60-second notification time is explicitly marked as a target and an assumption to validate.\"},{\"n\":2,\"verdict\":\"LABELLED\",\"reason\":\"The 60-second push notification time is explicitly marked as a target and an assumption to validate.\"},{\"n\":3,\"verdi",
+      "models": ["claude-opus-5-5"],
+      "usage": {
+        "input_tokens": 2,
+        "output_tokens": 586,
+        "cache_read_input_tokens": 871,
+        "cache_creation_input_tokens": 942,
+        "thinking_tokens": 222
+      },
+      "cost_usd_list": 0.0194382,
+      "num_turns": 2
+    }
+  ]
+}
