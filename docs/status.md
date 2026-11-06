@@ -18,4 +18,4 @@ Contributions welcome. Start with issues labeled `priority:low` or `area:docs`.
 
 ## Privacy
 
-Your data stays in your browser's IndexedDB. The only outbound request is the LLM call when you click _Generate_ or _Analyze_. Export everything anytime: **Settings → Export All Data**.
+Your data stays in your browser's IndexedDB. The only outbound requests are the LLM call when you click _Generate_ or _Analyze_, and anonymous page-view counts sent to Vercel Analytics (none of your data is included). Export everything anytime: **Settings → Export All Data**.
