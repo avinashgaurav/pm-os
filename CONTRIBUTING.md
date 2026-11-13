@@ -43,7 +43,7 @@ A good bug report names:
 1. Branch from `main` with a descriptive name (`feat/...`, `fix/...`, `chore/...`).
 2. Keep PRs scoped — one logical change per PR. Bundle docs/templates if the
    change is genuinely one chore (this PR is the canonical example).
-3. Run the check suite. CI runs Node 20 + 22 + secret scanning + prompt-eval
+3. Run the check suite. CI runs Node 22 + 24 + secret scanning + prompt-eval
    snapshots — locally cover what you can.
 4. Fill in the PR template (it's short on purpose).
 5. PRs are reviewed by an independent `code-reviewer` pass before merge.
